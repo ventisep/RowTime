@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html>
+  <body>
+
+    {% if user %}
+    <b> Hello {{ user }}, not you? <a href="{{ logout_url|safe}}">logout</a>
+    {% else %}
+    <a href="{{ login_url|safe }}">login</a>
+    {% endif %}
+
+  </body>
+</html>

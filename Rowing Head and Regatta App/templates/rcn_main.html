@@ -1,0 +1,32 @@
+
+{% extends "templates/layout.html" %}
+{% block main %}
+
+<body>
+  <header>
+    <h1><a href="/">Golf Competition Network - Your Competitions</a></h1>
+  </header>
+
+  <span id="username">{{user.name}}</span><br><br>
+
+{% for comp in competitions %}
+<table class="outer">
+	<tr><th></th><th>{{comp.name}}</th><th><a href="/detail?comp_key={{comp.key.urlsafe()}}">details</a></th></tr>
+	<tr><td align="left">admin: {{comp.admin_name}}</td><th></th><td>type: {{comp.comp_type}}</td></tr>
+		<tr><td colspan=3>
+		<table class="inner" sortable="true">
+			<thead>
+			<tr><th>Golfer<th>Strokes</th><th>Round 1<th>Round 2<th>Round 3<th>Round 4<th>Round 5<th>Round 6<th>Round 7th<th>Round 8</th><th>Round 9</th><th>Round 10</th><th>Round 11</th><th>Par</th></tr>
+			</thead>
+			<tbody>
+			{% for summary in comp.comp_summaries %}
+				<tr><td>{{summary.golfer_name}}</td><td>{{summary.current_handicap}}<td>{{summary.round_nscores[0]}}</td><td>{{summary.round_nscores[1]}}</td><td>{{summary.round_nscores[2]}}</td><td>{{summary.round_nscores[3]}}</td><td>{{summary.round_nscores[4]}}</td><td>{{summary.round_nscores[5]}}</td><td>{{summary.round_nscores[6]}}</td><td>{{summary.round_nscores[7]}}</td><td>{{summary.round_nscores[8]}}</td><td>{{summary.round_nscores[9]}}</td><td>{{summary.round_nscores[10]}}</td><td>{{summary.round_nscores[11]}}</td><td>{{summary.total_underpar}}</td></tr>
+			{% endfor %}
+			</tbody>
+		</table></td></tr>
+</table><br>
+{% endfor %}
+
+</body>
+{% endblock %}
+
