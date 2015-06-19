@@ -1,15 +1,16 @@
-oALEX I have updated this so we can both edit the story of what we are doing on this page to begin with.  we can put this text into design files later but this will work over the next few days.
+ALEX I have updated this so we can both edit the story of what we are doing on this page to begin with.  We can put this text into design files later but this will work over the next few days.
 
 
 User story
 
-As a user on the river bank I want to get a List of crews with a button next to them and a number of timer boxes representing each stage of the race. Each crew on the list has a button next to them and if I press this button I will record an observed time against the crew. The first press of the button enters a start time subsequent presses enters a time for each stage until the finish time is recorded . A press after the finish offers a pop up to validate and publish the time.   Later I will want to validate times against other users also timing the race but initially it will be a single option.  Validate or record that an error has been made or cancel validation.
+As a user of a mobile device on the river bank timing an event, I want to get a List of crews with a number of timer boxes representing each stage of the race. in the timer boxes is the current start time and split time of each stage with the current stage counting up as time passes.  Each crew on the list has a button next to them and if I press this button I will record an observed time against the crew for the stage they are at. The first press of the button enters a start time subsequent presses enters a time for each stage until the finish time is recorded . A press after the finish offers a pop up to validate and publish the time.   Later I will want to validate times against other users also timing the race but initially it will be a single option: Validate and record the time record which also publishes for others to see or cancel validation.
 
 Technical design overview
 
 The application is built using google app engine with Python on the server and a choice of apps in the front end.  We will start with a JavaScript client and html5
 
-Using the main screen initiates logon and registration.  This passes the user to the main screen which allows selection of an event and creates a list of crews about to race with current status of timing and sets up a channel to receive updates with three options:
+Using the login screen initiates logon and registration.  This passes the user to the event screen which allows selection of an event.  Choosing an event passes control to the Crews List page which shows a list of crews about to race in the chosen event with current status of timing for each crew and an optional button if the user is authorised to time crews. options for managing timing are:
+
 	1. Google app engine channels will send updates from other users when they record times by calling a broadcast function on asynchronous mode after updating the time event in the database at the backend.
 	2. Google app engine will be called every few seconds with an API call to get timing events since the last numbered event received
 	3. Google app engine will be called every few seconds for the complete list of crews and their times and stages using API end points
