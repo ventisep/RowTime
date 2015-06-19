@@ -1,9 +1,9 @@
-ALEX I have updated this so we can both edit the story of what we are doing on this page to begin with.  we can put this text into design files later but this will work over the next few days.
+oALEX I have updated this so we can both edit the story of what we are doing on this page to begin with.  we can put this text into design files later but this will work over the next few days.
 
 
 User story
 
-As a timer user I want to get a List of crews with a button next to them and a number of timer boxes representing each stage of the race. First press of the button enters a start time subsequent presses enters a time for each stage until the finish time is recorded . A press after the finish offers a pop up to validate and publish the time.   Later I will want to validate times against other users also timing the race but initially it will be a single option.  Validate or record that an error has been made or cancel validation.
+As a user on the river bank I want to get a List of crews with a button next to them and a number of timer boxes representing each stage of the race. Each crew on the list has a button next to them and if I press this button I will record an observed time against the crew. The first press of the button enters a start time subsequent presses enters a time for each stage until the finish time is recorded . A press after the finish offers a pop up to validate and publish the time.   Later I will want to validate times against other users also timing the race but initially it will be a single option.  Validate or record that an error has been made or cancel validation.
 
 Technical design overview
 
