@@ -125,7 +125,7 @@ class LoadCrews(BaseRequestHandler):
                 'user' : user
             }
 
-        template = JINJA_ENVIRONMENT.get_template('templates/gcn_detail.html')
+        template = JINJA_ENVIRONMENT.get_template('templates/rcn_detail.html')
         self.response.write(template.render(template_values))
 
 
@@ -194,7 +194,7 @@ class signup(AuthHandler):
             account = Accounts(email=email, username=name, rower_id = rower.key)
             account.key = account.put()
             data = {"account" : account.key.id(),
-                    "golfer_id" : golfer.key,
+                    "rower_id" : rower.key,
                     "name" : name,
                     "email" : email,
                     "password_raw":password}
