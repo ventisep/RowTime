@@ -31,32 +31,32 @@ class Events(ndb.Model):
     event_desc = ndb.StringProperty()
 
 class Rowers(ndb.Model):
-    account_id = ndb.KeyProperty(Kind= Account)
+    account_id = ndb.KeyProperty(kind= Accounts)
     name = ndb.StringProperty()
     email = ndb.StringProperty()
     club = ndb.StringProperty()
     pic = ndb.BlobProperty()
 
 class Crews(ndb.Model):
-    event_id = ndb.KeyProperty(Kind= Competition)
+    event_id = ndb.KeyProperty(kind= Events)
     crew_number = ndb.IntegerProperty()
     crew_type = ndb.StringProperty()
     rower_count = ndb.IntegerProperty()
     cox = ndb.BooleanProperty()
-    rower_id = ndb.KeyProperty(Kind=Rower, repeated=True)
+    rower_id = ndb.KeyProperty(kind=Rowers, repeated=True)
 
 class Observed_Times(ndb.Model):
-    event_id = ndb.KeyProperty()
+    event_id = ndb.KeyProperty(kind=Events)
     sequence_number = ndb.IntegerProperty()
     crew_number = ndb.IntegerProperty()
-    stage = ndb,IntegerProperty()
+    stage = ndb.IntegerProperty()
     time_local = ndb.DateTimeProperty()
     time_server = ndb.DateTimeProperty()
     recorded_by = ndb.StringProperty()
 
 class Crew_Times(ndb.Model):
-    event_id = ndb.KeyProperty(Kind= Event)
-    crew_id = ndb.KeyProperty(Kind= Crew)
+    event_id = ndb.KeyProperty(kind= Events)
+    crew_id = ndb.KeyProperty(kind= Crews)
     start_time_local = ndb.DateTimeProperty()
     end_time_local = ndb.DateTimeProperty()
     start_time_server = ndb.DateTimeProperty()
