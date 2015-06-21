@@ -1,4 +1,3 @@
-
 {% extends "templates/layout.html" %}
 {% block main %}
 
@@ -11,8 +10,8 @@
 
 {% for event in events %}
 <table class="outer">
-	<tr><th></th><th>{{event.name}}</th><th><a href="/loadcrews?event_key={{event.key.urlsafe()}}">details</a></th></tr>
-	<tr><td align="left">admin: {{event.admin_name}}</td><th></th><td>type: {{event.event_type}}</td></tr>
+	<tr><th></th><th>{{event.event_name}}</th><th><a href="/loadcrews?event_key={{event.key.urlsafe()}}">details</a></th></tr>
+	<tr><td align="left">date: {{event.event_date}}</td><th></th><td>type: {{event.event_desc}}</td></tr>
 </table><br>
 {% endfor %}
 

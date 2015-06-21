@@ -4,6 +4,7 @@ import sys
 import webapp2
 import logging
 import json
+import datetime
 
 from google.appengine.api import users
 from google.appengine.ext import ndb
@@ -81,13 +82,20 @@ class MainPage(BaseRequestHandler):
 
             #retrieve the events in the future and up to 2 weeks ago **TODO**
 
-            event_summaries = list()
+            testevent = Events(event_name = "Bedford Head",
+                event_date = datetime.date(2015,12,01),
+                event_desc = "The best meeting of the season")
+
+            event_key = testevent.put()
+
+            myevents = list()
+            myevents.append(testevent)
+
 
   
             template_values = {
                 'user': user,
                 'events': myevents,
-                'event_summaries': event_summaries,
                 }
 
             template = JINJA_ENVIRONMENT.get_template('templates/rcn_main.html')
@@ -114,7 +122,7 @@ class LoadCrews(BaseRequestHandler):
         logging.info('looking for results with event key %s', type(requested_event_key))
 
         crews=list()
-        crews=crews.query(crews.event_id==requested_event_key).order(crews.crew_number).fetch()
+        crews=Crews.query(Crews.event_id==requested_event_key).order(Crews.crew_number).fetch()
         if not crews:
             self.response.write("no crews")
             return
@@ -163,7 +171,7 @@ class login(AuthHandler):
             #user does not exist or password is wrong provide error message
             template_values = {'email' : email,
                             'error': 'Not a Valid Account or incorrect password - please sign-up'}
-            template = JINJA_ENVIRONMENT.get_template('templates/gcn_login.html')
+            template = JINJA_ENVIRONMENT.get_template('templates/rcn_login.html')
             self.response.write(template.render(template_values))
 
 
@@ -188,13 +196,10 @@ class signup(AuthHandler):
             self.response.write(template.render(template_values))
         else:
             #add account
-            rower = Rowers(email= email, name=name)
-            rower.key = rower.put()
             auth_id = "gcn:"+email
-            account = Accounts(email=email, username=name, rower_id = rower.key)
+            account = Accounts(email=email, username=name)
             account.key = account.put()
             data = {"account" : account.key.id(),
-                    "rower_id" : rower.key,
                     "name" : name,
                     "email" : email,
                     "password_raw":password}
