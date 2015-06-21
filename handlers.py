@@ -93,11 +93,11 @@ class AuthHandler(BaseRequestHandler, SimpleAuthHandler):
   OAUTH2_CSRF_STATE = True
   
   USER_ATTRS = {
-    'gcn'      : {
+    'rcn'      : {
       'account': 'id',
       'name'   : 'name',
       'email'  : 'email',
-      'golfer_id' : 'golfer_id',
+      'rower_id' : 'rower_id',
       'password_raw' : 'password_raw'
     },
     'facebook' : {
@@ -150,7 +150,7 @@ class AuthHandler(BaseRequestHandler, SimpleAuthHandler):
      data is a user info dictionary.
      auth_info contains access token or oauth token and secret.
 
-     if GCN is provider this is called with user data, access token and 'GCN'
+     if RCN is provider this is called with user data, access token and 'RCN'
 
     uinfo = {
       'id'      : user.federated_identity(),

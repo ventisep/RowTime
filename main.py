@@ -5,63 +5,18 @@ import webapp2
 import logging
 import json
 import datetime
-
+from datetime import timedelta
 from google.appengine.api import users
 from google.appengine.ext import ndb
 from handlers import BaseRequestHandler, AuthHandler
 import jinja2
-
 from webapp2 import WSGIApplication, Route
-
 from secrets import SESSION_KEY
 
 if 'lib' not in sys.path:
     sys.path[0:0] = ['lib']
 
-
-# The data model for Rowing Competition Network assumes we are using it with a non-relational database
-
-class Accounts(ndb.Model):
-    auth_id = ndb.IntegerProperty()
-    email = ndb.StringProperty()
-    username = ndb.StringProperty()
-
-class Events(ndb.Model):
-    event_name = ndb.StringProperty()
-    event_date = ndb.DateProperty()
-    event_desc = ndb.StringProperty()
-
-class Rowers(ndb.Model):
-    account_id = ndb.KeyProperty(kind= Accounts)
-    name = ndb.StringProperty()
-    email = ndb.StringProperty()
-    club = ndb.StringProperty()
-    pic = ndb.BlobProperty()
-
-class Crews(ndb.Model):
-    event_id = ndb.KeyProperty(kind= Events)
-    crew_number = ndb.IntegerProperty()
-    crew_type = ndb.StringProperty()
-    rower_count = ndb.IntegerProperty()
-    cox = ndb.BooleanProperty()
-    rower_id = ndb.KeyProperty(kind=Rowers, repeated=True)
-
-class Observed_Times(ndb.Model):
-    event_id = ndb.KeyProperty(kind=Events)
-    sequence_number = ndb.IntegerProperty()
-    crew_number = ndb.IntegerProperty()
-    stage = ndb.IntegerProperty()
-    time_local = ndb.DateTimeProperty()
-    time_server = ndb.DateTimeProperty()
-    recorded_by = ndb.StringProperty()
-
-class Crew_Times(ndb.Model):
-    event_id = ndb.KeyProperty(kind= Events)
-    crew_id = ndb.KeyProperty(kind= Crews)
-    start_time_local = ndb.DateTimeProperty()
-    end_time_local = ndb.DateTimeProperty()
-    start_time_server = ndb.DateTimeProperty()
-    end_time_server = ndb.DateTimeProperty()
+from models import *
 
 
 JINJA_ENVIRONMENT = jinja2.Environment(loader=jinja2.FileSystemLoader(os.getcwd())) 
@@ -80,22 +35,18 @@ class MainPage(BaseRequestHandler):
 
             user=self.current_user
 
-            #retrieve the events in the future and up to 2 weeks ago **TODO**
+            #retrieve the events in the future and up to 2 weeks ago **TODO***
+            #query the Events entities looking for events that have an event date
+            #greater than 2 weeks ago
 
-            testevent = Events(event_name = "Bedford Head",
-                event_date = datetime.date(2015,12,01),
-                event_desc = "The best meeting of the season")
+            searchdate = datetime.date.today() - timedelta(weeks=2)
 
-            event_key = testevent.put()
+            eventlist = list()
+            eventlist = Events.query(Events.event_date >= searchdate).order(Events.event_date).fetch()
 
-            myevents = list()
-            myevents.append(testevent)
-
-
-  
             template_values = {
                 'user': user,
-                'events': myevents,
+                'events': eventlist,
                 }
 
             template = JINJA_ENVIRONMENT.get_template('templates/rcn_main.html')
@@ -144,7 +95,7 @@ class login(AuthHandler):
         email=self.request.get("email")
         password=self.request.get("password")
         name = self.request.get("name")
-        auth_id = "gcn:"+email
+        auth_id = "rcn:"+email
         
         try:
             user=self.auth.get_user_by_password(auth_id, password)
@@ -182,7 +133,7 @@ class signup(AuthHandler):
         email=self.request.get("email2")
         password=self.request.get("password2")
         name = self.request.get("name")
-        auth_id = "gcn:%s" % email
+        auth_id = "rcn:%s" % email
 
         """TODO some validation of the above information"""
 
@@ -196,14 +147,14 @@ class signup(AuthHandler):
             self.response.write(template.render(template_values))
         else:
             #add account
-            auth_id = "gcn:"+email
+            auth_id = "rcn:"+email
             account = Accounts(email=email, username=name)
             account.key = account.put()
             data = {"account" : account.key.id(),
                     "name" : name,
                     "email" : email,
                     "password_raw":password}
-            _attrs = self._to_user_model_attrs(data, self.USER_ATTRS["gcn"])
+            _attrs = self._to_user_model_attrs(data, self.USER_ATTRS["rcn"])
 
 
             ok, user = self.auth.store.user_model.create_user(auth_id, **_attrs)
@@ -229,11 +180,11 @@ app_config = {
 routes = [
   Route('/', handler='main.MainPage'),
   Route('/loadcrews', handler='main.LoadCrews'),
-  Route('/testdata', handler='main.TestData'),
   Route('/profile', handler='handlers.ProfileHandler', name='profile'),
   Route('/logout', handler='handlers.AuthHandler:logout', name='logout'),
   Route('/login', handler='main.login'),
   Route('/signup', handler='main.signup'),
+  Route('/testdata', handler='testing.CreateTestData'),
   Route('/auth/<provider>', handler='handlers.AuthHandler:_simple_auth', name='auth_login'),
   Route('/auth/<provider>/callback', handler='handlers.AuthHandler:_auth_callback', name='auth_callback')
 ]

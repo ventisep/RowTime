@@ -5,6 +5,7 @@ from protorpc import message_types
 from protorpc import remote
 import datetime
 import logging
+from models import *
 
 #The package= line is used by the underlying ProtoRpc when creating names for the ProtoRPC messages you 
 #create. This package name will show up as a prefix to your message class names in the discovery 
@@ -62,7 +63,15 @@ class ObservedTimesApi(remote.Service):
   def time_create(self, request):
 
     logging.info(self)
-    return ObservedTime(keysequence=8,
+    request.keysequence=8
+
+
+    time =Observed_Times(crew_number=request.crew,
+                        sequence_number = request.keysequence,
+                        stage=request.stage,
+                        time_local=request.time)
+    time_key=time.put()
+    return ObservedTime(keysequence=request.keysequence,
                         crew=request.crew,
                         stage=request.stage,
                         time=request.time)

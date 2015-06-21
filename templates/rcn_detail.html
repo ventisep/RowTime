@@ -9,8 +9,9 @@
 
 {% for crew in crews %}
 <table class="outer">
-	<tr><th></th><th>{{crew.name}}</th><th><a href="/detail?event_key={{event.key.urlsafe()}}">details</a></th></tr>
-	<tr><td align="left">admin: {{event.admin_name}}</td><th></th><td>type: {{event.event_type}}</td></tr>
+	<tr><th></th><th>{{crew.name}}</th><th><a href="/crewdetail?crew_key={{crew.key.urlsafe()}}">details</a></th></tr>
+	<tr><td align="left">admin: {{crew.crew_number}}</td><th></th><td>type: {{crew.crew_type}}</td></tr>
 </table><br>
+{% endfor %}
 </body>
 {% endblock %}

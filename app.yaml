@@ -60,11 +60,11 @@ libraries:
 # Handlers tell App Engine how to route requests to your application.
 handlers:
 
-- url: /images
-  static_dir: images
-
 - url: /css
   static_dir: css
+
+- url: /images
+  static_dir: images
 
 - url: /_ah/spi/.*
   script: rowtime_api.application

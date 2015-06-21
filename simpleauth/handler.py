@@ -72,7 +72,7 @@ class SimpleAuthHandler(object):
   """
   
   PROVIDERS = {
-    'gcn'         : ('gcnlogin',
+    'rcn'         : ('rcnlogin',
       'no url for authorisation',
       'no return url for a second step'),
     'google'      : ('oauth2', 
@@ -131,7 +131,7 @@ class SimpleAuthHandler(object):
     
     Calls _<authtype>_init() method, where <authtype> is
     oauth2, oauth1 or openid (defined in PROVIDERS dict).
-    PV added a new type gcnlogin.  because a callback is needed
+    PV added a new type rcnlogin.  because a callback is needed
     
     May raise one of the exceptions defined at the beginning
     of the module. See README for details on error handling.
@@ -175,8 +175,8 @@ class SimpleAuthHandler(object):
     except AttributeError:
       raise UnknownAuthMethodError(method)
 
-  def _gcnlogin_init(self, provider, auth_url):
-    """Initiates a GCN login which uses appengine's authorisation
+  def _rcnlogin_init(self, provider, auth_url):
+    """Initiates a RCN login which uses appengine's authorisation
     capabilities in google appengine webapp2_extras.auth to identify
     user and validate password"""
 
@@ -202,7 +202,7 @@ class SimpleAuthHandler(object):
 
     self.redirect(target_url)      
     
-  def _gcnlogin_callback(self, provider, access_token_url):
+  def _rcnlogin_callback(self, provider, access_token_url):
     """Step 2 of OAuth 2.0, whenever the user accepts or denies access.
     lookup login and check password if accepted take date from account and 
     put into the user_data"""
@@ -429,7 +429,7 @@ class SimpleAuthHandler(object):
   #
   # user profile/info
   #
-  def _get_gcnlogin_user_info(self, auth_info, key=None, secret=None): #TODO do I need this or can I make the GCN login simpler?
+  def _get_rcnlogin_user_info(self, auth_info, key=None, secret=None): #TODO do I need this or can I make the RCN login simpler?
     """Returns a dict of currenly logging in user.
     """
     resp = self._oauth2_request(
