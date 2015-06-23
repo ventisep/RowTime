@@ -77,8 +77,21 @@ class LoadCrews(BaseRequestHandler):
         if not crews:
             self.response.write("no crews")
             return
-  
+
+        data=[{'crew_number' : 123,
+                'start_time_local' : "8,9,12.1234",
+                'end_time_local' : '2015,6,23,8,9,15,1235',
+                'start_time_server' : "2015,06,23,8,9,12,1242",
+                'end_time_server' : "2015,06,23,8,9,15,1237"},
+                {'crew_number' : 124,
+                'start_time_local' : "8,9,12.1234",
+                'end_time_local' : '2015,6,23,8,9,15,1235',
+                'start_time_server' : "2015,06,23,8,9,12,1242",
+                'end_time_server' : "2015,06,23,8,9,15,1237"}]
+                
+        jsondata=map(json.dumps, data)
         template_values = {
+                'data': jsondata,
                 'crews': crews,
                 'event' : requested_event_key,
                 'user' : user

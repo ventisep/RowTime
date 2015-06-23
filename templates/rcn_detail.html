@@ -1,16 +1,35 @@
 
 {% extends "templates/layout.html" %}
 {% block main %}
-<body>
+<script type="text/javascript">
+    function test_func() { 	//this function is run onload and paints the screen with the 
+    						//crews and their times
+        var data={{ data|safe }}; //get data passed from jinja2
+        var crew_data = []			//create and array to hold the crew data
+
+        for (i=0; i < data.length; i++) {   //step through the data passed and assign it to crew_data
+        	crew_data[i]=JSON.parse(data[i]); //convert the JSON string to an object
+        
+
+ 	       	var btn = document.createElement("BUTTON");        // Create a <button> element
+			var t = document.createTextNode(crew_data[i].crew_number.toString());       // Create a text node
+			btn.appendChild(t);                                // Append the text to <button>
+			document.body.appendChild(btn);                    // Append <button> to <body>
+		}	
+
+    }
+</script>
+<body onload="test_func()">
+
   <header>
     <h2>Row Timing - List of Crews Due to Row Now</h2>
   </header>
   <span id="username">{{user.name}}</span><br><br>
 
+
 {% for crew in crews %}
-<table class="outer">
-	<tr><th></th><th>{{crew.name}}</th><th><a href="/crewdetail?crew_key={{crew.key.urlsafe()}}">details</a></th></tr>
-	<tr><td align="left">admin: {{crew.crew_number}}</td><th></th><td>type: {{crew.crew_type}}</td></tr>
+<table class="crews">
+	<tr><td align="left">{{crew.crew_number}} crew name here </td><td>type: {{crew.crew_type}}</td></tr>
 </table><br>
 {% endfor %}
 </body>

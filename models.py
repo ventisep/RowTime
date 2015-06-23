@@ -43,7 +43,11 @@ class Observed_Times(ndb.Model):
 class Crew_Times(ndb.Model):
     event_id = ndb.KeyProperty(kind= Events)
     crew_id = ndb.KeyProperty(kind= Crews)
+    crew_number = ndb.IntegerProperty()
     start_time_local = ndb.DateTimeProperty()
     end_time_local = ndb.DateTimeProperty()
     start_time_server = ndb.DateTimeProperty()
     end_time_server = ndb.DateTimeProperty()
+
+    def todict(o):
+        return o.__dict__
