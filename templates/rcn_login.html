@@ -1,34 +1,21 @@
 {% extends "templates/layout.html" %}
 {% block main %}
-<body >
-	<table align="center" border="0" bgcolor="white" class="table_2" height="400px">
-		<tr>
-			<td align="center" valign="top" width="50%">
+<body>
 				<form method="post" action="/login">
-				<h1 id="title"><span>L</span>og <span>I</span>n</h1>
+				<h2>Log In</h2><br>
 				<input type="text" placeholder="email" id="text3" name="email" class="text_space2" value = {{email}}> 
 				<br> 
 				<input type="password" placeholder="Password" id="text3" name="password" class="text_space"><br>
 				<span id="errormsg">{{error}}</span>
 				<input type="submit" id="log">
 				</form>
-				<a href="/auth/facebook"><img src="/images/Facebook_login.png" width="150px" class="img"></a>
-
-			</td>
-			<td align="center" width="5px">
-				<img src="/images/strip.png" height="350px" width="10px" class="img_1">
-			</td>
-			<td align="center" valign="top">
 				<form method="post" action="/signup">
-				<h1 id="title"><span>S</span>ign <span>U</span>p</h1>
+				<h2>Sign Up</h2>
 				<input type="text" placeholder="email" id="text3" name="email2" class="text_space2"> 
 				<br>
 				<input type="text" placeholder="name" id="text3" name="name" class="text_space2"><br>
 				<input type="password" placeholder="Password" id="text3" name="password2" class="text_space"><br>
 				<input type="submit" value="signup">
 				</form>
-			</td>
-		</tr>
-	</table>
 </body>
 {% endblock %}

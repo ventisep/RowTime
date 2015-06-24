@@ -1,5 +1,5 @@
 body{
-	background-image: url('/images/rowingpic.tif');
+	background-image: url('/images/rowingpic.jpg');
 	background-size: 100%;
 	background-repeat: repeat-y;
 }
@@ -10,27 +10,8 @@ h1{
 	opacity: 1;
 }
 h2{
-	text-align: center;
-	font-family: Arial;
-	font-size: 20px;
-	padding-left: 120px;
-	padding-right: 19px;
-	opacity: 1;
 }
 div#menubar_1 > a{
-	text-align: center;
-	font-family: Arial;
-	text-decoration: none;
-	margin-left: 60px;
-	border-width:0px;
-	padding: 10px 10px 10px 10px;
-	background-color: #333;
-	color: #999;
-	font-size: 19px;
-	border-radius: 3px;
-	-ms-transition: background 0.3s linear 0s, color 0.3s linear 0s,box-shadow 0.3s ease;
-	-o-transition: background 0.3s linear 0s, color 0.3s linear 0s,box-shadow 0.3s ease;
-	transition: background 0.3s linear 0s, color 0.3s linear 0s,box-shadow 0.3s ease;
 }
 
 div#menubar_1 > a:hover{
@@ -39,14 +20,6 @@ div#menubar_1 > a:hover{
 	box-shadow: 0px 0px 15px #000000;
 }
 div#log > a{
-	font-family: Arial;
-	font-size: 20px;
-	padding: 10px 10px 10px 10px;
-	background: #333;
-	color: #999;
-	border-radius: 5px;
-	text-decoration: none;
-	transition: background 0.3s linear 0s, color 0.3s linear 0s;
 }
 div#log > a:hover{
 	background: rgba(234, 127, 0, 1);
@@ -60,28 +33,17 @@ div#log > a:hover{
 }
 
 table{
-	border-radius: 20px;
-	background-color:rgba(255,255,255,.6);
-	-moz-box-shadow: 11px 11px 37px #000000; 
-	box-shadow: 11px 11px 37px #000000;
-	-webkit-box-shadow: 11px 11px 37px #000000;
 }
 input[readonly]{
 	background: grey;
 }
 .table_1{
-	background-image: URL("/images/noise_back.PNG");
-	background-size: 5%;
 }
 .table_2{
-	margin-top:100px;
-	background-image: URL("/images/noise_back.png");
-	background-size: 10%;
-	width: 895px;
+	margin-top: 20px;
 }
 .golfer_table{
 	margin-top:100px;
-	background-image: URL("/images/noise_back.png");
 	background-size: 10%;
 	width: 895px;
 }
@@ -181,12 +143,9 @@ p{
 	padding: 6px 1px 6px 15px; 
 	border-radius: 5px;
 	box-shadow: 0px 0px 1px #ccc inset; 
-	transition:200ms all ease;
 	outline:0;
 } 
 
 #text3:hover 
 { 
-	width:270px;
-	box-shadow: 0px 0px 10px rgba(234, 127, 0, .9) inset;
 } 
