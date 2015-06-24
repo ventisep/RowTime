@@ -1,9 +1,61 @@
 
 {% extends "templates/layout.html" %}
 {% block main %}
+ <!--Add a button for the user to click to initiate auth sequence -->
+    <button id="get_list">get time list</button>
+    <script type="text/javascript">
+
+	  function init() {
+	    var ROWTIME_API = 'https://rowtime-26.appspot.com/_ah/api';
+		gapi.client.load('observedtimes', 'v1', function() {api_loading_init();}, ROWTIME_API);
+	  }
+
+	  function api_loading_init() {
+		alert("ROWTIME_API loaded and init function called");
+	  }
+
+			// Insert an observed time
+	  function record_observed_time(observed_time) {
+		var request = gapi.client.observedtimes.times.timecreate.post(observed_time).execute(function(resp) {
+	  	console.log(resp);
+	  	}
+	  });
+
+      // Load the API and make an API call.  Display the results on the screen.
+      function makeApiCall() {
+
+        var request = gapi.client.observedtimes.times.listtimes.get({
+            'seq':0
+        });
+          // Step 6: Execute the API request
+        request.then(function(resp) {
+
+          	t = document.createTextNode(resp);
+            document.getElementById('content').appendChild(t);
+        }, function(reason) {
+            console.log('Error: ' + reason.result.error.message);
+          });
+       });
+    </script>
+    // Step 1: Load JavaScript client library
+    <script src="https://apis.google.com/js/client.js?onload=init"></script>
+
+
+
+
+
+
+<script type="text/javascript" src=https://apis.google.com/js/client.js?onload=init></script>
 <script type="text/javascript">
+
+// Get the list of previous scores
+gapi.client.tictactoe.scores.list().execute(function(resp) {
+  console.log(resp);
+});
+	}
     function test_func() { 	//this function is run onload and paints the screen with the 
-    						//crews and their times
+
+								//crews and their times
         var data={{ data|safe }}; //get data passed from jinja2
         var crew_data = []			//create and array to hold the crew data
 
