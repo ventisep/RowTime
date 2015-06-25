@@ -45,7 +45,6 @@
 
 
 
-<script type="text/javascript" src=https://apis.google.com/js/client.js?onload=init></script>
 <script type="text/javascript">
 
 // Get the list of previous scores
@@ -78,11 +77,22 @@ gapi.client.tictactoe.scores.list().execute(function(resp) {
   </header>
   <span id="username">{{user.name}}</span><br><br>
 
-
+<table border="1">
+	<tr>
+		<td>Crew No.</td>
+		<td>Crew Name</td>
+		<td>Start</td>
+		<td>Stop</td>
+	</tr>
 {% for crew in crews %}
-<table class="crews">
-	<tr><td align="left">{{crew.crew_number}} crew name here </td><td>type: {{crew.crew_type}}</td></tr>
-</table><br>
+	<tr>
+		<td>{{crew.crew_number}}</td>				<!-- the two elements here are placeholders because I didn't find out the name of the actual entities -->
+		<td>{{crew.crew_type}}</td>
+		<td><input id="start_{{crew.crew_number}}" type="datetime" placeholder="Start"/></td>
+		<td><input id="stop_{{crew.crew_number}}" type="text" placeholder="Stop"/></td>
+		<td><input type="button" value="start"/></td>
+	</tr>
 {% endfor %}
+</table><br>
 </body>
 {% endblock %}

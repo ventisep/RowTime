@@ -8,22 +8,14 @@
 
   <span id="username">{{user.name}}</span><br><br>
 
-<table border="1">
-	<tr>
-		<td>Crew No.</td>
-		<td>Crew Name</td>
-		<td>Start</td>
-		<td>Stop</td>
-	</tr>
 {% for event in events %}
-	<tr>
-		<td>{{event.Crew_num}}</td>				<!-- the two elements here are placeholders because I didn't find out the name of the actual entities -->
-		<td>{{event.Crew_name}}</td>
-		<td><input type="text" placeholder="Start"/></td>
-		<td><input type="text" placeholder="Stop"/></td>
-		<td><input type="button" value="submit"/></td>
-	</tr>
+	<table class="outer">
+		<tr><th></th><th>{{event.event_name}}</th><th><a href="/loadcrews?event_key={{event.key.urlsafe()}}">details</a></th></tr>
+		<tr><td align="left">date: {{event.event_date}}</td><th></th><td>type: {{event.event_desc}}</td></tr>
+	</table><br>
 {% endfor %}
+
+
 
 </body>
 {% endblock %}
