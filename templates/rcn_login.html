@@ -1,21 +1,31 @@
 {% extends "templates/layout.html" %}
 {% block main %}
-<body>
-				<form method="post" action="/login">
-				<h2>Log In</h2><br>
-				<input type="text" placeholder="email" id="text3" name="email" class="text_space2" value = {{email}}> 
-				<br> 
-				<input type="password" placeholder="Password" id="text3" name="password" class="text_space"><br>
-				<span id="errormsg">{{error}}</span>
-				<input type="submit" id="log">
-				</form>
-				<form method="post" action="/signup">
-				<h2>Sign Up</h2>
-				<input type="text" placeholder="email" id="text3" name="email2" class="text_space2"> 
-				<br>
-				<input type="text" placeholder="name" id="text3" name="name" class="text_space2"><br>
-				<input type="password" placeholder="Password" id="text3" name="password2" class="text_space"><br>
-				<input type="submit" value="signup">
-				</form>
+<HTML>
+<body onload="myFunction()" id="body">
+	<form method="post" action="/login">
+		<h2>Log In</h2><br>
+		<input type="text" placeholder="email" id="text3" name="email" class="text_space2" value = {{email}}> 
+		<br> 
+		<input type="password" placeholder="Password" id="text3" name="password" class="text_space"><br>
+		<span id="errormsg">{{error}}</span>
+		<input type="submit" id="log">
+	</form><br>
+
+	<form method="post" action="/signup">
+		<h2>Sign Up</h2>
+		<input type="text" placeholder="email" id="text3" name="email2" class="text_space2"> 
+		<br>
+		<input type="text" placeholder="name" id="text3" name="name" class="text_space2"><br>
+		<input type="password" placeholder="Password" id="text3" name="password2" class="text_space"><br>
+		<input type="submit" value="signup">
+	</form>
+	<script>
+		function myFunction() {
+			var rand_num = Math.floor((Math.random() * 10) + 1);
+			background = "url('/images/rowingpic" + String(rand_num) + ".jpg')";
+			document.body.style.backgroundImage = background;
+		}
+	</script>
 </body>
+</HTML>
 {% endblock %}

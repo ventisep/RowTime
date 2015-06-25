@@ -1,5 +1,4 @@
 body{
-	background-image: url('/images/rowingpic.jpg');
 	background-size: 100%;
 	background-repeat: repeat-y;
 }
@@ -10,6 +9,7 @@ h1{
 	opacity: 1;
 }
 h2{
+	font-family: Arial;
 }
 div#menubar_1 > a{
 }
