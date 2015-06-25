@@ -2,6 +2,7 @@
 {% block main %}
 <HTML>
 <body onload="myFunction()" id="body">
+	<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
 	<form method="post" action="/login">
 		<h2>Log In</h2><br>
 		<input type="text" placeholder="email" id="text3" name="email" class="text_space2" value = {{email}}> 
@@ -19,6 +20,9 @@
 		<input type="password" placeholder="Password" id="text3" name="password2" class="text_space"><br>
 		<input type="submit" value="signup">
 	</form>
+</tr>
+</td>
+</table>
 	<script>
 		function myFunction() {
 			var rand_num = Math.floor((Math.random() * 10) + 1);

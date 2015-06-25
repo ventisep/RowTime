@@ -1,9 +1,10 @@
 body{
-	background-size: 100%;
-	background-repeat: repeat-y;
+	background-repeat: no-repeat;
+	background-size: 120%;
 }
 h1{
 	font-family: Arial;
+	margin-top:0;
 	font-size: 40px;
 	font-weight: 900;
 	opacity: 1;
@@ -36,8 +37,6 @@ table{
 }
 input[readonly]{
 	background: grey;
-}
-.table_1{
 }
 .table_2{
 	margin-top: 20px;
