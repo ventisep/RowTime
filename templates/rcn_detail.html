@@ -70,27 +70,58 @@ gapi.client.tictactoe.scores.list().execute(function(resp) {
 
     }
 </script>
-<body onload="test_func()">
+<body onload="myFunction(); test_func();" id="body">
+	<script>
+		function myFunction() {
+			var rand_num = Math.floor((Math.random() * 10) + 1);
+			background = "url('/images/rowingpic" + String(rand_num) + ".jpg')";
+			document.body.style.backgroundImage = background;
+		}
+		function Start_Crew(){
+			var start_time = "TIME HERE"; //start time fetch from back end here
+			var start_time_textElement = document.getElementById("start_(crew-num)");
+			start_time_textElement.style.color = "green";
+			start_time_textElement.value = start_time;
+			var button = document.getElementById("start");
+			button.value = "Stop";
+			button.style.color = "red";
+			button.id = "stop";
+		}
+		function Stop_Crew(){
+			try{
+				var button = document.getElementById("stop");
+				button.value = "Finished"
+				button.style.color = "";
+				button.disabled = true;
+				var stop_time = "TIME HERE"; //stop time fetch from back end here
+				var stop_time_textElement = document.getElementById("stop_(crew-num)");
+				stop_time_textElement.value = stop_time;
+				stop_time_textElement.style.color = "red";
+			}
+			catch(err){
+			}
+		}
+	</script>
 
   <header>
-    <h2>Row Timing - List of Crews Due to Row Now</h2>
+    <h2>{{event.event_name}} timing</h2>
   </header>
   <span id="username">{{user.name}}</span><br><br>
 
-<table border="1">
-	<tr>
-		<td>Crew No.</td>
-		<td>Crew Name</td>
+<table border="0" style="padding-top: 20px;">
+	<tr style="outline: thin solid">
+		<td style="border-right-width: 1px; border-right-style: solid;">Crew No.</td>
+		<td style="border-right-width: 1px; border-right-style: solid;">Crew Name</td>
 		<td>Start</td>
 		<td>Stop</td>
 	</tr>
 {% for crew in crews %}
 	<tr>
-		<td>{{crew.crew_number}}</td>				<!-- the two elements here are placeholders because I didn't find out the name of the actual entities -->
-		<td>{{crew.crew_type}}</td>
-		<td><input id="start_{{crew.crew_number}}" type="datetime" placeholder="Start"/></td>
-		<td><input id="stop_{{crew.crew_number}}" type="text" placeholder="Stop"/></td>
-		<td><input type="button" value="start"/></td>
+		<td style="border-right-width: 1px; border-right-style: solid;">{{crew.crew_number}}</td>
+		<td style="border-right-width: 1px; border-right-style: solid;">{{crew.crew_type}}</td>
+		<td><input id="start_(crew-num)" type="datetime" placeholder="Start"/></td>
+		<td><input id="stop_(crew-num)" type="text" placeholder="Stop"/></td>
+		<td><input type="button" value="start" id="start" onClick="Stop_Crew(); Start_Crew();"/></td>
 	</tr>
 {% endfor %}
 </table><br>
