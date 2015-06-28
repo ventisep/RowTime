@@ -1,20 +1,39 @@
 
+import urllib
 import endpoints
+from google.appengine.ext import ndb
+from google.appengine.api import users
 from protorpc import messages
 from protorpc import message_types
 from protorpc import remote
 import datetime
 import logging
 from models import *
+import os
+import urllib
+import sys
+import webapp2
+import logging
+import json
+from datetime import timedelta
+from handlers import BaseRequestHandler, AuthHandler
+import jinja2
+from webapp2 import WSGIApplication, Route
+from secrets import SESSION_KEY
 
 #The package= line is used by the underlying ProtoRpc when creating names for the ProtoRPC messages you 
 #create. This package name will show up as a prefix to your message class names in the discovery 
 #doc and client libraries.
 package = 'RowTimePackage'
 
+class TimesRequest(messages.Message):
+  "used to store the request for a list of times since the last timestamp"
+  event_id = messages.StringField(1)
+  last_timestamp = messages.StringField(2)
+
 class ObservedTime(messages.Message):
   """used to store an observered time from a user for a specific Crew."""
-  event = messages.StringField(1)
+  event_id = messages.StringField(1)
   timestamp = message_types.DateTimeField(2)
   crew = messages.IntegerField(3)
   stage = messages.IntegerField(4)
@@ -22,17 +41,17 @@ class ObservedTime(messages.Message):
 
 class ObservedTimeList(messages.Message):
   """Used to provide a list of Observed times since last request for a specific event"""
-  event = messages.StringField(1)
+  event_id = messages.StringField(1)
   last_timestamp = message_types.DateTimeField(2)
   times = messages.MessageField(ObservedTime, 3, repeated=True)
 
 class CrewTime(messages.Message):
   """Used to provide the set of times for a specific Crew in an event"""
-  event = messages.StringField(1)
+  event_id = messages.StringField(1)
   crew = messages.IntegerField(2)
   observed_time_list = messages.MessageField(ObservedTime, 3, repeated=True)
 
-STORED_TIMES = ObservedTimeList(event = "bedford regatta", 
+STORED_TIMES = ObservedTimeList(event_id = "bedford regatta", last_timestamp = datetime.datetime.now(),
   times= [ObservedTime(timestamp = datetime.datetime.now(), crew = 123, stage = 0, time = datetime.datetime(2015,11,8,15,49,07,696869)),
 	ObservedTime(timestamp = datetime.datetime.now(), crew = 123, stage = 0, time = datetime.datetime(2015,11,8,15,52,06,330000)),
 	ObservedTime(timestamp = datetime.datetime.now(), crew = 124, stage = 0, time = datetime.datetime(2015,11,8,15,53,07,696869)),
@@ -48,12 +67,34 @@ class ObservedTimesApi(remote.Service):
   observed times since the last time the user asked for a list and a POST method
   to record new times"""
 
-  @endpoints.method(ObservedTime, ObservedTimeList,
-                    path='times, http_method='GET',
+  @endpoints.method(TimesRequest, ObservedTimeList,
+                    path='times', http_method='GET',
                     name='times.listtimes')
   def times_list(self, request):
 
-    return STORED_TIMES
+    eventkey = ndb.Key(urlsafe = request.event_id)
+
+    retrieved_times = ObservedTimeList()
+
+    searched_times=Observed_Times.query(Observed_Times.event_id==eventkey).fetch()
+
+    if not searched_times:
+      retrieved_times = STORED_TIMES
+    else:
+      i=0
+      for time in searched_times:
+        retrieved_times.times.append(ObservedTime())
+        retrieved_times.times[i].event_id = request.event_id
+        retrieved_times.times[i].timestamp = time.timestamp 
+        retrieved_times.times[i].crew = time.crew_number
+        retrieved_times.times[i].stage = time.stage 
+        retrieved_times.times[i].time = time.time_local
+        retrieved_times.last_timestamp = time.timestamp
+        i = i+1
+
+    retrieved_times.event_id = request.event_id
+
+    return retrieved_times
 
   @endpoints.method(ObservedTime, ObservedTime,
                     path='times', http_method='POST',
@@ -62,19 +103,22 @@ class ObservedTimesApi(remote.Service):
 
     current_time = datetime.datetime.now()  #get current time as soon as possible for server time
     logging.info(self)
-    user=self.current_user
 
+    user="paul"
 
+    ot = ObservedTime()
     saved_time = Observed_Times(crew_number=request.crew,
-                        timestamp = datetime.datetime.now(),
+                        timestamp = current_time,
                         stage=request.stage,
                         time_local=request.time,
                         time_server=current_time,
-                        recorded_by=user.name).put()
+                        recorded_by=user).put()
 
-    return ObservedTime(timestamp=saved_time.timestamp,
-                        crew=saved_time.crew,
-                        stage=saved_time.stage,
-                        time=saved_time.time_local)
+    ot.timestamp=current_time
+    ot.crew=request.crew
+    ot.stage=request.stage
+    ot.time=request.time
     
+    return ot
+
 application = endpoints.api_server([ObservedTimesApi])

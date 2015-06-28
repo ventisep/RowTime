@@ -44,7 +44,7 @@ class CreateTestData(BaseRequestHandler):
 
 	        	ot=Observed_Times(
 				    event_id = e,
-				    server_timestamp = datetime.datetime.now(),
+				    timestamp = datetime.datetime.now(),
 				    crew_number = 123,
 				    stage = 0,
 				    time_local = datetime.datetime(2015,6,20,14,13,10,1234),
@@ -53,7 +53,7 @@ class CreateTestData(BaseRequestHandler):
 
 	        	ot2=Observed_Times(
 				    event_id = e,
-				    server_timestamp = datetime.datetime.now(),
+				    timestamp = datetime.datetime.now(),
 				    crew_number = 123,
 				    stage = 1,
 				    time_local = datetime.datetime(2015,6,20,14,20,21,3456),
@@ -62,7 +62,7 @@ class CreateTestData(BaseRequestHandler):
 
 	        	ot3=Observed_Times(
 				    event_id = e,
-				    server_timestamp = datetime.datetime.now(),
+				    timestamp = datetime.datetime.now(),
 				    crew_number = 124,
 				    stage = 0,
 				    time_local = datetime.datetime(2015,6,20,14,17,20,1234),
@@ -71,7 +71,7 @@ class CreateTestData(BaseRequestHandler):
 
 	        	ot24=Observed_Times(
 				    event_id = e,
-				    server_timestamp = datetime.datetime.now(),
+				    timestamp = datetime.datetime.now(),
 				    crew_number = 124,
 				    stage = 1,
 				    time_local = datetime.datetime(2015,6,20,14,27,21,3456),
@@ -81,6 +81,10 @@ class CreateTestData(BaseRequestHandler):
 	        	ct=Crew_Times(
 				    event_id = e,
 				    crew_id = c).put()
+
+	        	ct2=Crew_Times(
+				    event_id = e,
+				    crew_id = c2).put()
 
 	        except:
         		message = sys.exc_info()[0]
