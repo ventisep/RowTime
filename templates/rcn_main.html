@@ -1,22 +1,22 @@
 {% extends "templates/layout.html" %}
 {% block main %}
 
-<body>
-  <header>
-    <h1><a href="/">Rowing Times - Choose an Event</a></h1>
-  </header>
+<body onload="myFunction()">
 
   <span id="username">{{user.name}}</span><br><br>
-
+  <br>
 {% for event in events %}
-	<table class="outer">
-		<tr><th></th><th>{{event.event_name}}</th><th><a href="/loadcrews?event_key={{event.key.urlsafe()}}">details</a></th></tr>
-		<tr><td align="left">date: {{event.event_date}}</td><th></th><td>type: {{event.event_desc}}</td></tr>
+	<table class="outer" border="1">
+		<tr><th>{{event.event_name}}</th><th><a href="/loadcrews?event_key={{event.key.urlsafe()}}">details</a></th></tr>
+		<tr><td align="left">date: {{event.event_date}}</td><td>type: {{event.event_desc}}</td></tr>
 	</table><br>
 {% endfor %}
-
-
-
+	<script>
+		function myFunction() {
+			var rand_num = Math.floor((Math.random() * 10) + 1);
+			background = "url('/images/rowingpic" + String(rand_num) + ".jpg')";
+			document.body.style.backgroundImage = background;
+		}
+	</script>
 </body>
 {% endblock %}
-

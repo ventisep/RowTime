@@ -25,6 +25,7 @@ div#log > a{
 div#log > a:hover{
 	background: rgba(234, 127, 0, 1);
 	color: #FFF;
+	border-right-
 }
 
 #username{
