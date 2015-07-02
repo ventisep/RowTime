@@ -104,7 +104,7 @@ class ObservedTimesApi(remote.Service):
     current_time = datetime.datetime.now()  #get current time as soon as possible for server time
     logging.info(self)
 
-    user="paul"
+    user="paul-backend"
 
     ot = ObservedTime()
     saved_time = Observed_Times(crew_number=request.crew,

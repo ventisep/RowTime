@@ -9,7 +9,8 @@
     <script type="text/javascript">
 
 	  function init() {
-		var ROWTIME_API = 'http://localhost:9000/_ah/api'
+	  	//time_array = new Array();
+		var ROWTIME_API = 'http://localhost:9000/_ah/api';
 	    //var ROWTIME_API = 'https://rowtime-26.appspot.com/_ah/api';
 		gapi.client.load('observedtimes', 'v1', function() {api_loading_init();
 		}, ROWTIME_API);
