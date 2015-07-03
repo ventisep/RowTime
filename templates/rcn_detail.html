@@ -47,28 +47,25 @@
 
 <script type="text/javascript">
 
-/*	// Get the list of previous scores
-	gapi.client.tictactoe.scores.list().execute(function(resp) {
-	  console.log(resp);
-	});
-		}
-	    function test_func() { 	//this function is run onload and paints the screen with the 
+/*	// Get the list of times for the crews on a refresh of the screen
 
-									//crews and their times
-	        var data={{ data|safe }}; //get data passed from jinja2
-	        var crew_data = []			//create and array to hold the crew data
+function test_func() { 	//this function is run onload and paints the screen with the list of crews and times
 
-	        for (i=0; i < data.length; i++) {   //step through the data passed and assign it to crew_data
-	        	crew_data[i]=JSON.parse(data[i]); //convert the JSON string to an object
-	        
+							//crews and their times
+    var data={{ data|safe }}; //get data passed from jinja2
+    var crew_data = []			//create and array to hold the crew data
 
-	 	       	var btn = document.createElement("BUTTON");        // Create a <button> element
-				var t = document.createTextNode(crew_data[i].crew_number.toString());       // Create a text node
-				btn.appendChild(t);                                // Append the text to <button>
-				document.body.appendChild(btn);                    // Append <button> to <body>
-			}	
+    for (i=0; i < data.length; i++) {   //step through the data passed and assign it to crew_data
+    	crew_data[i]=JSON.parse(data[i]); //convert the JSON string to an object
+    
 
-	    } //all the above function does not yet work PV
+	       	var btn = document.createElement("BUTTON");        // Create a <button> element
+		var t = document.createTextNode(crew_data[i].crew_number.toString());       // Create a text node
+		btn.appendChild(t);                                // Append the text to <button>
+		document.body.appendChild(btn);                    // Append <button> to <body>
+	}	
+
+} //all the above function does not yet work PV
 */
 </script>
 
@@ -102,7 +99,7 @@
 			button.disabled = true;
 			var stop_time = new Date(); //stop time fetch from back end here
 			var stop_time_textElement = document.getElementById("stop_"+crew_num);
-			stop_time_textElement.value = stop_time.toTimeString();
+			stop_time_textElement.value = stop_time.toTimeString().replace(/.*(\d{2}:\d{2}:\d{2}).*/, "$1");
 			stop_time_textElement.style.color = "red";
 		}
 		else {
@@ -118,6 +115,7 @@
 		}
 		var stop_time_textElement = document.getElementById("stop_"+crew_num);
 		var start_time_textElement = document.getElementById("start_"+crew_num);
+		difference = start_time - new Date();
 		var d = new Date().toTimeString().replace(/.*(\d{2}:\d{2}:\d{2}).*/, "$1");
 		stop_time_textElement.value = d;
 		var refresh=100; // Refresh rate in milli seconds
