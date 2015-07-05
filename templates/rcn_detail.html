@@ -1,15 +1,16 @@
 
 {% extends "templates/layout.html" %}
 {% block main %}
-     // Step 1: Load JavaScript client library
  <script src="https://apis.google.com/js/client.js?onload=init"></script>
+ <button id="get_list" onClick = "get_times()">get time list</button>
+ 
+ <script type="text/javascript">
+ //create the array to hold the times for each crew as a global variable accessible by all the functions, the index for the array will be the order in which the crews are displayed on the screen//
+    var crew_times = new Array;
+    var last_timestamp = new Date(800000);
 
- <!--Add a button for the user to click to initiate auth sequence -->
-    <button id="get_list" onClick = "get_times()">get time list</button>
-    <script type="text/javascript">
-
+    //initialise the API calls to the rowtime-26 server.//
 	  function init() {
-	  	//time_array = new Array();
 		var ROWTIME_API = 'http://localhost:9000/_ah/api';
 	    //var ROWTIME_API = 'https://rowtime-26.appspot.com/_ah/api';
 		gapi.client.load('observedtimes', 'v1', function() {api_loading_init();
@@ -17,23 +18,26 @@
 	  }
 
 	  function api_loading_init() {
-		alert("ROWTIME_API loaded and init function called");
+	  	//this function is called when the API is initialised, put anything here we need to do at the start, for example get an initial read of the obeserved times if we need it//
+		console.log("ROWTIME_API loaded and init function called");
 	  }
 
-			// Insert an observed time
 	  function record_observed_time(observed_time) {
+		// Insert an observed time into the rowtime-26 server//
 		var recordtime = gapi.client.observedtimes.times.timecreate.post(observed_time).execute(function(resp) {
 	  		console.log(resp);
 	  	});
 	  }
 
-      // Load the API and make an API call.  Display the results on the screen.
       function get_times(){
-        var request = gapi.client.observedtimes.times.listtimes({"event_id":"{{event.urlsafe()}}"});
+       // Get the list of observed times since the last time it was requested//
+       var request = gapi.client.observedtimes.times.listtimes({"event_id":"{{event.urlsafe()}}", "last_timestamp":last_timestamp.toISOString()});
           // Step 6: Execute the API request
         request.then(function(resp) {
-        	data = resp.result;
-        	alert(data.event_id);
+        	last_timestamp = resp.result.timestamp;
+        	for(i=0; i<resp.result.times.length; i++) {
+        		alert(resp.result.times[i].crew);
+        	}
         	//now have list of times to apply to the screen TODO PV
           });
        };

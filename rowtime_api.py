@@ -15,7 +15,7 @@ import sys
 import webapp2
 import logging
 import json
-from datetime import timedelta
+from datetime import timedelta, time, date
 from handlers import BaseRequestHandler, AuthHandler
 import jinja2
 from webapp2 import WSGIApplication, Route
@@ -73,10 +73,12 @@ class ObservedTimesApi(remote.Service):
   def times_list(self, request):
 
     eventkey = ndb.Key(urlsafe = request.event_id)
+    last_timestamp = datetime.datetime.strptime(request.last_timestamp, "%Y-%m-%dT%H:%M:%S.%fZ")
 
     retrieved_times = ObservedTimeList()
 
-    searched_times=Observed_Times.query(Observed_Times.event_id==eventkey).fetch()
+    searched_times=Observed_Times.query(ndb.AND(Observed_Times.event_id==eventkey,
+                                                Observed_Times.timestamp>last_timestamp)).fetch()
 
     if not searched_times:
       retrieved_times = STORED_TIMES
