@@ -1,6 +1,8 @@
 body{
 	background-repeat: no-repeat;
 	background-size: 120%;
+	height: 80%;
+	width: 100%;
 }
 h1{
 	font-family: Arial;
@@ -25,7 +27,6 @@ div#log > a{
 div#log > a:hover{
 	background: rgba(234, 127, 0, 1);
 	color: #FFF;
-	border-right-
 }
 
 #username{
@@ -144,8 +145,4 @@ p{
 	border-radius: 5px;
 	box-shadow: 0px 0px 1px #ccc inset; 
 	outline:0;
-} 
-
-#text3:hover 
-{ 
 } 
