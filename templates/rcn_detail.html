@@ -38,46 +38,34 @@
         	last_timestamp = new Date(resp.result.last_timestamp);
         	console.log("timestamp as ISO string from result "+last_timestamp.toISOString());
 
-        	for(i=0; i<resp.result.times.length; i++) {
+        	for(var i=0; i<resp.result.times.length; i++) {
         		update_time_list(resp.result.times[i]);
         	}
         	//now have list of times to apply to the screen TODO PV
           });
-       };
+       }
 
        function update_time_list(time) {
        	//Update the times in the crew_times array and update the screen//
        	//1.  for every hit against a crew number process the result time//
-       	//for (i=0; i<crew_times.length; i++) {
-       	//	if (crew_times.crew_number == time.crew) {
-       	//		ClickButton(i, time.crew, time.time, time.stage);
+       	for (var i=0; i<crew_times.length; i++) {
+       		if (crew_times[i].crew_number == time.crew) {
+       			UpdateTimes(i, time.crew, new Date(time.time), time.stage);
+       			}
        		}
+       	}
        	
+	//load the crew_times object with the crew times list retrieved from the database//
+	function test_func() {
+	    var data={{ data|safe }}; //get data passed from jinja2
 
-       	//2.  update the index and the relevent row on the screen//
+	    for (var i=0; i < data.length; i++) {   //step through the data passed and assign it to crew_data
+	    	crew_times.push(JSON.parse(data[i])); //convert the JSON string to an object
+	    	console.log("put crew number " + crew_times[i].crew_number+" into the object array");
+		}	
 
-       	//3.  if there is no line on the screen for the crew in the observed time create an alert//
-       
-    </script>
+	}
 
-
-<script type="text/javascript">
-
-//load the crew_times object with the crew times list retrieved from the database//
-function test_func() {
-    var data={{ data|safe }}; //get data passed from jinja2
-
-    for (i=0; i < data.length; i++) {   //step through the data passed and assign it to crew_data
-    	crew_times.push(JSON.parse(data[i])); //convert the JSON string to an object
-    	console.log("put crew number " + crew_times[i].crew_number+" into the object array");
-	}	
-
-}
-</script>
-
-
-<body onload="myFunction(); init(); test_func();" id="body">
-<script>
 
 	function myFunction() {
 
@@ -86,34 +74,56 @@ function test_func() {
 		document.body.style.backgroundImage = background;
 	}
 
+	function UpdateTimes(indx, crew_num, time, stage){
+		if (stage == 0){
+			//a start time has been recorded//
+			UpdateStartTime(indx, crew_num, time);
+		} else if(stage ==1){
+			//a stop time has been recorded//
+			UpdateStopTime(indx,crew_num,time);
+		} else { alert("stage parameter not set properly")}
+	}
+
+	function UpdateStartTime(indx, crew_num, time){
+		var button = document.getElementById("button_"+crew_num);
+		crew_times[indx].start_time_local = time; //start time
+		crew_times[indx].stage++;
+		var start_time_id = "start_"+crew_num;
+		var start_time_textElement = document.getElementById(start_time_id);
+		var the_button = document.getElementById(start_time_id);
+		start_time_textElement.style.color = "green";
+		start_time_textElement.value = time.toTimeString().replace(/.*(\d{2}:\d{2}:\d{2}).*/, "$1")+"."+("00"+time.getMilliseconds().toString()).slice(-3);
+		button.value = "stop";
+		button.style.color = "red";
+	}
+
+	function UpdateStopTime(indx,crew_num,time){
+		var button = document.getElementById("button_"+crew_num);
+		button.value = "Finished"
+		crew_times[indx].end_time_local = time; //end time
+		crew_times[indx].stage++
+		crew_times[indx].stage_delta = crew_times[indx].end_time_local - crew_times[indx].start_time_local;
+		var delta = new Date(crew_times[indx].stage_delta);
+		button.style.color = "";
+		button.disabled = true;
+		var stop_time_textElement = document.getElementById("stop_"+crew_num);
+		var delta_time_textElement = document.getElementById("delta_"+crew_num);
+		stop_time_textElement.value = time.toTimeString().replace(/.*(\d{2}:\d{2}:\d{2}).*/, "$1")+"."+("00"+time.getMilliseconds().toString()).slice(-3);
+		delta_time_textElement.value = delta.toTimeString().replace(/.*(\d{2}:\d{2}:\d{2}).*/, "$1")+"."+("00"+delta.getMilliseconds().toString()).slice(-3);
+		stop_time_textElement.style.color = "red";
+		delta_time_textElement.style.color = "black";
+	}
+
+
 	function ClickButton(indx, crew_num, time, stage){
 		var button = document.getElementById("button_"+crew_num);
-		if ((button.value == "start")||(stage == 0)) {
-			crew_times[indx].start_time_local = time; //start time
-			crew_times[indx].stage++;
-			var start_time_id = "start_"+crew_num;
-			var start_time_textElement = document.getElementById(start_time_id);
-			start_time_textElement.style.color = "green";
-			start_time_textElement.value = time.toTimeString().replace(/.*(\d{2}:\d{2}:\d{2}).*/, "$1")+"."+("00"+time.getMilliseconds().toString()).slice(-3);
-			button.value = "stop";
-			button.style.color = "red";
+		if (button.value == "start") {
+			UpdateStartTime(indx, crew_num, time);
 			var refresh=100; // Refresh rate in milli seconds
 			mytime=setTimeout('update_time('+crew_num+')',refresh)
 		}
-		else if((button.value == "stop")||(stage==1)) {
-			button.value = "Finished"
-			crew_times[indx].end_time_local = time; //end time
-			crew_times[indx].stage++
-			crew_times[indx].stage_delta = crew_times[indx].end_time_local - crew_times[indx].start_time_local;
-			var delta = new Date(crew_times[indx].stage_delta);
-			button.style.color = "";
-			button.disabled = true;
-			var stop_time_textElement = document.getElementById("stop_"+crew_num);
-			var delta_time_textElement = document.getElementById("delta_"+crew_num);
-			stop_time_textElement.value = time.toTimeString().replace(/.*(\d{2}:\d{2}:\d{2}).*/, "$1")+"."+("00"+time.getMilliseconds().toString()).slice(-3);
-			delta_time_textElement.value = delta.toTimeString().replace(/.*(\d{2}:\d{2}:\d{2}).*/, "$1")+"."+("00"+delta.getMilliseconds().toString()).slice(-3);
-			stop_time_textElement.style.color = "red";
-			delta_time_textElement.style.color = "black";
+		else if(button.value == "stop") {
+			UpdateStopTime(indx, crew_num, time);
 		}
 		else {
 			alert("button not start or stop");
@@ -135,6 +145,7 @@ function test_func() {
 		var mytime=setTimeout('update_time('+crew_num+')',refresh);
 	}
 </script>
+<body onload="myFunction(); init(); test_func();" id="body">
 
   <header>
     <h2>{{event.event_key}} timing</h2>
