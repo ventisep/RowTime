@@ -17,14 +17,18 @@ h2{
 	font-family: Arial;
 }
 
+.input_RCNdetail{
+	border-width: 0px;
+	background-color: rgba(228, 228, 229, 0.8);
+	font-size: 20px;
+	width: 150px;
+	text-align: center;
+}
+
 #username{
 	font-family: Arial;
 	font-weight: bold;
 	font-size: 30px;
-}
-
-input[readonly]{
-	background: grey;
 }
 
 .table_2{

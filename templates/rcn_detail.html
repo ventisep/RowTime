@@ -170,17 +170,17 @@
 	<tr style="outline: thin solid">
 		<td style="border-right-width: 1px; border-right-style: solid;">Crew No.</td>
 		<td style="border-right-width: 1px; border-right-style: solid;">Crew Name</td>
-		<td>Start</td>
-		<td>Delta</td>
-		<td>Stop</td>
+		<td align="center">Start</td>
+		<td align="center">Delta</td>
+		<td align="center">Stop</td>
 	</tr>
 {% for crew in crews %}
 	<tr style="height:75px;">
 		<td style="border-right-width: 1px; border-right-style: solid;">{{crew.crew_number}}</td>
 		<td style="border-right-width: 1px; border-right-style: solid;">{{crew.crew_type}}</td>
-		<td><input id="start_{{crew.crew_number}}" type="datetime" placeholder="Start"/></td>
-		<td><input id="delta_{{crew.crew_number}}" type="datetime" placeholder="delta"/></td>
-		<td><input id="stop_{{crew.crew_number}}" type="datetime" placeholder="Stop"/></td>
+		<td><input class="input_RCNdetail" disabled id="start_{{crew.crew_number}}" type="datetime"/></td>
+		<td><input class="input_RCNdetail" disabled id="delta_{{crew.crew_number}}" type="datetime"/></td>
+		<td><input class="input_RCNdetail" disabled id="stop_{{crew.crew_number}}"  type="datetime"/></td>
 		<td><input type="button" value="start" id="button_{{crew.crew_number}}" style="font-size: 30px;" onClick="ClickButton({{loop.index-1}}, {{crew.crew_number}}, new Date(), 'none');"/></td>
 	</tr>
 {% endfor %}
