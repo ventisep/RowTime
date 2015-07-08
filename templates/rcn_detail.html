@@ -175,13 +175,13 @@
 		<td>Stop</td>
 	</tr>
 {% for crew in crews %}
-	<tr>
+	<tr style="height:75px;">
 		<td style="border-right-width: 1px; border-right-style: solid;">{{crew.crew_number}}</td>
 		<td style="border-right-width: 1px; border-right-style: solid;">{{crew.crew_type}}</td>
 		<td><input id="start_{{crew.crew_number}}" type="datetime" placeholder="Start"/></td>
 		<td><input id="delta_{{crew.crew_number}}" type="datetime" placeholder="delta"/></td>
 		<td><input id="stop_{{crew.crew_number}}" type="datetime" placeholder="Stop"/></td>
-		<td><input type="button" value="start" id="button_{{crew.crew_number}}" onClick="ClickButton({{loop.index-1}}, {{crew.crew_number}}, new Date(), 'none');"/></td>
+		<td><input type="button" value="start" id="button_{{crew.crew_number}}" style="font-size: 30px;" onClick="ClickButton({{loop.index-1}}, {{crew.crew_number}}, new Date(), 'none');"/></td>
 	</tr>
 {% endfor %}
 </table><br>
