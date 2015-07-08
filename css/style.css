@@ -4,6 +4,7 @@ body{
 	height: 80%;
 	width: 100%;
 }
+
 h1{
 	font-family: Arial;
 	margin-top:0;
@@ -11,22 +12,9 @@ h1{
 	font-weight: 900;
 	opacity: 1;
 }
+
 h2{
 	font-family: Arial;
-}
-div#menubar_1 > a{
-}
-
-div#menubar_1 > a:hover{
-	background: rgba(234, 127, 0, 1);
-	color: #FFF;
-	box-shadow: 0px 0px 15px #000000;
-}
-div#log > a{
-}
-div#log > a:hover{
-	background: rgba(234, 127, 0, 1);
-	color: #FFF;
 }
 
 #username{
@@ -35,106 +23,28 @@ div#log > a:hover{
 	font-size: 30px;
 }
 
-table{
-}
 input[readonly]{
 	background: grey;
 }
+
 .table_2{
 	margin-top: 20px;
 }
-.golfer_table{
-	margin-top:100px;
-	background-size: 10%;
-	width: 895px;
-}
-p{
-	font-family: Arial;
-	font-weight: bold;
-	display:inline-block;
-	margin-right:5px;
-	opacity: 1;
-}
-#title span{
-	font-size: 1.5em;
-	color: rgba(234, 127, 0, 1);
-}
-.text_space{
+
+.login_text-box{
 	margin-bottom: 25px;
 }
-.text_space2{
+
+.login_text-box2{
 	margin-bottom: 2px
 }
 
-.text_club{
-	background: white; 
-	font-size: 25px;
-	font-family: Arial;
-	color: rgba(0,0,0,.8); 
-	width: 300px; 
-	padding: 6px 1px 6px 15px; 
-	border-radius: 5px;
-	box-shadow: 0px 0px 1px #ccc inset; 
-	transition:200ms all ease;
-	outline:0;
-
-}
-.text_name{
-	background: white; 
-	font-size: 25px;
-	font-family: Arial;
-	color: rgba(0,0,0,.8); 
-	width: 300px; 
-	padding: 6px 1px 6px 15px; 
-	border-radius: 5px;
-	box-shadow: 0px 0px 1px #ccc inset; 
-	transition:200ms all ease;
-	outline:0;
-}
-
-.text_club{
-	background: white; 
-	font-size: 25px;
-	font-family: Arial;
-	color: rgba(0,0,0,.8); 
-	width: 300px; 
-	padding: 6px 1px 6px 15px; 
-	border-radius: 5px;
-	box-shadow: 0px 0px 1px #ccc inset; 
-	transition:200ms all ease;
-	outline:0;
-}
-.text_email{
-	background: white; 
-	font-size: 25px;
-	font-family: Arial;
-	color: rgba(0,0,0,.8); 
-	width: 300px; 
-	padding: 6px 1px 6px 15px; 
-	border-radius: 5px;
-	box-shadow: 0px 0px 1px #ccc inset; 
-	transition:200ms all ease;
-	outline:0;
-}
-
-.text_handicap{
-
-	background: white; 
-	font-size: 25px;
-	font-family: Arial;
-	color: rgba(0,0,0,.8); 
-	width: 100px; 
-	padding: 6px 1px 6px 15px; 
-	border-radius: 5px;
-	box-shadow: 0px 0px 1px #ccc inset; 
-	transition:200ms all ease;
-	outline:0;
-}
 #errormsg{
 	color: red;
 	font-size: 25px;
 }
-#text3 
+
+#login-signup-style 
 { 
 	background: white; 
 	width: 200px;
