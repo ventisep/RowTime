@@ -24,7 +24,7 @@
 
 	  function record_observed_time(observed_time) {
 		// Insert an observed time into the rowtime-26 server//
-		var recordtime = gapi.client.observedtimes.times.timecreate.post(observed_time).execute(function(resp) {
+		var recordtime = gapi.client.observedtimes.times.timecreate(observed_time).execute(function(resp) {
 	  		console.log(resp);
 	  	});
 	  }
@@ -47,7 +47,7 @@
 
        function update_time_list(time) {
        	//Update the times in the crew_times array and update the screen//
-       	//1.  for every hit against a crew number process the result time//
+       	//1.  for every hit against a crew number process the observed time//
        	for (var i=0; i<crew_times.length; i++) {
        		if (crew_times[i].crew_number == time.crew) {
        			UpdateTimes(i, time.crew, new Date(time.time), time.stage);
@@ -99,9 +99,9 @@
 
 	function UpdateStopTime(indx,crew_num,time){
 		var button = document.getElementById("button_"+crew_num);
-		button.value = "Finished"
+		button.value = "Finished";
 		crew_times[indx].end_time_local = time; //end time
-		crew_times[indx].stage++
+		crew_times[indx].stage++;
 		crew_times[indx].stage_delta = crew_times[indx].end_time_local - crew_times[indx].start_time_local;
 		var delta = new Date(crew_times[indx].stage_delta);
 		button.style.color = "";
@@ -119,11 +119,25 @@
 		var button = document.getElementById("button_"+crew_num);
 		if (button.value == "start") {
 			UpdateStartTime(indx, crew_num, time);
+			stage = 0;
+			var observed_time = {event_id: "{{event.urlsafe()}}",
+								  timestamp: time,
+								  crew: crew_num,
+								  stage: stage,
+								  time: time};
+			record_observed_time(observed_time);
 			var refresh=100; // Refresh rate in milli seconds
 			mytime=setTimeout('update_time('+crew_num+')',refresh)
 		}
 		else if(button.value == "stop") {
 			UpdateStopTime(indx, crew_num, time);
+			stage = 1;
+			var observed_time = {event_id: "{{event.urlsafe()}}",
+								  timestamp: time,
+								  crew: crew_num,
+								  stage: stage,
+								  time: time};
+			record_observed_time(observed_time);
 		}
 		else {
 			alert("button not start or stop");
@@ -148,7 +162,7 @@
 <body onload="myFunction(); init(); test_func();" id="body">
 
   <header>
-    <h2>{{event.event_key}} timing</h2>
+    <h2>{{event}} timing</h2>
   </header>
   <span id="username">Hi {{user.name}}</span><br><br>
 

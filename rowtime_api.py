@@ -7,6 +7,7 @@ from protorpc import messages
 from protorpc import message_types
 from protorpc import remote
 import datetime
+from datetime import tzinfo
 import logging
 from models import *
 import os
@@ -109,10 +110,13 @@ class ObservedTimesApi(remote.Service):
     user="paul-backend"
 
     ot = ObservedTime()
-    saved_time = Observed_Times(crew_number=request.crew,
+    utc_time = request.time - request.time.utcoffset()
+    eventkey = ndb.Key(urlsafe = request.event_id)
+    saved_time = Observed_Times(event_id = eventkey,
+                        crew_number=request.crew,
                         timestamp = current_time,
                         stage=request.stage,
-                        time_local=request.time,
+                        time_local=utc_time.replace(tzinfo=None),
                         time_server=current_time,
                         recorded_by=user).put()
 
