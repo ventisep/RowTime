@@ -17,6 +17,14 @@
 			background = "url('/images/rowingpic" + String(rand_num) + ".jpg')";
 			document.body.style.backgroundImage = background;
 		}
+		
+		if((navigator.userAgent.match(/iPhone/i)) || 
+		 (navigator.userAgent.match(/iPod/i))) {
+		   if (document.cookie.indexOf("iphone_redirect=false") == -1){
+		   var css_link = document.getElementById('linker');
+		   css_link.setAttribute("href", "css/style_iphone.css");
+		}
+		}
 	</script>
 </body>
 {% endblock %}

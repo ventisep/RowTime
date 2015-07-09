@@ -160,6 +160,14 @@
 		var refresh=10; // Refresh rate in milli seconds
 		var mytime=setTimeout('update_time('+crew_num+')',refresh);
 	}
+
+	if((navigator.userAgent.match(/iPhone/i)) || 
+	 (navigator.userAgent.match(/iPod/i))) {
+	   if (document.cookie.indexOf("iphone_redirect=false") == -1){
+	   var css_link = document.getElementById('linker');
+	   css_link.setAttribute("href", "css/style_iphone.css");
+	}
+	}
 </script>
 <body onload="myFunction(); init(); test_func();" id="body">
 
