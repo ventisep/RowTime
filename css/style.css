@@ -17,6 +17,14 @@ h2{
 	font-family: Arial;
 }
 
+.normal_align{
+	vertical-align: top;
+}
+
+.normal_title_align{
+	text-align: left;
+}
+
 .input_RCNdetail{
 	border-width: 0px;
 	background-color: rgba(228, 228, 229, 0.8);
