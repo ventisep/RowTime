@@ -171,24 +171,32 @@ class signup(AuthHandler):
             template = JINJA_ENVIRONMENT.get_template('templates/rcn_login.html')
             self.response.write(template.render(template_values))
         else:
-            #add account
-            auth_id = "rcn:"+email
-            account = Accounts(email=email, username=name)
-            account.key = account.put()
-            data = {"account" : account.key.id(),
-                    "name" : name,
-                    "email" : email,
-                    "password_raw":password}
-            _attrs = self._to_user_model_attrs(data, self.USER_ATTRS["rcn"])
+            if email and password and name:
+                #add account
+                auth_id = "rcn:"+email
+                account = Accounts(email=email, username=name)
+                account.key = account.put()
+                data = {"account" : account.key.id(),
+                        "name" : name,
+                        "email" : email,
+                        "password_raw":password}
+                _attrs = self._to_user_model_attrs(data, self.USER_ATTRS["rcn"])
 
 
-            ok, user = self.auth.store.user_model.create_user(auth_id, **_attrs)
-            if ok:
-                self.auth.set_session(self.auth.store.user_to_dict(user))
+                ok, user = self.auth.store.user_model.create_user(auth_id, **_attrs)
+                if ok:
+                    self.auth.set_session(self.auth.store.user_to_dict(user))
 
 
-            self.redirect('/')
-            return
+                self.redirect('/')
+                return
+            else:
+                template_values = {'email' : email,
+                                'name': name,
+                                'error': 'information incomplete'}
+                template = JINJA_ENVIRONMENT.get_template('templates/rcn_login.html')
+                self.response.write(template.render(template_values))            
+                return
 
         
 # webapp2 config
