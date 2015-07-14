@@ -39,11 +39,11 @@
 {% for crew in crews %}
 	<tr style="height:75px;">
 		<td style="border-right-width: 1px; border-right-style: solid;">{{crew.crew_number}}</td>
-		<td style="border-right-width: 1px; border-right-style: solid;">{{crew.crew_type}}</td>
+		<td style="border-right-width: 1px; border-right-style: solid;">{{crew.crew_name}}</td>
 		<td><input class="input_RCNdetail" disabled id="start_{{crew.crew_number}}" type="datetime"/></td>
 		<td><input class="input_RCNdetail" disabled id="delta_{{crew.crew_number}}" type="datetime"/></td>
 		<td><input class="input_RCNdetail" disabled id="stop_{{crew.crew_number}}"  type="datetime"/></td>
-		<td><input type="button" value="start" id="button_{{crew.crew_number}}" style="font-size: 30px;" onClick="ClickButton({{loop.index-1}}, {{crew.crew_number}}, new Date(), 'none');"/></td>
+		<td><input class = "btn" type="button" value="start" id="button_{{crew.crew_number}}" style="font-size: 30px;" onClick="ClickButton({{loop.index-1}}, {{crew.crew_number}}, new Date(), 'none');"/></td>
 	</tr>
 {% endfor %}
 </table><br>

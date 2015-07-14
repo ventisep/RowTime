@@ -31,6 +31,7 @@ class CreateTestData(BaseRequestHandler):
 	        	c=Crews(
 				    event_id = e,
 				    crew_number = 123,
+				    crew_name = "Eton College RC",
 				    crew_type = "Coxed Quad 4x+",
 				    rower_count = 4,
 				    cox = True).put()
@@ -38,6 +39,7 @@ class CreateTestData(BaseRequestHandler):
 	        	c2=Crews(
 				    event_id = e,
 				    crew_number = 124,
+				    crew_name = "Bedford Modern RC",
 				    crew_type = "Coxed Quad 4x+",
 				    rower_count = 4,
 				    cox = True).put()

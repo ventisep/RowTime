@@ -1,24 +1,31 @@
- //create the array to hold the times for each crew as a global variable accessible by all the functions, the index for the array will be the order in which the crews are displayed on the screen//
- //todo list:
- //	1.  find out how to set the ROWTIME_API variable based on the website being used so we
- //		dont have to keep changing the commented code when we promote to the website - DONE PV
- //	2.  create variables that will be set by JINJA2 so I can put the JS code in a seperate file - DONE PV
+
+
 
  //variables that will have a global scope:
+ //variables event_id_urlsafe and last_timestamp have to be set in the parent document by jinja2
 
     var crew_times = [];
     var last_timestamp = new Date(800000);
     var event_and_last_timestamp = {"event_id":event_id_urlsafe,
 								"last_timestamp":last_timestamp.toISOString()};
+	const REFRESH_TIME = 100; //in milleseconds
+	var refresh = [];
 
 
 //initialise the API calls to the rowtime-26 server.//
   function init() {
-  	var ROWTIME_API = document.location.protocol + "//"+ document.location.host+"/_ah/api" //works for localhost but not https:/rowtime
+  	var ROWTIME_API = document.location.protocol + "//"+ document.location.host+"/_ah/api" //works for localhost but only for https:/rowtime if
+  																							// the user types in https://rowtime-26.appspot.com without the www and not http
 	//var ROWTIME_API = 'http://localhost:9000/_ah/api';
     //var ROWTIME_API = 'https://rowtime-26.appspot.com/_ah/api';
-	gapi.client.load('observedtimes', 'v1', function() {api_loading_init();
-	}, ROWTIME_API);
+
+    try {
+		gapi.client.load('observedtimes', 'v1', function() {api_loading_init();
+	 	}, ROWTIME_API);
+    }
+    catch(err) {
+    	alert("error connecting to internet: To try again reload the page");
+    }
   }
 
   function api_loading_init() {
@@ -36,16 +43,12 @@
   function get_times(){
    // Get the list of observed times since the last time it was requested//
    var request = gapi.client.observedtimes.times.listtimes(event_and_last_timestamp);
-   console.log("timestamp as ISO string"+last_timestamp.toISOString())
-      // Step 6: Execute the API request
    request.then(function(resp) {
     	last_timestamp = new Date(resp.result.last_timestamp);
-    	console.log("timestamp as ISO string from result "+last_timestamp.toISOString());
 
-    	for(var i=0; i<resp.result.times.length; i++) {
+   		for(var i=0; i<resp.result.times.length; i++) {
     		update_time_list(resp.result.times[i]);
     	}
-    	//now have list of times to apply to the screen TODO PV
       });
    }
 
@@ -65,6 +68,7 @@
 	    for (var i=0; i < crew_data.length; i++) {   //step through the crew_data passed and assign it to crew_times
 	    	crew_times.push(JSON.parse(crew_data[i])); //convert the JSON string to an object
 	    	console.log("put crew number " + crew_times[i].crew_number+" into the object array");
+	    	refresh[i] = false;
 		}	
 
 	}
@@ -99,6 +103,11 @@
 		button.value = "stop";
 		button.style.color = "red";
 		button.disabled = false;
+		if (refresh[indx] == false){
+			var mytime=setTimeout('update_time('+indx+','+crew_num+')',REFRESH_TIME);
+			refresh[indx] = true;
+		}
+
 
 	}
 
@@ -131,8 +140,6 @@
 								  stage: stage,
 								  time: time};
 			record_observed_time(observed_time);
-			var refresh=100; // Refresh rate in milli seconds
-			mytime=setTimeout('update_time('+crew_num+')',refresh)
 		}
 		else if(button.value == "stop") {
 			UpdateStopTime(indx, crew_num, time);
@@ -150,18 +157,23 @@
 		}
 	}
 
-	function update_time(crew_num) {
+	function update_time(indx, crew_num) {
 		var button = document.getElementById("button_"+crew_num)
 		if (button.value == "Finished"){
+			refresh[indx] = false;
 			return;
 		}
 		var stop_time_textElement = document.getElementById("stop_"+crew_num);
 		var start_time_textElement = document.getElementById("start_"+crew_num);
-		var difference = new Date(); //work out differnce "- crew_times[crew_index].start_time;""
-		var d = difference.toTimeString().replace(/.*(\d{2}:\d{2}:\d{2}).*/, "$1")+"."+("00"+difference.getMilliseconds().toString()).slice(-3);
-		stop_time_textElement.value = d;
-		var refresh=10; // Refresh rate in milli seconds
-		var mytime=setTimeout('update_time('+crew_num+')',refresh);
+		var delta_time_textElement = document.getElementById("delta_"+crew_num);
+		var stage_delta = new Date() - crew_times[indx].start_time_local;
+		var delta = new Date(stage_delta);
+		var endtime = new Date();
+		var dt = delta.toTimeString().replace(/.*(\d{2}:\d{2}:\d{2}).*/, "$1")+"."+("00"+delta.getMilliseconds().toString()).slice(-3);
+		delta_time_textElement.value = dt;
+		var mytime=setTimeout('update_time('+indx+','+crew_num+')',REFRESH_TIME);
+		refresh[indx] = true;
+
 	}
 
 
