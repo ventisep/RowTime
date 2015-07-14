@@ -14,7 +14,7 @@
 
 //initialise the API calls to the rowtime-26 server.//
   function init() {
-  	var ROWTIME_API = document.location.origin+"/_ah/api"
+  	var ROWTIME_API = document.location.protocol + "//"+ document.location.host+"/_ah/api" //works for localhost but not https:/rowtime
 	//var ROWTIME_API = 'http://localhost:9000/_ah/api';
     //var ROWTIME_API = 'https://rowtime-26.appspot.com/_ah/api';
 	gapi.client.load('observedtimes', 'v1', function() {api_loading_init();
