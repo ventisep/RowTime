@@ -166,7 +166,8 @@
 		var stop_time_textElement = document.getElementById("stop_"+crew_num);
 		var start_time_textElement = document.getElementById("start_"+crew_num);
 		var delta_time_textElement = document.getElementById("delta_"+crew_num);
-		var stage_delta = new Date() - crew_times[indx].start_time_local;
+		var tempnow = new Date();
+		var stage_delta = tempnow - crew_times[indx].start_time_local;
 		var delta = new Date(stage_delta);
 		var endtime = new Date();
 		var dt = delta.toTimeString().replace(/.*(\d{2}:\d{2}:\d{2}).*/, "$1")+"."+("00"+delta.getMilliseconds().toString()).slice(-3);
