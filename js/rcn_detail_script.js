@@ -101,10 +101,13 @@
 		crew_times[indx].start_time_local = time; //start time
 		crew_times[indx].stage=0;
 		var start_time_id = "start_"+crew_num;
+		var stop_time_id = "stop_"+crew_num;
 		var start_time_textElement = document.getElementById(start_time_id);
+		var stop_time_textElement = document.getElementById(stop_time_id);
 		var the_button = document.getElementById(start_time_id);
 		start_time_textElement.style.color = "green";
 		start_time_textElement.value = time.toTimeString().replace(/.*(\d{2}:\d{2}:\d{2}).*/, "$1")+"."+("00"+time.getMilliseconds().toString()).slice(-3);
+		stop_time_textElement.value = "";
 		button.value = "stop";
 		button.style.color = "red";
 		button.disabled = false;
