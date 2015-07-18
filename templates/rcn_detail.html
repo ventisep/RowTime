@@ -31,6 +31,7 @@
 <table border="0" style="padding-top: 20px;">
 	<tr style="outline: thin solid">
 		<td style="border-right-width: 1px; border-right-style: solid;">Crew No.</td>
+		<td style="border-right-width: 1px; border-right-style: solid;">Crew Oars</td>
 		<td style="border-right-width: 1px; border-right-style: solid;">Crew Name</td>
 		<td align="center">Start</td>
 		<td align="center">Delta</td>
@@ -39,6 +40,7 @@
 {% for crew in crews %}
 	<tr style="height:75px;">
 		<td style="border-right-width: 1px; border-right-style: solid;">{{crew.crew_number}}</td>
+		<td style="border-right-width: 1px; border-right-style: solid;"><img src="images/blade icons/{{crew.pic_file}}"></td>
 		<td style="border-right-width: 1px; border-right-style: solid;">{{crew.crew_name}}</td>
 		<td><input class="input_RCNdetail" disabled id="start_{{crew.crew_number}}" type="datetime"/></td>
 		<td><input class="input_RCNdetail" disabled id="delta_{{crew.crew_number}}" type="datetime"/></td>

@@ -8,9 +8,14 @@
     var last_timestamp = new Date(800000);
     var event_and_last_timestamp = {"event_id":event_id_urlsafe,
 								"last_timestamp":last_timestamp.toISOString()};
-	const REFRESH_TIME = 100; //in milleseconds
+	const REFRESH_TIME = 10; //in milleseconds
 	var refresh = [];
 
+	Number.prototype.pad = function(size) {
+	      var s = String(this);
+	      while (s.length < (size || 2)) {s = "0" + s;}
+	      return s;
+	    }
 
 //initialise the API calls to the rowtime-26 server.//
   function init() {
@@ -117,13 +122,13 @@
 		crew_times[indx].end_time_local = time; //end time
 		crew_times[indx].stage=1;
 		crew_times[indx].stage_delta = crew_times[indx].end_time_local - crew_times[indx].start_time_local;
-		var delta = new Date(crew_times[indx].stage_delta);
+		var delta = Convert_ms_tostring(crew_times[indx].stage_delta);
 		button.style.color = "";
 		button.disabled = true;
 		var stop_time_textElement = document.getElementById("stop_"+crew_num);
 		var delta_time_textElement = document.getElementById("delta_"+crew_num);
 		stop_time_textElement.value = time.toTimeString().replace(/.*(\d{2}:\d{2}:\d{2}).*/, "$1")+"."+("00"+time.getMilliseconds().toString()).slice(-3);
-		delta_time_textElement.value = delta.toTimeString().replace(/.*(\d{2}:\d{2}:\d{2}).*/, "$1")+"."+("00"+delta.getMilliseconds().toString()).slice(-3);
+		delta_time_textElement.value = delta;
 		stop_time_textElement.style.color = "red";
 		delta_time_textElement.style.color = "black";
 	}
@@ -168,13 +173,18 @@
 		var delta_time_textElement = document.getElementById("delta_"+crew_num);
 		var tempnow = new Date();
 		var stage_delta = tempnow - crew_times[indx].start_time_local;
-		var delta = new Date(stage_delta);
-		var endtime = new Date();
-		var dt = delta.toTimeString().replace(/.*(\d{2}:\d{2}:\d{2}).*/, "$1")+"."+("00"+delta.getMilliseconds().toString()).slice(-3);
+		var dt = Convert_ms_tostring(stage_delta);
 		delta_time_textElement.value = dt;
 		var mytime=setTimeout('update_time('+indx+','+crew_num+')',REFRESH_TIME);
 		refresh[indx] = true;
 
 	}
 
-
+	function Convert_ms_tostring(number){
+		var ms = number%1000;
+		var seconds=new Number(((number/1000)%60).toFixed(0));
+		var minutes=new Number(((number/(1000*60))%60).toFixed(0));
+		var hours=new Number(((number/(1000*60*60))%24).toFixed(0));
+		var dt = hours.pad()+":"+minutes.pad()+":"+seconds.pad()+"."+ms.pad(3);
+		return dt
+	}
