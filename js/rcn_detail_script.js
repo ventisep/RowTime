@@ -9,6 +9,7 @@
     var event_and_last_timestamp = {"event_id":event_id_urlsafe,
 								"last_timestamp":last_timestamp.toISOString()};
 	const REFRESH_TIME = 10; //in milleseconds
+	const REFRESH_TIME2 = 1000; //in milleseconds
 	var refresh = [];
 
 	Number.prototype.pad = function(size) {
@@ -55,6 +56,7 @@
     		update_time_list(resp.result.times[i]);
     	}
       });
+   	  var mytime=setTimeout('get_times()',REFRESH_TIME2);
    }
 
    function update_time_list(time) {

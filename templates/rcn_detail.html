@@ -2,7 +2,7 @@
 {% extends "templates/layout.html" %}
 {% block main %}
  <script src="https://apis.google.com/js/client.js?onload=init"></script>
- <button id="get_list" onClick = "get_times()">get time list</button>
+ <button id="get_list" onClick = "get_times()">start getting time list</button>
  
  <script type="text/javascript">
  //Set the gobal variables needed by the JavaScript in rcn_detail_script.js
@@ -40,7 +40,7 @@
 {% for crew in crews %}
 	<tr style="height:75px;">
 		<td style="border-right-width: 1px; border-right-style: solid;">{{crew.crew_number}}</td>
-		<td style="border-right-width: 1px; border-right-style: solid;"><img src="images/blade icons/{{crew.pic_file}}"></td>
+		<td style="border-right-width: 1px; border-right-style: solid;"><img src="/images/blade icons/{{crew.pic_file}}"></td>
 		<td style="border-right-width: 1px; border-right-style: solid;">{{crew.crew_name}}</td>
 		<td><input class="input_RCNdetail" disabled id="start_{{crew.crew_number}}" type="datetime"/></td>
 		<td><input class="input_RCNdetail" disabled id="delta_{{crew.crew_number}}" type="datetime"/></td>
