@@ -128,7 +128,7 @@
 		crew_times[indx].stage=1;
 		crew_times[indx].stage_delta = crew_times[indx].end_time_local - crew_times[indx].start_time_local;
 		var delta = Convert_ms_tostring(crew_times[indx].stage_delta);
-		button.style.color = "";
+		button.style.color = "grey";
 		button.disabled = true;
 		var stop_time_textElement = document.getElementById("stop_"+crew_num);
 		var delta_time_textElement = document.getElementById("delta_"+crew_num);

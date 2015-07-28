@@ -1,4 +1,5 @@
-{% extends "templates/layout.html" %}
+
+<meta name="viewport" content="width=device-width, user-scalable=no">{% extends "templates/layout.html" %}
 {% block main %}
 
 <body onload="myFunction()">
@@ -6,7 +7,7 @@
   <span id="username">{{user.name}}</span><br><br>
   <br>
 {% for event in events %}
-	<table class="outer" border="1">
+	<table class="iphone_table_main" border="1">
 		<tr><th>{{event.event_name}}</th><th><a href="/loadcrews?event_key={{event.key.urlsafe()}}">details</a></th></tr>
 		<tr><td align="left">date: {{event.event_date}}</td><td>type: {{event.event_desc}}</td></tr>
 	</table><br>
