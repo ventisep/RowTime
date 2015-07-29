@@ -80,14 +80,6 @@
 
 	}
 
-
-	function myFunction() {
-
-		var rand_num = Math.floor((Math.random() * 10) + 1);
-		background = "url('/images/rowingpic" + String(rand_num) + ".jpg')";
-		document.body.style.backgroundImage = background;
-	}
-
 	function UpdateTimes(indx, crew_num, time, stage){
 		if (stage == 0){
 			//a start time has been recorded//

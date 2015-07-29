@@ -1,31 +1,22 @@
 
-<meta name="viewport" content="width=device-width, user-scalable=no">{% extends "templates/layout.html" %}
+{% extends "templates/layout.html" %}
 {% block main %}
 
-<body onload="myFunction()">
+<body>
 
   <span id="username">{{user.name}}</span><br><br>
   <br>
 {% for event in events %}
-	<table class="iphone_table_main" border="1">
-		<tr><th>{{event.event_name}}</th><th><a href="/loadcrews?event_key={{event.key.urlsafe()}}">details</a></th></tr>
-		<tr><td align="left">date: {{event.event_date}}</td><td>type: {{event.event_desc}}</td></tr>
+	<table class="iphone_table_main">
+		<tr><th>{{event.event_name}}</th>
+			<td rowspan="2">type: {{event.event_desc}}</td>
+			<td rowspan="2">
+				<button class="login-buttons" href="/loadcrews?event_key={{event.key.urlsafe()}}">details</button>
+			</td>
+		</tr>
+		<tr width="70%"><td>date: {{event.event_date}}</td>
+			</tr>
 	</table><br>
 {% endfor %}
-	<script>
-		function myFunction() {
-			var rand_num = Math.floor((Math.random() * 10) + 1);
-			background = "url('/images/rowingpic" + String(rand_num) + ".jpg')";
-			document.body.style.backgroundImage = background;
-		}
-		
-		if((navigator.userAgent.match(/iPhone/i)) || 
-		 (navigator.userAgent.match(/iPod/i))) {
-		   if (document.cookie.indexOf("iphone_redirect=false") == -1){
-		   var css_link = document.getElementById('linker');
-		   css_link.setAttribute("href", "css/style_iphone.css");
-		}
-		}
-	</script>
 </body>
 {% endblock %}

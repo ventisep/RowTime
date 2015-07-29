@@ -1,5 +1,4 @@
-<meta name="viewport" content="width=device-width, user-scalable=no">
-<meta name="apple-mobile-web-app-capable" content="yes" /> <!--stops the URL bar in the app version-->
+
 {% extends "templates/layout.html" %}
 {% block main %}
 <HTML>
@@ -32,21 +31,6 @@
 	</td>
 </tr>
 </table>
-	<script>
-		function myFunction() {
-			var rand_num = Math.floor((Math.random() * 10) + 1);
-			background = "url('/images/rowingpic" + String(rand_num) + ".jpg')";
-			document.body.style.backgroundImage = background;
-		}
-
-		if((navigator.userAgent.match(/iPhone/i)) || 
-		 (navigator.userAgent.match(/iPod/i))) {
-		   if (document.cookie.indexOf("iphone_redirect=false") == -1){
-		   var css_link = document.getElementById('linker');
-		   css_link.setAttribute("href", "css/style_iphone.css");
-		}
-		}
-	</script>
 </body>
 </HTML>
 {% endblock %}

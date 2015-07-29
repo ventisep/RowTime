@@ -1,5 +1,6 @@
 @charset "UTF-8";
 body{
+	background-image: url('/images/rowingpic.jpg');
 	background-repeat: no-repeat;
 	background-size: 120%;
 	height: 80%;

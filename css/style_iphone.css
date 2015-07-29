@@ -1,13 +1,40 @@
 .iphone_table{
-   width: 110%;
+   width: 100%;
    text-align: center;
    vertical-align: middle;
 }
 .iphone_table_main{
-   width: 90%;
-   margin-left: 5%;
+   width: 100%;
    text-align: center;
    vertical-align: middle;
+   border-style: solid;
+   border-color: black;
+   border-width: 1px;
+   border-radius: 3px;
+   font-size: 15px;
+   margin: auto;
+}
+
+.timetable_iphone{
+   width: 100%;
+
+}
+
+.input_RCNdetail{
+   border-width: 0px;
+   background-color: rgba(228, 228, 229, 1);
+   font-size: 14px;
+   height: 35px;
+   width: auto;
+   text-align: center;
+}
+
+.Iphone_oars{
+   width: 35px;
+}
+
+.colhead{
+   font-size: 18px;
 }
 
 #login-signup-style 
@@ -177,7 +204,7 @@ h1{
 }
 
 html{
-   width:100%;
+   width:90%;
 }
 
 h2{
@@ -190,6 +217,7 @@ meta{
 }
 
 body{
+   background-image: url('/images/rowingpic.jpg');
 	background-repeat: no-repeat;
 	width: 100%;
    overflow:hidden;

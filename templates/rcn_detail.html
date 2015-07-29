@@ -1,5 +1,3 @@
-<meta name="viewport" content="width=device-width, initial-scale=2, maximum-scale=1,user-scalable=no">
-
 {% extends "templates/layout.html" %}
 {% block main %}
  <script src="https://apis.google.com/js/client.js?onload=init"></script>
@@ -22,14 +20,14 @@
 
  <script type="text/javascript" src="js/rcn_detail_script.js"></script>
 
-<body onload="init(); get_crew_times(); myFunction();" id="body">
+<body onload="init(); get_crew_times();" id="body">
 
   <header>
     <h2>{{event.urlsafe}} timing</h2>
   </header>
   <span id="username">Hi {{user.name}}</span><br><br>
 
-<table class = "timetable">
+<table class = "timetable_iphone">
 	<tr class = "rowhead">
 		<td class = "colhead">Crew No.</td>
 		<td class = "colhead">Crew Oars</td>
@@ -41,8 +39,8 @@
 {% for crew in crews %}
 	<tr class = "row">
 		<td class = "cell">{{crew.crew_number}}</td>
-		<td class = "cell"><img src="/images/blade-icons/{{crew.pic_file}}"></td>
-		<td class = "cell">{{crew.crew_name}}</td>
+		<td class = "cell"><img class="Iphone_oars" src="/images/blade-icons/{{crew.pic_file}}"></td>
+		<td class = "cell"/>{{crew.crew_name}}</td>
 		<td class = "cell"><input class="input_RCNdetail" disabled id="start_{{crew.crew_number}}" type="datetime"/></td>
 		<td><input class="input_RCNdetail" disabled id="delta_{{crew.crew_number}}" type="datetime"/></td>
 		<td><input class="input_RCNdetail" disabled id="stop_{{crew.crew_number}}"  type="datetime"/></td>
