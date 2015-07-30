@@ -3,7 +3,7 @@
    text-align: center;
    vertical-align: middle;
 }
-.iphone_table_main{
+.table_main{
    width: 100%;
    text-align: center;
    vertical-align: middle;
@@ -15,8 +15,9 @@
    margin: auto;
 }
 
-.timetable_iphone{
+.timetable{
    width: 100%;
+ /*  display: inline-block;*/
 
 }
 

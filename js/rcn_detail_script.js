@@ -16,12 +16,12 @@
 	      var s = String(this);
 	      while (s.length < (size || 2)) {s = "0" + s;}
 	      return s;
-	    }
+	}
 
 //initialise the API calls to the rowtime-26 server.//
   function init() {
   	var ROWTIME_API = document.location.protocol + "//"+ document.location.host+"/_ah/api" //works for localhost but only for https:/rowtime if
-  																							// the user types in https://rowtime-26.appspot.com without the www and not http
+  	get_crew_times();																// the user types in https://rowtime-26.appspot.com without the www and not http
 	//var ROWTIME_API = 'http://localhost:9000/_ah/api';
     //var ROWTIME_API = 'https://rowtime-26.appspot.com/_ah/api';
 
@@ -71,13 +71,19 @@
        	
 	//load the crew_times object with the crew times list retrieved from the database//
 	function get_crew_times() {
-
 	    for (var i=0; i < crew_data.length; i++) {   //step through the crew_data passed and assign it to crew_times
 	    	crew_times.push(JSON.parse(crew_data[i])); //convert the JSON string to an object
 	    	console.log("put crew number " + crew_times[i].crew_number+" into the object array");
 	    	refresh[i] = false;
 		}	
 
+	}
+
+	function myFunction() {
+
+		var rand_num = Math.floor((Math.random() * 10) + 1);
+		background = "url('/images/rowingpic" + String(rand_num) + ".jpg')";
+		document.body.style.backgroundImage = background;
 	}
 
 	function UpdateTimes(indx, crew_num, time, stage){
@@ -185,3 +191,4 @@
 		var dt = hours.pad()+":"+minutes.pad()+":"+seconds.pad()+"."+ms.pad(3);
 		return dt
 	}
+

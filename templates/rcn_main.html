@@ -7,12 +7,10 @@
   <span id="username">{{user.name}}</span><br><br>
   <br>
 {% for event in events %}
-	<table class="iphone_table_main">
-		<tr><th>{{event.event_name}}</th>
-			<td rowspan="2">type: {{event.event_desc}}</td>
-			<td rowspan="2">
-				<button class="login-buttons" href="/loadcrews?event_key={{event.key.urlsafe()}}">details</button>
-			</td>
+	<table class="table_main">
+		<tr><th><a href="/loadcrews?event_key={{event.key.urlsafe()}}">{{event.event_name}}</a></th>
+			<td rowspan="2">{{event.event_desc}}</td>
+			<td rowspan="2"></td>
 		</tr>
 		<tr width="70%"><td>date: {{event.event_date}}</td>
 			</tr>

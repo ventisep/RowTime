@@ -7,27 +7,18 @@
  //Set the gobal variables needed by the JavaScript in rcn_detail_script.js
     var event_id_urlsafe = "{{event.urlsafe()}}";
 	var crew_data={{ data|safe }}; //get data passed from jinja2
-
-	if((navigator.userAgent.match(/iPhone/i)) || 
-	 (navigator.userAgent.match(/iPod/i))) {
-	    if (document.cookie.indexOf("iphone_redirect=false") == -1){
-	    var css_link = document.getElementById('linker');
-	    css_link.setAttribute("href", "css/style_iphone.css");
-		}
-	}
-
  </script>
 
  <script type="text/javascript" src="js/rcn_detail_script.js"></script>
 
-<body onload="init(); get_crew_times();" id="body">
+<body onload="init()" id="body">
 
   <header>
     <h2>{{event.urlsafe}} timing</h2>
   </header>
   <span id="username">Hi {{user.name}}</span><br><br>
 
-<table class = "timetable_iphone">
+<table class = "timetable">
 	<tr class = "rowhead">
 		<td class = "colhead">Crew No.</td>
 		<td class = "colhead">Crew Oars</td>
