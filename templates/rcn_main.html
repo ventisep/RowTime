@@ -8,7 +8,7 @@
   <br>
 {% for event in events %}
 	<table class="table_main">
-		<tr><th><a href="/loadcrews?event_key={{event.key.urlsafe()}}">{{event.event_name}}</a></th>
+		<tr><th><a href="#" onclick="window.location='/loadcrews?event_key={{event.key.urlsafe()}}';">{{event.event_name}}</a></th>
 			<td rowspan="2">{{event.event_desc}}</td>
 			<td rowspan="2"></td>
 		</tr>
