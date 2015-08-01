@@ -8,10 +8,9 @@
     var event_id_urlsafe = "{{event.urlsafe()}}";
 	var crew_data={{ data|safe }}; //get data passed from jinja2
  </script>
-
  <script type="text/javascript" src="js/rcn_detail_script.js"></script>
 
-<body onload="init()" id="body">
+<div id="content" onload="init()">
 
   <header>
     <h2>{{event.urlsafe}} timing</h2>
@@ -39,5 +38,5 @@
 	</tr>
 {% endfor %}
 </table><br>
-</body>
+</div>
 {% endblock %}

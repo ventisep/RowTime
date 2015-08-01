@@ -4,24 +4,35 @@
  //variables that will have a global scope:
  //variables event_id_urlsafe and last_timestamp have to be set in the parent document by jinja2
 
-    var crew_times = [];
-    var last_timestamp = new Date(800000);
-    var event_and_last_timestamp = {"event_id":event_id_urlsafe,
-								"last_timestamp":last_timestamp.toISOString()};
-	const REFRESH_TIME = 10; //in milleseconds
-	const REFRESH_TIME2 = 1000; //in milleseconds
-	var refresh = [];
+var crew_times = [];
+var last_timestamp = new Date(800000);
+var event_and_last_timestamp = {"event_id":event_id_urlsafe,
+							"last_timestamp":last_timestamp.toISOString()};
+const REFRESH_TIME = 10; // for timer counting in milleseconds
+const REFRESH_TIME2 = 1000; //for checking server for times in milleseconds
+var refresh = [];
+get_crew_times();  //initialise the crew_times array
 
-	Number.prototype.pad = function(size) {
-	      var s = String(this);
-	      while (s.length < (size || 2)) {s = "0" + s;}
-	      return s;
-	}
 
+Number.prototype.pad = function(size) {
+      var s = String(this);
+      while (s.length < (size || 2)) {s = "0" + s;}
+      return s;
+}
+
+//load the crew_times object with the crew times list retrieved from the database//
+function get_crew_times() {
+    for (var i=0; i < crew_data.length; i++) {   //step through the crew_data passed and assign it to crew_times
+    	crew_times.push(JSON.parse(crew_data[i])); //convert the JSON string to an object
+    	console.log("put crew number " + crew_times[i].crew_number+" into the object array");
+    	refresh[i] = false;
+	}	
+
+}
 //initialise the API calls to the rowtime-26 server.//
   function init() {
   	var ROWTIME_API = document.location.protocol + "//"+ document.location.host+"/_ah/api" //works for localhost but only for https:/rowtime if
-  	get_crew_times();																// the user types in https://rowtime-26.appspot.com without the www and not http
+  																						// the user types in https://rowtime-26.appspot.com without the www and not http
 	//var ROWTIME_API = 'http://localhost:9000/_ah/api';
     //var ROWTIME_API = 'https://rowtime-26.appspot.com/_ah/api';
 
@@ -69,15 +80,7 @@
    		}
    	}
        	
-	//load the crew_times object with the crew times list retrieved from the database//
-	function get_crew_times() {
-	    for (var i=0; i < crew_data.length; i++) {   //step through the crew_data passed and assign it to crew_times
-	    	crew_times.push(JSON.parse(crew_data[i])); //convert the JSON string to an object
-	    	console.log("put crew number " + crew_times[i].crew_number+" into the object array");
-	    	refresh[i] = false;
-		}	
 
-	}
 
 	function myFunction() {
 

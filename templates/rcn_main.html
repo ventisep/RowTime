@@ -1,20 +1,14 @@
 
 {% extends "templates/layout.html" %}
 {% block main %}
-
-<body>
+<div class="content" id="content">
 
   <span id="username">{{user.name}}</span><br><br>
   <br>
+	<div id="eventList" class="clickableList">
+		<ul>
 {% for event in events %}
-	<table class="table_main">
-		<tr><th><a href="#" onclick="window.location='/loadcrews?event_key={{event.key.urlsafe()}}';">{{event.event_name}}</a></th>
-			<td rowspan="2">{{event.event_desc}}</td>
-			<td rowspan="2"></td>
-		</tr>
-		<tr width="70%"><td>date: {{event.event_date}}</td>
-			</tr>
-	</table><br>
+		<li class="arrow"><a href="#" onclick="window.location='/loadcrews?event_key={{event.key.urlsafe()}}';">{{event.event_name}} on {{event.event_date}}</a></li>
 {% endfor %}
-</body>
+</div>
 {% endblock %}

@@ -6,40 +6,31 @@
   <meta charset="utf-8">
   <title>Rowing Times</title>
   <meta name="Paul Ventisei" content="Rowing Times">
-  <link rel="stylesheet" id="linker" type = "text/css" href="css/style.css">
+  <link rel="stylesheet" type = "text/css" href="css/pv_style_iphone.css" media="only screen and (max-width: 480px)"/>
+  <link rel="stylesheet" type = "text/css" href="css/pv_style_iphone.css" media="only screen and (min-width: 481px)"/>
+  <!--[if IE]>
+  <link rel="stylesheet" type = "text/css" href="css/style.css" media="all"/>
+  <![endif]-->
+<script type="text/javascript" src="js/layout_script.js"></script>
+
 </head>
-<script>
-    if((navigator.userAgent.match(/iPhone/i)) || 
-     (navigator.userAgent.match(/iPod/i)) || (navigator.userAgent.indexOf('iPad') != -1)) {
-       if (document.cookie.indexOf("iphone_redirect=false") == -1){
-       var css_link = document.getElementById('linker');
-       css_link.setAttribute("href", "css/style_iphone.css");
-    }
-    }
-</script>
-<table border="0px" class="iphone_table" style="height:100%; position: absolute; top: 0; bottom: 0; left: 0; right: 0; background: rgba(222, 227, 225, 0.7);">
-  <tr style="height: 100%;" class="iphone_title_align">
-    <td class="normal_align">
-  <table border="0px" class="iphone_title_align" valign="top" height="60px" width="230px">
-    <tr>
-      <td class="normal_title_align" class="iphone_title_align">
-        <div class="ribbon"><div class="ribbon-stitches-top"></div><strong class="ribbon-content"><h1>Rowing Times</h1></strong><div class="ribbon-stitches-bottom"></div></div>
-      </td>
-    </tr>
-    <tr> 
-      <td class="h2" align="left">
-        <div id="menubar_1"><a HREF="/">Select Event</div>
-        <div id="menubar_1"><a HREF="/static/help">Help</div>
-        <div id="menubar_1"><a HREF="/logout">logout</div>
-      </td>
-    </tr>
-  </table>  
+<body>
+  <div id="container">
+    <div id="header">
+      <h1><a href="./">Rowing Times</a></h1>
+      <div class="leftButton" ontouch="toggleMenu()" onclick="toggleMenu()">Menu</div>
+      <div id="nav" hidden="true">
+        <ul>
+          <li><a href="#" onclick="window.location='/';">Select Event</a></li>
+          <li><a href="#" onclick="window.location='/static/help;">Help</a></li>
+          <li><a href="#" onclick="window.location='/logout';">logout</a></li>
+        </ul>
+      </div>
+    </div>   
     {% block main %}
-
     {% endblock %}
-
+  </div>
   <footer>
-   
   </footer>
 </body>
 </html>

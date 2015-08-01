@@ -1,8 +1,7 @@
 
 {% extends "templates/layout.html" %}
 {% block main %}
-<HTML>
-<body onload="myFunction()" id="body">
+<div id="content">
 	<br>
 	<form method="post" action="/login">
 		<h2>Log In</h2>
@@ -21,16 +20,5 @@
 		<input type="password" placeholder="Password" id="login-signup-style" name="password2" class="login_text-box"><br>
 		<input type="submit" id="login-signup-buttons" onClick="validations()" class="login-buttons" value="signup">
 	</form>
-	</td>
-	<td>
-	</td>
-</tr>
-<tr>
-	<td colspan="2" class="bottom_info">
-
-	</td>
-</tr>
-</table>
-</body>
-</HTML>
+</div>
 {% endblock %}
