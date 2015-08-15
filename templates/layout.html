@@ -1,35 +1,102 @@
 <!doctype html>
-<meta name="viewport" content="width=device-width, user-scalable=no">
-<meta name="apple-mobile-web-app-capable" content="yes" /> <!--stops the URL bar in the app version-->
 <html >
 <head>
   <meta charset="utf-8">
-  <title>Rowing Times</title>
   <meta name="Paul Ventisei" content="Rowing Times">
-  <link rel="stylesheet" type = "text/css" href="css/pv_style_iphone.css" media="only screen and (max-width: 480px)"/>
-  <link rel="stylesheet" type = "text/css" href="css/pv_style_iphone.css" media="only screen and (min-width: 481px)"/>
-  <!--[if IE]>
-  <link rel="stylesheet" type = "text/css" href="css/style.css" media="all"/>
-  <![endif]-->
-<script type="text/javascript" src="js/layout_script.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+  <link rel="stylesheet" href="jquery/jquery.mobile-1.4.5.min.css"/>
+  <script src="jquery/jquery-1.11.3.min.js"></script>
+  <script src="jquery/jquery.mobile-1.4.5.min.js"></script>
 
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 </head>
 <body>
-  <div id="container">
-    <div id="header">
-      <h1><a href="./">Rowing Times</a></h1>
-      <div class="leftButton" ontouch="toggleMenu()" onclick="toggleMenu()">Menu</div>
-      <div id="nav" hidden="true">
-        <ul>
-          <li><a href="#" onclick="window.location='/';">Select Event</a></li>
-          <li><a href="#" onclick="window.location='/static/help;">Help</a></li>
-          <li><a href="#" onclick="window.location='/logout';">logout</a></li>
-        </ul>
-      </div>
-    </div>   
+
+  <div data-role="page" class="ui-responsive-panel" id="home" data-title="Navigation Panel">
+
+    <div data-role="header">
+        <h1>Row Time</h1>
+        <a href="#nav-panel" data-icon="bars" data-iconpos="notext">Menu</a>
+        <a href="#login-form" data-icon="gear" data-iconpos="notext">login</a>
+    </div><!-- /header -->
+
+    <div role="main" class="ui-content jqm-content jqm-fullwidth">
+
+      <h1>Row Time</h1>
+
+
+    <div data-demo-html="#home"></div><!--/demo-html -->
+
+        <p>This Application is designed to allow spectators and organisers to get more out of any head race rowing events.  Why not register or login and give it a try?.</p>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+
+  </div><!-- /content -->
+
+  <div data-role="panel" data-display="overlay" data-theme="b" id="nav-panel">
+
+    <ul data-role="listview">
+            <li data-icon="delete"><a href="#" data-rel="close">Close menu</a></li>
+                <li><a href="#events">Select Event</a></li>
+                <li><a href="#crewtimes">Crew Times</a></li>
+                <li><a href="#help">Help</a></li>
+    </ul>
+
+  </div><!-- /panel -->
+
+  <div data-role="panel" data-position="right" data-display="overlay" data-theme="a" id="login-form">
+
+        <form data-ajax="false" class="userform" method="post" action="/login">
+
+          <h2>login</h2>
+
+            <label for="email">E-mail:</label>
+            <input type="text" placeholder="E-mail" id="login-signup-style" name="email" class="login_text-box2" value = "" data-clear-btn="true" data-mini="true"> 
+
+
+            <label for="password">Password:</label>
+            <input type="password" placeholder="Password" id="login-signup-style" name="password" class="login_text-box" data-clear-btn="true" autocomplete="off" data-mini="true">
+
+            <span id="errormsg">error  messages go here</span>
+            <input type="submit" value="Login" class="login-buttons" id="log">
+        </form>
+        <form method="post" action="/signup">
+          <h2>Sign Up</h2>
+            <label for="email2">E-mail:</label>
+            <input type="text" placeholder="E-mail" id="login-signup-style" name="email2" class="login_text-box2" data-clear-btn="true" data-mini="true">
+            <label for="name">Name:</label>
+            <input type="text" placeholder="Name" id="login-signup-style" name="name" class="login_text-box2" data-clear-btn="true" data-mini="true">
+            <label for="password2">Password:</label>
+            <input type="password" placeholder="Password" id="login-signup-style" name="password2" class="login_text-box" data-clear-btn="true" autocomplete="off" data-mini="true">
+            <input type="submit" id="login-signup-buttons" onClick="validations()" class="login-buttons" value="signup">
+        </form>
+
+  </div><!-- /panel -->
+
+</div><!-- /page -->
+
+<div data-role="page" id="help">
+
+    <div data-role="header">
+        <h1>Help Page</h1>
+    </div><!-- /header -->
+
+    <div role="main" class="ui-content jqm-content">
+
+        <p>This is where the help page goes</p>
+
+        <a href="#home" class="ui-btn ui-shadow ui-corner-all ui-btn-inline ui-mini ui-icon-back ui-btn-icon-left">Back</a>
+
+    </div><!-- /content -->
+
+</div><!-- /page -->
+
     {% block main %}
     {% endblock %}
-  </div>
   <footer>
   </footer>
 </body>

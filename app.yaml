@@ -69,6 +69,9 @@ handlers:
 - url: /js
   static_dir: js
 
+- url: /jquery
+  static_dir: jquery
+
 - url: /_ah/spi/.*
   script: rowtime_api.application
 

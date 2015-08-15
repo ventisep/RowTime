@@ -1,0 +1,14 @@
+<div data-role="page" id="createevent">
+	<div data-role="header">
+    	<h1 id="username">Create an Event - Upload File</h1><br>
+    	<a href="#" data-rel="back" data-icon="back" data-iconpos="notext">login</a>
+  	</div>
+
+  	<div data-role="main" class="ui-content jqm-content">
+     	<form action="{{upload_url}}" method="POST" enctype="multipart/form-data">
+        Upload File:
+        	<input type="file" name="file"> <br>
+        	<input type="submit" name="submit" value="Submit">
+        </form>
+    </div>
+</div>    

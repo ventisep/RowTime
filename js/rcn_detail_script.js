@@ -4,16 +4,41 @@
  //variables that will have a global scope:
  //variables event_id_urlsafe and last_timestamp have to be set in the parent document by jinja2
 
-var crew_times = [];
-var last_timestamp = new Date(800000);
-var event_and_last_timestamp = {"event_id":event_id_urlsafe,
-							"last_timestamp":last_timestamp.toISOString()};
+
 const REFRESH_TIME = 10; // for timer counting in milleseconds
 const REFRESH_TIME2 = 1000; //for checking server for times in milleseconds
+var crew_times = [];
+var autoUpdate = true;
+var last_timestamp = new Date(800000);
 var refresh = [];
-get_crew_times();  //initialise the crew_times array
+var gae_connected_flag = false;
 
+$( document ).one( "pagecreate", "#crewtimes", function() {
 
+    // call the initialisation function for the Google App Engine APIs but only on first visit
+    init();
+
+    });
+
+$( document ).on( "pagecreate", "#crewtimes", function() {
+
+	get_crew_times();  //initialise the crew_times array and set connection status
+	if (gae_connected_flag == true) {
+		$(".connection-status").text("Connected to Rowing Times");
+		}
+
+    });
+
+$( document ).on( "pagehide", "#crewtimes", function() {
+
+    // stop the function calls
+    autoUpdate = false;
+    //clear down all the global variables used
+    crew_times = [];
+	last_timestamp = new Date(800000);
+	refresh = [];
+
+    });
 Number.prototype.pad = function(size) {
       var s = String(this);
       while (s.length < (size || 2)) {s = "0" + s;}
@@ -48,6 +73,8 @@ function get_crew_times() {
   function api_loading_init() {
   	//this function is called when the API is initialised, put anything here we need to do at the start, for example get an initial read of the obeserved times if we need it//
 	console.log("ROWTIME_API loaded and init function called");
+	$(".connection-status").text("Connected to Rowing Times");
+	gae_connected_flag=true;
   }
 
   function record_observed_time(observed_time) {
@@ -62,12 +89,15 @@ function get_crew_times() {
    var request = gapi.client.observedtimes.times.listtimes(event_and_last_timestamp);
    request.then(function(resp) {
     	last_timestamp = new Date(resp.result.last_timestamp);
+    	event_and_last_timestamp.last_timestamp = last_timestamp.toISOString();
 
    		for(var i=0; i<resp.result.times.length; i++) {
     		update_time_list(resp.result.times[i]);
     	}
       });
-   	  var mytime=setTimeout('get_times()',REFRESH_TIME2);
+   	  if (autoUpdate == true) {
+   	  	var mytime=setTimeout('get_times()',REFRESH_TIME2);
+   	  }
    }
 
    function update_time_list(time) {
@@ -100,20 +130,17 @@ function get_crew_times() {
 	}
 
 	function UpdateStartTime(indx, crew_num, time){
-		var button = document.getElementById("button_"+crew_num);
+		var button = $("#button_"+crew_num);
 		crew_times[indx].start_time_local = time; //start time
 		crew_times[indx].stage=0;
-		var start_time_id = "start_"+crew_num;
-		var stop_time_id = "stop_"+crew_num;
-		var start_time_textElement = document.getElementById(start_time_id);
-		var stop_time_textElement = document.getElementById(stop_time_id);
-		var the_button = document.getElementById(start_time_id);
-		start_time_textElement.style.color = "green";
-		start_time_textElement.value = time.toTimeString().replace(/.*(\d{2}:\d{2}:\d{2}).*/, "$1")+"."+("00"+time.getMilliseconds().toString()).slice(-3);
-		stop_time_textElement.value = "";
-		button.value = "stop";
-		button.style.color = "red";
-		button.disabled = false;
+		var start_time_textElement = $("#start_"+crew_num);
+		var stop_time_textElement = $("#stop_"+crew_num);
+		start_time_textElement.css("green");
+		start_time_textElement.text("start: "+time.toTimeString().replace(/.*(\d{2}:\d{2}:\d{2}).*/, "$1")+"."+("00"+time.getMilliseconds().toString()).slice(-3));
+		stop_time_textElement.text("stop: ");
+		button.text("stop");
+		button.css("background", "red");
+		button.prop("enabled");
 		if (refresh[indx] == false){
 			var mytime=setTimeout('update_time('+indx+','+crew_num+')',REFRESH_TIME);
 			refresh[indx] = true;
@@ -123,26 +150,26 @@ function get_crew_times() {
 	}
 
 	function UpdateStopTime(indx,crew_num,time){
-		var button = document.getElementById("button_"+crew_num);
-		button.value = "Finished";
+		var button = $("#button_"+crew_num);
 		crew_times[indx].end_time_local = time; //end time
 		crew_times[indx].stage=1;
 		crew_times[indx].stage_delta = crew_times[indx].end_time_local - crew_times[indx].start_time_local;
 		var delta = Convert_ms_tostring(crew_times[indx].stage_delta);
-		button.style.color = "grey";
-		button.disabled = true;
-		var stop_time_textElement = document.getElementById("stop_"+crew_num);
-		var delta_time_textElement = document.getElementById("delta_"+crew_num);
-		stop_time_textElement.value = time.toTimeString().replace(/.*(\d{2}:\d{2}:\d{2}).*/, "$1")+"."+("00"+time.getMilliseconds().toString()).slice(-3);
-		delta_time_textElement.value = delta;
-		stop_time_textElement.style.color = "red";
-		delta_time_textElement.style.color = "black";
+		button.text("Finished");
+		button.css("background","grey");
+		button.prop("disabled");
+		var stop_time_textElement = $("#stop_"+crew_num);
+		var delta_time_textElement = $("#delta_"+crew_num);
+		stop_time_textElement.text("stop: "+time.toTimeString().replace(/.*(\d{2}:\d{2}:\d{2}).*/, "$1")+"."+("00"+time.getMilliseconds().toString()).slice(-3));
+		delta_time_textElement.text("delta: "+delta);
+		stop_time_textElement.css("style","red");
+		delta_time_textElement.css("style","black");
 	}
 
 
 	function ClickButton(indx, crew_num, time, stage){
-		var button = document.getElementById("button_"+crew_num);
-		if (button.value == "start") {
+		var button = $("#button_"+crew_num);
+		if (button.text() == "start") {
 			UpdateStartTime(indx, crew_num, time);
 			stage = 0;
 			var observed_time = {event_id: event_id_urlsafe,
@@ -152,7 +179,7 @@ function get_crew_times() {
 								  time: time};
 			record_observed_time(observed_time);
 		}
-		else if(button.value == "stop") {
+		else if(button.text() == "stop") {
 			UpdateStopTime(indx, crew_num, time);
 			stage = 1;
 			var observed_time = {event_id: event_id_urlsafe,
@@ -169,18 +196,18 @@ function get_crew_times() {
 	}
 
 	function update_time(indx, crew_num) {
-		var button = document.getElementById("button_"+crew_num)
-		if (button.value == "Finished"){
+		var button = $("#button_"+crew_num);
+		if (button.text() == "Finished"){
 			refresh[indx] = false;
 			return;
 		}
-		var stop_time_textElement = document.getElementById("stop_"+crew_num);
-		var start_time_textElement = document.getElementById("start_"+crew_num);
-		var delta_time_textElement = document.getElementById("delta_"+crew_num);
+		var stop_time_textElement = $("#stop_"+crew_num);
+		var start_time_textElement = $("#start_"+crew_num);
+		var delta_time_textElement = $("#delta_"+crew_num);
 		var tempnow = new Date();
 		var stage_delta = tempnow - crew_times[indx].start_time_local;
 		var dt = Convert_ms_tostring(stage_delta);
-		delta_time_textElement.value = dt;
+		delta_time_textElement.text("delta: "+dt);
 		var mytime=setTimeout('update_time('+indx+','+crew_num+')',REFRESH_TIME);
 		refresh[indx] = true;
 

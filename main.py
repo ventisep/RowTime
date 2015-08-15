@@ -8,11 +8,13 @@ import datetime
 from datetime import timedelta
 from google.appengine.api import users
 from google.appengine.ext import ndb
+from google.appengine.ext import blobstore
+from google.appengine.ext.webapp import blobstore_handlers
 from handlers import BaseRequestHandler, AuthHandler
 import jinja2
 from webapp2 import WSGIApplication, Route
 from secrets import SESSION_KEY
-
+import csv
 if 'lib' not in sys.path:
     sys.path[0:0] = ['lib']
 
@@ -134,12 +136,6 @@ class login(AuthHandler):
             logging.info('Found existing user to log in')
             # found the user so set their details into the session
             self.auth.set_session(self.auth.store.user_to_dict(user))
-
-            #template_values = { 'written_user' : user,
-            #                    'session' : self.session}
-            #template = JINJA_ENVIRONMENT.get_template('templates/debug.html')
-            #self.response.write(template.render(template_values))
-
             self.redirect('/')
                 
         else:
@@ -198,6 +194,36 @@ class signup(AuthHandler):
                 self.response.write(template.render(template_values))            
                 return
 
+class loadevent(BaseRequestHandler):
+    def get(self):
+        upload_url = blobstore.create_upload_url('/upload')
+
+        template_values = {'upload_url' : upload_url}
+        template = JINJA_ENVIRONMENT.get_template('templates/createevent.html')
+        self.response.write(template.render(template_values))
+
+
+class UploadHandler(blobstore_handlers.BlobstoreUploadHandler):
+    def post(self):
+        upload_files = self.get_uploads('file')  # 'file' is file upload field in the form
+        blob_info = upload_files[0]
+        process_csv(blob_info)
+
+        blobstore.delete(blob_info.key())  # optional: delete file after import
+        self.redirect('/')
+
+
+    def process_csv(blob_info):
+        blob_reader = blobstore.BlobReader(blob_info.key())
+        reader = csv.reader(blob_reader, delimiter=';')
+        for row in reader:
+            read_event_name, read_datetime, read_desc = row
+            e =Events(
+                    event_name = read_event_name,
+                    event_date = datetime.date(read_datetime),
+                    event_desc = read_desc).put()
+            e.put()
+
         
 # webapp2 config
 app_config = {
@@ -212,11 +238,14 @@ app_config = {
 
 routes = [
   Route('/', handler='main.MainPage'),
+  Route('/events', handler='main.MainPage'),
   Route('/loadcrews', handler='main.LoadCrews'),
   Route('/profile', handler='handlers.ProfileHandler', name='profile'),
   Route('/logout', handler='handlers.AuthHandler:logout', name='logout'),
   Route('/login', handler='main.login'),
   Route('/signup', handler='main.signup'),
+  Route('/uploadevents', handler='main.loadevent'),
+  Route('/upload', handler='main.UploadHandler'),
   Route('/testdata', handler='testing.CreateTestData'),
   Route('/auth/<provider>', handler='handlers.AuthHandler:_simple_auth', name='auth_login'),
   Route('/auth/<provider>/callback', handler='handlers.AuthHandler:_auth_callback', name='auth_callback')

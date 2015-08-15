@@ -1,24 +1,115 @@
+<!doctype html>
+<html >
+<head>
+  <meta charset="utf-8">
+  <meta name="Paul Ventisei" content="Rowing Times">
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+  <link rel="stylesheet" href="jquery/jquery.mobile-1.4.5.min.css"/>
+  <script src="jquery/jquery-1.11.3.min.js"></script>
+  <script src="jquery/jquery.mobile-1.4.5.min.js"></script>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+</head>
+<body>
 
-{% extends "templates/layout.html" %}
-{% block main %}
-<div id="content">
-	<br>
-	<form method="post" action="/login">
-		<h2>Log In</h2>
-		<input type="text" placeholder="E-mail" id="login-signup-style" name="email" class="login_text-box2" value = {{email}}> 
-		<br> 
-		<input type="password" placeholder="Password" id="login-signup-style" name="password" class="login_text-box"><br>
-		<span id="errormsg">{{error}}</span>
-		<input type="submit" value="Login" class="login-buttons" id="log">
-	</form>
+  <div data-role="page" class="ui-responsive-panel" id="home" data-title="Rowing Head Race App">
 
-	<form method="post" action="/signup">
-		<h2 style="padding-top: 20px;">Sign Up</h2>
-		<input type="text" placeholder="E-mail" id="login-signup-style" name="email2" class="login_text-box2"> 
-		<br>
-		<input type="text" placeholder="Name" id="login-signup-style" name="name" class="login_text-box2"><br>
-		<input type="password" placeholder="Password" id="login-signup-style" name="password2" class="login_text-box"><br>
-		<input type="submit" id="login-signup-buttons" onClick="validations()" class="login-buttons" value="signup">
-	</form>
-</div>
-{% endblock %}
+    <div data-role="header">
+        <h1>Row Time</h1>
+        <a href="#nav-panel" data-icon="bars" data-iconpos="notext">Menu</a>
+        <a href="#login-form" data-icon="gear" data-iconpos="text">login</a>
+    </div><!-- /header -->
+
+    <div data-role="main" class="ui-content jqm-content jqm-fullwidth">
+
+      <h1>Row Time</h1>
+
+
+    <div data-demo-html="#home"></div><!--/demo-html -->
+
+        <p>This Application is designed to allow spectators and organisers to get more out of any head race rowing events.  Why not register or login and give it a try?.</p>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+
+  </div><!-- /content -->
+  <div data-role="footer">
+  	  	<span id="errormsg">{{error}}</span>
+  </div>
+
+  <div data-role="panel" data-display="overlay" data-theme="a" id="nav-panel">
+
+    <ul data-role="listview">
+            <li data-icon="delete"><a href="#" data-rel="close">Close menu</a></li>
+                <li><a href="#help">Help</a></li>
+                <li><a href="#about">About Row Time</a></li>
+    </ul>
+
+  </div><!-- /panel -->
+
+  <div data-role="panel" data-position="right" data-display="reveal" data-theme="a" id="login-form">
+
+        <form data-ajax="false" method="post" action="/login">
+
+          <h2>login</h2>
+
+            <label for="email">E-mail:</label>
+            <input type="text" placeholder="E-mail" id="login-signup-style" name="email" class="login_text-box2" value = "" data-clear-btn="true" data-mini="true"> 
+
+
+            <label for="password">Password:</label>
+            <input type="password" placeholder="Password" id="login-signup-style" name="password" class="login_text-box" data-clear-btn="true" autocomplete="off" data-mini="true">
+
+            <input type="submit" value="Login" id="login-button">
+        </form>
+        <form data-ajax="false" method="post" action="/signup">
+          <h2>Sign Up</h2>
+            <label for="email2">E-mail:</label>
+            <input type="text" placeholder="E-mail" id="login-signup-style" name="email2" class="login_text-box2" data-clear-btn="true" data-mini="true">
+            <label for="name">Name:</label>
+            <input type="text" placeholder="Name" id="login-signup-style" name="name" class="login_text-box2" data-clear-btn="true" data-mini="true">
+            <label for="password2">Password:</label>
+            <input type="password" placeholder="Password" id="login-signup-style" name="password2" class="login_text-box" data-clear-btn="true" autocomplete="off" data-mini="true">
+            <input type="submit" id="signup-button" value="Signup">
+        </form>
+
+  </div><!-- /panel -->
+</div><!-- /page -->
+
+<div data-role="page" id="help">
+
+    <div data-role="header">
+        <h1>Help Page</h1>
+        <a href="#home" class="ui-btn ui-shadow ui-corner-all ui-btn-inline ui-mini ui-icon-back ui-btn-icon-left">Back</a>
+    </div><!-- /header -->
+
+    <div role="main" class="ui-content jqm-content">
+
+        <p>This is where the help text goes</p>
+
+
+    </div><!-- /content -->
+</div><!-- /page -->
+
+<div data-role="page" id="about">
+
+    <div data-role="header">
+        <h1>About Page</h1>
+        <a href="#home" class="ui-btn ui-shadow ui-corner-all ui-btn-inline ui-mini ui-icon-back ui-btn-icon-left">Back</a>
+    </div><!-- /header -->
+
+    <div role="main" class="ui-content jqm-content">
+
+        <p>This is where the about information goes.  eg: who wrote it, who coded it, who took pictures etc..  What version it is</p>
+
+
+    </div><!-- /content -->
+</div><!-- /page -->
+
+<footer>
+</footer>
+</body>
+</html>
+
