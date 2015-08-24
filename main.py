@@ -204,26 +204,38 @@ class loadevent(BaseRequestHandler):
 
 
 class UploadHandler(blobstore_handlers.BlobstoreUploadHandler):
+
     def post(self):
-        upload_files = self.get_uploads('file')  # 'file' is file upload field in the form
-        blob_info = upload_files[0]
-        process_csv(blob_info)
+        upload_file = self.get_uploads('file')[0]  # 'file' is file upload field in the form
 
-        blobstore.delete(blob_info.key())  # optional: delete file after import
+        blob_reader = blobstore.BlobReader(upload_file.key())
+        dialect = csv.Sniffer().sniff(blob_reader.read(1024))
+        blob_reader.seek(0)
+        has_header = csv.Sniffer().has_header(blob_reader.read(1024))
+        blob_reader.seek(0)
+        reader = csv.reader(blob_reader, dialect)
+        for count, row in enumerate(reader, start=0):
+            logging.info(row)
+            if count==0 and has_header:
+                logging.info("ignored first header line")
+            else:
+                read_event_name, read_desc, read_day, read_month, read_year = row
+                e =Events(
+                        event_name = read_event_name,
+                        event_date = datetime.date(int(read_year), int(read_month), int(read_day)),
+                        event_desc = read_desc)
+                e.put()     
+        blobstore.delete(upload_file.key())  # optional: delete file after import
         self.redirect('/')
-
-
-    def process_csv(blob_info):
-        blob_reader = blobstore.BlobReader(blob_info.key())
-        reader = csv.reader(blob_reader, delimiter=';')
-        for row in reader:
-            read_event_name, read_datetime, read_desc = row
-            e =Events(
-                    event_name = read_event_name,
-                    event_date = datetime.date(read_datetime),
-                    event_desc = read_desc).put()
-            e.put()
-
+# the Crews Class elements to be taken from the file.  the Event info from the form input fields TODO sort out
+#    event_id = ndb.KeyProperty(kind= Events)
+#    crew_number = ndb.IntegerProperty()
+#    crew_name = ndb.StringProperty()
+#    pic_file = ndb.StringProperty()
+#    crew_type = ndb.StringProperty()
+#    rower_count = ndb.IntegerProperty()
+#    cox = ndb.BooleanProperty()
+#    rower_id = ndb.KeyProperty(kind=Rowers, repeated=True)
         
 # webapp2 config
 app_config = {

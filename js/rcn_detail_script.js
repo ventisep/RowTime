@@ -16,29 +16,75 @@ var gae_connected_flag = false;
 $( document ).one( "pagecreate", "#crewtimes", function() {
 
     // call the initialisation function for the Google App Engine APIs but only on first visit
-    init();
+    var status=init();
+	$(".connection-status").text(status);
 
     });
 
 $( document ).on( "pagecreate", "#crewtimes", function() {
 
 	get_crew_times();  //initialise the crew_times array and set connection status
-	if (gae_connected_flag == true) {
-		$(".connection-status").text("Connected to Rowing Times");
-		}
 
     });
 
 $( document ).on( "pagehide", "#crewtimes", function() {
 
-    // stop the function calls
+    // stop the function calls and reset last_timestamp
     autoUpdate = false;
-    //clear down all the global variables used
+    //clear down all the other global variables used
     crew_times = [];
-	last_timestamp = new Date(800000);
 	refresh = [];
 
     });
+
+// this bit of code taken from ksloan/jquery-mobile-swipe-list excellent project
+
+$(function() {
+
+    function disable_scroll() {
+        $(document).on('vmousemove', prevent_default);
+    }
+    function enable_scroll() {
+        $(document).unbind('vmousemove', prevent_default)
+    }
+
+    $(document).on('swipe', '.swipe-delete li > a', function(e) {
+            console.log(e)
+            var change = e.swipestop.coords[0] - e.swipestart.coords[0]; // anchor point
+ 			var left = parseInt(e.target.style.left);
+ 			if (!left) {left = 0};
+ 			var new_left;
+ 			change = (change < 0) ? -100 : 100;
+ 			change = change+left;
+            if (change < -20) {
+                new_left = '-100px';
+             	$(e.target).addClass('open');
+            } else if (change > 20) {
+            	$(e.target).addClass('open');
+                new_left = '100px';
+            } else {
+            	$(e.target).removeClass('open');
+                new_left = '0px'
+            }
+            // e.currentTarget.style.left = new_left
+            $(e.target).animate({left: new_left}, 200);
+            //e.preventDefault();
+            //e.stopPropagation();
+        })
+    $('li .delete-btn').on('vclick', function(e) {
+        e.preventDefault()
+        $(this).parents('li').slideUp('fast', function() {
+            $(this).remove()
+        })
+    })
+    $('li .edit-btn').on('vclick', function(e) {
+        e.preventDefault()
+        $(this).parents('li').children('a').html('edited')
+    })
+});
+
+//ksloan/jquery-mobile-swipe-list end
+
 Number.prototype.pad = function(size) {
       var s = String(this);
       while (s.length < (size || 2)) {s = "0" + s;}
@@ -64,16 +110,16 @@ function get_crew_times() {
     try {
 		gapi.client.load('observedtimes', 'v1', function() {api_loading_init();
 	 	}, ROWTIME_API);
+	 	return("succesfully connected")
     }
     catch(err) {
-    	alert("error connecting to internet: To try again reload the page");
+    	return("error connecting...!");
     }
   }
 
   function api_loading_init() {
   	//this function is called when the API is initialised, put anything here we need to do at the start, for example get an initial read of the obeserved times if we need it//
 	console.log("ROWTIME_API loaded and init function called");
-	$(".connection-status").text("Connected to Rowing Times");
 	gae_connected_flag=true;
   }
 
@@ -97,6 +143,8 @@ function get_crew_times() {
       });
    	  if (autoUpdate == true) {
    	  	var mytime=setTimeout('get_times()',REFRESH_TIME2);
+   	  } else {
+   	  	last_timestamp = new Date(800000); //reset lst timestamp so next request gets all times
    	  }
    }
 

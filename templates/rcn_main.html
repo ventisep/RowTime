@@ -6,25 +6,60 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
   <link rel="stylesheet" href="jquery/jquery.mobile-1.4.5.min.css"/>
   <script src="jquery/jquery-1.11.3.min.js"></script>
-  <script src="jquery/jquery.mobile-1.4.5.min.js"></script>
+  <script src="jquery/jquery.mobile-1.4.5.js"></script>
   <script src="https://apis.google.com/js/client.js?onload=init"></script>
   <script type="text/javascript" src="js/rcn_detail_script.js"></script>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 </head>
+    <style>
+    .behind {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        top: 0;
+        right: 0;
+    }
+    .behind a.ui-btn {
+        width: 68px;
+        height: 62px;
+        margin: 0px;
+        float: right;
+        border: none;
+    }
+    .behind a.delete-btn, .behind a.delete-btn:active, .behind a.delete-btn:visited, .behind a.delete-btn:focus, .behind a.delete-btn:hover {
+        color: white;
+        background-color: red;
+        text-shadow: none;
+    }
+    .behind a.ui-btn.pull-left {
+        float: left;
+    }
+    .behind a.edit-btn, .behind a.edit-btn:active, .behind a.edit-btn:visited, .behind a.edit-btn:focus, .behind a.edit-btn:hover {
+        color: white;
+        background-color: orange;
+        text-shadow: none;
+    }
+    </style>
 
 <body>
 <div data-role="page" class="ui-responsive-panel" id="events">
 	<div data-role="header">
-    	<h1 id="username">Events Available</h1><br>
+    	<h1 id="username">Events Available</h1>
     	<a href="#nav-panel" data-icon="bars" data-iconpos="notext">Menu</a>
         <a href="#settings" data-icon="gear" data-iconpos="notext">Settings</a>
   	</div> <!-- /Header -->
 
 	<div data-role="main" id="eventList" class="ui-content jqm-content jqm-fullwidth">
-		<ul data-role="listview" class="ui-content jqm-content jqm-fullwidth" data-inset="true" data-filter="true">
+		<ul data-role="listview" class="swipe-delete ui-content jqm-content jqm-fullwidth" data-inset="true" data-filter="true">
 	{% for event in events %}
-			<li><a href="/loadcrews?event_key={{event.key.urlsafe()}}">{{event.event_name}} <br>on {{event.event_date}}</a></li>
+			<li>
+          <div class="behind">
+              <a href="#" class="ui-btn delete-btn">Delete</a>
+              <a href="#" class="ui-btn edit-btn pull-left">Edit</a>
+          </div>
+          <a href="/loadcrews?event_key={{event.key.urlsafe()}}">{{event.event_name}} <br>on {{event.event_date}}</a>
+      </li>
 	{% endfor %}
 		</ul>
 	</div> <!-- /Content -->
@@ -33,7 +68,6 @@
 
     <ul data-role="listview">
             <li data-icon="delete"><a href="#" data-rel="close">Close menu</a></li>
-            	<li><a href="/events"> Events</a></li>
                 <li><a href="/uploadevents">Create Event</a></li>
                 <li><a href="#help">Help</a></li>
                 <li><a href="#about">About Row Time</a></li>
@@ -43,12 +77,12 @@
 
   <div data-role="panel" data-position="right" data-display="reveal" data-theme="a" id="settings">
 
-        <form data-ajax="false" method="post" action="/settings">
+        <form method="post" action="/settings">
 
           <h2>Settings for {{user.name}}</h2>
 
 			<label for="flip">Auto update:</label>
-			<select name="flip" id="update-flip" data-role="slider">
+			<select name="flip" id="update-times" data-role="slider">
 			    <option value="off">Off</option>
 			    <option value="on">On</option>
 			</select>
@@ -62,6 +96,37 @@
 
   </div><!-- /panel -->
 </div><!-- /page -->
+
+<div data-role="page" id="help">
+
+    <div data-role="header">
+        <h1>Help Page</h1>
+        <a href="#" data-rel="back" data-icon="back" data-iconpos="notext">back</a>
+    </div><!-- /header -->
+
+    <div role="main" class="ui-content jqm-content">
+
+        <p>This is where the help text goes</p>
+
+
+    </div><!-- /content -->
+</div><!-- /page -->
+
+<div data-role="page" id="about">
+
+    <div data-role="header">
+        <h1>About Page</h1>
+        <a href="#" data-rel="back" data-icon="back" data-iconpos="notext">back</a>
+    </div><!-- /header -->
+
+    <div role="main" class="ui-content jqm-content">
+
+        <p>This is where the about information goes.  eg: who wrote it, who coded it, who took pictures etc..  What version it is</p>
+
+
+    </div><!-- /content -->
+</div><!-- /page -->
+
 <footer>
 </footer>
 </body>
