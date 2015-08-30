@@ -10,6 +10,7 @@ import jinja2
 
 from models import *
 
+JINJA_ENVIRONMENT = jinja2.Environment(loader=jinja2.FileSystemLoader(os.getcwd())) 
 
 class CreateTestData(BaseRequestHandler):
 
@@ -25,7 +26,7 @@ class CreateTestData(BaseRequestHandler):
         	try:
         		e=Events(
 			    	event_name = "Marlow",
-			    	event_date = datetime.date(2015,6,20),
+			    	event_date = datetime.date(2015,8,20),
 			    	event_desc = "The last chance to excel before Henley").put()
 
 	        	c=Crews(

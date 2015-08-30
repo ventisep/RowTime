@@ -4,11 +4,17 @@
   <meta charset="utf-8">
   <meta name="Paul Ventisei" content="Rowing Times">
   <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<!--
   <link rel="stylesheet" href="jquery/jquery.mobile-1.4.5.min.css"/>
+-->
+  <link rel="stylesheet" href="jquery/RowTimeTheme.min.css" />
+  <link rel="stylesheet" href="jquery/jquery.mobile.icons.min.css" />
+  <link rel="stylesheet" href="jquery/jquery.mobile.structure-1.4.5.min.css" />
   <script src="jquery/jquery-1.11.3.min.js"></script>
-  <script src="jquery/jquery.mobile-1.4.5.js"></script>
-  <script src="https://apis.google.com/js/client.js?onload=init"></script>
+  <script src="jquery/jquery.mobile-1.4.5.min.js"></script>
+  <script src="https://apis.google.com/js/client.js?onload=init" async></script>
   <script type="text/javascript" src="js/rcn_detail_script.js"></script>
+
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 </head>
@@ -40,14 +46,16 @@
         background-color: orange;
         text-shadow: none;
     }
-    </style>
+</style>
 
 <body>
+
+  <!-- Page - show events -->
 <div data-role="page" class="ui-responsive-panel" id="events">
 	<div data-role="header">
     	<h1 id="username">Events Available</h1>
     	<a href="#nav-panel" data-icon="bars" data-iconpos="notext">Menu</a>
-        <a href="#settings" data-icon="gear" data-iconpos="notext">Settings</a>
+      <a href="#eventsettings" data-icon="gear" data-iconpos="notext">Settings</a>
   	</div> <!-- /Header -->
 
 	<div data-role="main" id="eventList" class="ui-content jqm-content jqm-fullwidth">
@@ -75,22 +83,14 @@
 
   </div><!-- /panel -->
 
-  <div data-role="panel" data-position="right" data-display="reveal" data-theme="a" id="settings">
+  <div data-role="panel" data-position="right" data-display="reveal" data-theme="a" id="eventsettings">
 
-        <form method="post" action="/settings">
+      <h2>Settings for {{user.name}}</h2>
 
-          <h2>Settings for {{user.name}}</h2>
+      <label for="email">E-mail:</label>
+      <input type="text" placeholder="E-mail" id="login-signup-style" name="email" class="login_text-box2" value = "{{user.email}}" data-clear-btn="true" data-mini="true">
 
-			<label for="flip">Auto update:</label>
-			<select name="flip" id="update-times" data-role="slider">
-			    <option value="off">Off</option>
-			    <option value="on">On</option>
-			</select>
-
-            <label for="email">E-mail:</label>
-            <input type="text" placeholder="E-mail" id="login-signup-style" name="email" class="login_text-box2" value = "{{user.email}}" data-clear-btn="true" data-mini="true">
-
-        </form>
+        <a data-ajax="false" href="/login" class="ui-btn ui-corner-all">Login</a>
         <a data-ajax="false" href="/logout" class="ui-btn ui-corner-all">Logout</a>
 
 

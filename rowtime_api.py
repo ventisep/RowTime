@@ -52,16 +52,6 @@ class CrewTime(messages.Message):
   crew = messages.IntegerField(2)
   observed_time_list = messages.MessageField(ObservedTime, 3, repeated=True)
 
-STORED_TIMES = ObservedTimeList(event_id = "bedford regatta", last_timestamp = datetime.datetime.now(),
-  times= [ObservedTime(timestamp = datetime.datetime.now(), crew = 123, stage = 0, time = datetime.datetime(2015,11,8,15,49,07,696869)),
-	ObservedTime(timestamp = datetime.datetime.now(), crew = 123, stage = 0, time = datetime.datetime(2015,11,8,15,52,06,330000)),
-	ObservedTime(timestamp = datetime.datetime.now(), crew = 124, stage = 0, time = datetime.datetime(2015,11,8,15,53,07,696869)),
-	ObservedTime(timestamp = datetime.datetime.now(), crew = 124, stage = 0, time = datetime.datetime(2015,11,8,15,56,04,450000)),
-	ObservedTime(timestamp = datetime.datetime.now(), crew = 123, stage = 0, time = datetime.datetime(2015,11,8,15,56,04,696869)),
-	ObservedTime(timestamp = datetime.datetime.now(), crew = 124, stage = 0, time = datetime.datetime(2015,11,8,15,59,07,696869)),
-	ObservedTime(timestamp = datetime.datetime.now(), crew = 123, stage = 0, time = datetime.datetime(2015,11,8,16,00,07,696869)),
-	ObservedTime(timestamp = datetime.datetime.now(), crew = 124, stage = 0, time = datetime.datetime(2015,11,8,16,01,03,780000))])
-
 @endpoints.api(name='observedtimes', version='v1')
 class ObservedTimesApi(remote.Service):
   """ObservedTimes API v1.  This API allows the GET method to get a collection of
@@ -81,9 +71,7 @@ class ObservedTimesApi(remote.Service):
     searched_times=Observed_Times.query(ndb.AND(Observed_Times.event_id==eventkey,
                                                 Observed_Times.timestamp>last_timestamp)).fetch()
 
-    if not searched_times:
-      retrieved_times = STORED_TIMES
-    else:
+    if searched_times:
       i=0
       for time in searched_times:
         retrieved_times.times.append(ObservedTime())

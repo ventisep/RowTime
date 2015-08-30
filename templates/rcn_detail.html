@@ -12,16 +12,15 @@
 	<div data-role="header">
     	<h1 id="username">Hi {{user.name}}</h1>
     	<a href="#" data-rel="back" data-icon="back" data-iconpos="notext">back</a>
+    	<a href="#settings" data-icon="gear" data-iconpos="notext">Settings</a>
     	<span class="connection-status">Connecting...</span>
   	</div>
 
-  <div data-role="main" class="ui-content jqm-content">
- 	<button id="get_list" class="ui-corner-all" onClick = "get_times()">start getting time list</button>
+  <div data-role="content" class="ui-content jqm-content">
 
 	<ul data-role="listview" data-inset="true" class="ui-content jqm-content jqm-fullwidth">
 
 		{% for crew in crews %}
-
 		<li>
 			<div class="ui-corner-all">
 				<div class="ui-bar ui-bar-a">				
@@ -31,11 +30,33 @@
 					<div class="ui-corner-all" id="start_{{crew.crew_number}}" type="datetime">start:</div>
 					<div class="ui-corner-all"  id="delta_{{crew.crew_number}}" type="datetime">delta:</div>
 					<div class="ui-corner-all"  id="stop_{{crew.crew_number}}"  type="datetime">stop:</div>
-					<button id="button_{{crew.crew_number}}" class = "ui-corner-all" onClick="ClickButton({{loop.index-1}}, {{crew.crew_number}}, new Date(), 'none');">start</button>
+
+					<button id="button_{{crew.crew_number}}" class = "timer-button ui-corner-all" onClick="ClickButton({{loop.index-1}}, {{crew.crew_number}}, new Date(), 'none');" onTouch="ClickButton({{loop.index-1}}, {{crew.crew_number}}, new Date(), 'none');">start</button>
 				</div>
 			</div>
 		</li>
 		{% endfor %}
-  </div>
+	</ul>
+	<div data-role="panel" data-display="overlay" data-theme="a" id="nav-panel">
+
+    	<ul data-role="listview">
+            	<li data-icon="delete"><a href="#" data-rel="close">Close menu</a></li>
+                <li><a href="/uploadentries">Create Entries</a></li>
+                <li><a href="#help">Help</a></li>
+                <li><a href="#about">About Row Time</a></li>
+    	</ul>
+
+   </div><!-- /panel -->
+   <div data-role="panel" data-position="right" data-display="overlay" data-theme="a" id="settings">
+          <h2>Settings for {{user.name}}</h2>
+
+            <label for="email">E-mail:</label>
+            <input type="text" placeholder="E-mail" id="login-signup-style" name="email" class="login_text-box2" value = "{{user.email}}" data-clear-btn="true" data-mini="true">
+
+        <a data-ajax="false" href="/logout" class="ui-btn ui-corner-all">Logout</a>
+
+
+   </div><!-- /panel -->
+  </div><!-- /page -->
 </div>
 

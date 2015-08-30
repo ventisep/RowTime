@@ -1,8 +1,13 @@
 
-
+//ToDos
+//1. stop touch and click firing twice on the button bind to one or other depending on device
+//2. load in content of detail page using a pagecreate event
+//3. fix the right panel on detail page which acts funny (possible becasue it is loaded more than once or becasue of number of DIVs)
+//4. add clear option to the start/stop button on swipe
+//5. add stage names to the button rather than start/stop
 
  //variables that will have a global scope:
- //variables event_id_urlsafe and last_timestamp have to be set in the parent document by jinja2
+ //variables event_id_urlsafe and last_timestamp have to be set in the dynamic document by jinja2
 
 
 const REFRESH_TIME = 10; // for timer counting in milleseconds
@@ -12,75 +17,105 @@ var autoUpdate = true;
 var last_timestamp = new Date(800000);
 var refresh = [];
 var gae_connected_flag = false;
+var connection_status;
+var touch_supported = (('ontouchstart' in window) || (navigator.msMaxTouchPoints > 0));
 
-$( document ).one( "pagecreate", "#crewtimes", function() {
+//------- this section for event handling on the screens ------------//
 
-    // call the initialisation function for the Google App Engine APIs but only on first visit
-    var status=init();
-	$(".connection-status").text(status);
 
-    });
 
-$( document ).on( "pagecreate", "#crewtimes", function() {
 
-	get_crew_times();  //initialise the crew_times array and set connection status
-
-    });
-
-$( document ).on( "pagehide", "#crewtimes", function() {
-
-    // stop the function calls and reset last_timestamp
-    autoUpdate = false;
-    //clear down all the other global variables used
-    crew_times = [];
-	refresh = [];
-
-    });
-
-// this bit of code taken from ksloan/jquery-mobile-swipe-list excellent project
+// this bit of code taken from ksloan/jquery-mobile-swipe-list project and amended
 
 $(function() {
 
-    function disable_scroll() {
-        $(document).on('vmousemove', prevent_default);
-    }
-    function enable_scroll() {
-        $(document).unbind('vmousemove', prevent_default)
-    }
+    // call the initialisation function for the Google App Engine API
+    connection_status=init();
+
+	$(':mobile-pagecontainer').on( "pagecreate", "#crewtimes", function() {
+
+		get_crew_times();  //initialise the crew_times array and set connection status
+		$(".connection-status").text(connection_status);
+	    autoUpdate = true;
+		get_times();
+
+	});
+
+	$( ':mobile-pagecontainer' ).on( "pagehide" , "#crewtimes", function() {
+	    // stop the function calls and reset last_timestamp
+	    autoUpdate = false;
+	    last_timestamp = new Date(800000);
+
+	    });
+
+
+	$( document ).on( "connection", function(e) {
+
+		connection_status = e.originalEvent.data;
+		$(".connection-status").text(connection_status);
+
+		});
+
+	if touch_supported {
+		$(':mobile-pagecontainer').on("tap", ".stopwatch", function())
+	}
+
+
+//original code from ksloan/jquery-mobile-swipe-list I updated to improve behaviour with JQuery Mobile
+
+	function change_click_to_swipe(oe) {  //bound to click or tap when swipeable item is open
+		oe.preventDefault();
+		oe.stopPropagation();
+		e= new $.Event({type: "swipe", data: "pvfired"});
+		$(this).trigger(e);
+	}
 
     $(document).on('swipe', '.swipe-delete li > a', function(e) {
             console.log(e)
-            var change = e.swipestop.coords[0] - e.swipestart.coords[0]; // anchor point
- 			var left = parseInt(e.target.style.left);
- 			if (!left) {left = 0};
- 			var new_left;
- 			change = (change < 0) ? -100 : 100;
- 			change = change+left;
+            var change = 0;
+            var new_left = '0px';
+	 		var left = parseInt(e.target.style.left);
+ 			if (!left || left == 0) {  //the target is closed already then this is an action
+ 				left = 0  			  //on a new item so close any other open ones
+ 				$('.open').animate({left: 0}, 200);
+ 				$('.open').removeClass('open');
+ 			};
+  			if (typeof(e.swipestop) !== 'undefined') { //must have been a real swipe
+	            change = e.swipestop.coords[0] - e.swipestart.coords[0]; // get value of x axis change
+ 				change = (change < 0) ? -100 : 100;
+	        } else {
+	        	change = -left;  //if not a real swipe - it was one of our trapped events so set change to zero
+	        }
+	        change=change+left;
             if (change < -20) {
                 new_left = '-100px';
              	$(e.target).addClass('open');
+             	$(e.target).on('tap click vclick', change_click_to_swipe);
             } else if (change > 20) {
             	$(e.target).addClass('open');
+             	$('.swipe-delete li > a').on('tap click vclick', change_click_to_swipe);
                 new_left = '100px';
             } else {
+             	$(e.target).off('tap click vclick', change_click_to_swipe);
             	$(e.target).removeClass('open');
                 new_left = '0px'
             }
-            // e.currentTarget.style.left = new_left
             $(e.target).animate({left: new_left}, 200);
-            //e.preventDefault();
-            //e.stopPropagation();
-        })
+            e.preventDefault();
+            e.stopPropagation();
+    });
+
     $('li .delete-btn').on('vclick', function(e) {
         e.preventDefault()
         $(this).parents('li').slideUp('fast', function() {
             $(this).remove()
         })
-    })
+    });
+
     $('li .edit-btn').on('vclick', function(e) {
         e.preventDefault()
         $(this).parents('li').children('a').html('edited')
-    })
+    });
 });
 
 //ksloan/jquery-mobile-swipe-list end
@@ -93,6 +128,9 @@ Number.prototype.pad = function(size) {
 
 //load the crew_times object with the crew times list retrieved from the database//
 function get_crew_times() {
+
+	crew_times.length = 0; // initialise crew Array before filling it with the crew list
+	refresh.length = 0; //initialise the refresh array before setting it up
     for (var i=0; i < crew_data.length; i++) {   //step through the crew_data passed and assign it to crew_times
     	crew_times.push(JSON.parse(crew_data[i])); //convert the JSON string to an object
     	console.log("put crew number " + crew_times[i].crew_number+" into the object array");
@@ -110,9 +148,13 @@ function get_crew_times() {
     try {
 		gapi.client.load('observedtimes', 'v1', function() {api_loading_init();
 	 	}, ROWTIME_API);
+	 	e = new $.Event({type: "connection", data: "Successfully connected"});
+		$(document).trigger(e);
 	 	return("succesfully connected")
     }
     catch(err) {
+    	e = new $.Event({type: "connection", data: "Connection Error"});
+		$(document).trigger(e);
     	return("error connecting...!");
     }
   }
@@ -125,27 +167,47 @@ function get_crew_times() {
 
   function record_observed_time(observed_time) {
 	// Insert an observed time into the rowtime-26 server//
-	var recordtime = gapi.client.observedtimes.times.timecreate(observed_time).execute(function(resp) {
-  		console.log(resp);
-  	});
+	try {
+		var recordtime = gapi.client.observedtimes.times.timecreate(observed_time).execute(function(resp) {
+	  		console.log(resp);
+	  	e = new $.Event({type: "connection", data: "recorded time"});
+		$(document).trigger(e);
+	  	});
+	} catch(err) {
+		e = new $.Event({type: "connection", data: "failed to record time"});
+		$(document).trigger(e);
+		console.log("recording time failed");
+		return("error connecting...!");
+	}
   }
 
   function get_times(){
    // Get the list of observed times since the last time it was requested//
-   var request = gapi.client.observedtimes.times.listtimes(event_and_last_timestamp);
-   request.then(function(resp) {
-    	last_timestamp = new Date(resp.result.last_timestamp);
-    	event_and_last_timestamp.last_timestamp = last_timestamp.toISOString();
+   if (autoUpdate==false) {
+   		last_timestamp = new Date(800000);
+   		return;
+   }
+ 	var request = gapi.client.observedtimes.times.listtimes(event_and_last_timestamp);
+  	try {
+	   request.then(function(resp) {
+	    	last_timestamp = new Date(resp.result.last_timestamp);
+	    	event_and_last_timestamp.last_timestamp = last_timestamp.toISOString();
 
-   		for(var i=0; i<resp.result.times.length; i++) {
-    		update_time_list(resp.result.times[i]);
-    	}
-      });
-   	  if (autoUpdate == true) {
-   	  	var mytime=setTimeout('get_times()',REFRESH_TIME2);
-   	  } else {
-   	  	last_timestamp = new Date(800000); //reset lst timestamp so next request gets all times
-   	  }
+	   		for(var i=0; i<resp.result.times.length; i++) {
+	    		update_time_list(resp.result.times[i]);
+	    	}
+	      });
+		e = new $.Event({type: "connection", data: "get times - success"});
+		$(document).trigger(e);	   	  
+	} catch(err) {
+	   	e = new $.Event({type: "connection", data: "get times - failed"});
+		$(document).trigger(e);
+   	}
+   	if (autoUpdate == true) {
+   		var mytime=setTimeout('get_times()',REFRESH_TIME2);
+   	} else {
+	   	last_timestamp = new Date(800000); //reset lst timestamp so next request gets all times
+	}
    }
 
    function update_time_list(time) {
@@ -158,8 +220,6 @@ function get_crew_times() {
    		}
    	}
        	
-
-
 	function myFunction() {
 
 		var rand_num = Math.floor((Math.random() * 10) + 1);
@@ -245,7 +305,7 @@ function get_crew_times() {
 
 	function update_time(indx, crew_num) {
 		var button = $("#button_"+crew_num);
-		if (button.text() == "Finished"){
+		if (button.text() == "Finished"){   //this does not work if there is no button
 			refresh[indx] = false;
 			return;
 		}
