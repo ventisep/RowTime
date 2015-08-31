@@ -34,9 +34,9 @@ class MainPage(BaseRequestHandler):
 
         # First check if user is signed in and if not redirect to sign-in page
         if self.logged_in:
-
             user=self.current_user
-
+        else:
+            user=""
 
         #retrieve the events in the future and up to 2 weeks ago **TODO***
         #query the Events entities looking for events that have an event date

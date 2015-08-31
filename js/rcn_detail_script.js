@@ -1,6 +1,6 @@
 
 //ToDos
-//1. stop touch and click firing twice on the button bind to one or other depending on device
+//1. prevent stop button changing twice s it reads from observed times and picks up the start time before the stope time is recorded
 //2. load in content of detail page using a pagecreate event
 //3. fix the right panel on detail page which acts funny (possible becasue it is loaded more than once or becasue of number of DIVs)
 //4. add clear option to the start/stop button on swipe
@@ -10,12 +10,13 @@
  //variables event_id_urlsafe and last_timestamp have to be set in the dynamic document by jinja2
 
 
-const REFRESH_TIME = 10; // for timer counting in milleseconds
+const REFRESH_TIME = 100; // for timer counting in milleseconds
 const REFRESH_TIME2 = 1000; //for checking server for times in milleseconds
 var crew_times = [];
 var autoUpdate = true;
 var last_timestamp = new Date(800000);
 var refresh = [];
+var indexof = [];
 var gae_connected_flag = false;
 var connection_status;
 var touch_supported = (('ontouchstart' in window) || (navigator.msMaxTouchPoints > 0));
@@ -23,26 +24,23 @@ var touch_supported = (('ontouchstart' in window) || (navigator.msMaxTouchPoints
 //------- this section for event handling on the screens ------------//
 
 
-
-
-// this bit of code taken from ksloan/jquery-mobile-swipe-list project and amended
-
 $(function() {
 
     // call the initialisation function for the Google App Engine API
     connection_status=init();
 
-	$(':mobile-pagecontainer').on( "pagecreate", "#crewtimes", function() {
+	$(document).on( "pagecreate", "#crewtimes", function() {
 
 		get_crew_times();  //initialise the crew_times array and set connection status
 		$(".connection-status").text(connection_status);
 	    autoUpdate = true;
 		get_times();
+    	$(".ui-table-columntoggle-btn").appendTo($("#columnsTD"));
 
 	});
 
-	$( ':mobile-pagecontainer' ).on( "pagehide" , "#crewtimes", function() {
-	    // stop the function calls and reset last_timestamp
+	$(document).on( "pagehide" , "#crewtimes", function() {
+	    // stop the function calls to update time and reset last_timestamp
 	    autoUpdate = false;
 	    last_timestamp = new Date(800000);
 
@@ -56,8 +54,42 @@ $(function() {
 
 		});
 
-	if touch_supported {
-		$(':mobile-pagecontainer').on("tap", ".stopwatch", function())
+	function record_stage(e) {
+		time = new Date();
+		var button = $(this);
+		crew_num = button.attr("id");
+		indx = indexof[crew_num];
+		if (button.text() == "start") {
+			UpdateStartTime(indx, crew_num, time);
+			stage = 0;
+			var observed_time = {event_id: event_id_urlsafe,
+								  timestamp: time,
+								  crew: crew_num,
+								  stage: stage,
+								  time: time};
+			record_observed_time(observed_time);
+		}
+		else if(button.text() == "stop") {
+			UpdateStopTime(indx, crew_num, time);
+			stage = 1;
+			var observed_time = {event_id: event_id_urlsafe,
+								  timestamp: time,
+								  crew: crew_num,
+								  stage: stage,
+								  time: time};
+			record_observed_time(observed_time);
+		}
+		else {
+			alert("button not start or stop");
+
+		}
+	};
+
+	if (touch_supported) {  //if this works delete clickButton function
+		$('body').on("tap", ".stopwatch", record_stage)
+	}
+	else {
+		$('body').on("click", ".stopwatch", record_stage)
 	}
 
 
@@ -131,8 +163,10 @@ function get_crew_times() {
 
 	crew_times.length = 0; // initialise crew Array before filling it with the crew list
 	refresh.length = 0; //initialise the refresh array before setting it up
+	indexof.length = 0;
     for (var i=0; i < crew_data.length; i++) {   //step through the crew_data passed and assign it to crew_times
     	crew_times.push(JSON.parse(crew_data[i])); //convert the JSON string to an object
+    	indexof[crew_times[i].crew_number]=i; //create a lookup
     	console.log("put crew number " + crew_times[i].crew_number+" into the object array");
     	refresh[i] = false;
 	}	
@@ -203,11 +237,8 @@ function get_crew_times() {
 	   	e = new $.Event({type: "connection", data: "get times - failed"});
 		$(document).trigger(e);
    	}
-   	if (autoUpdate == true) {
-   		var mytime=setTimeout('get_times()',REFRESH_TIME2);
-   	} else {
-	   	last_timestamp = new Date(800000); //reset lst timestamp so next request gets all times
-	}
+   	var mytime=setTimeout('get_times()',REFRESH_TIME2);
+
    }
 
    function update_time_list(time) {
@@ -238,12 +269,12 @@ function get_crew_times() {
 	}
 
 	function UpdateStartTime(indx, crew_num, time){
-		var button = $("#button_"+crew_num);
+		var button = $('#'+crew_num);
 		crew_times[indx].start_time_local = time; //start time
 		crew_times[indx].stage=0;
 		var start_time_textElement = $("#start_"+crew_num);
 		var stop_time_textElement = $("#stop_"+crew_num);
-		start_time_textElement.css("green");
+		start_time_textElement.css("color","green");
 		start_time_textElement.text("start: "+time.toTimeString().replace(/.*(\d{2}:\d{2}:\d{2}).*/, "$1")+"."+("00"+time.getMilliseconds().toString()).slice(-3));
 		stop_time_textElement.text("stop: ");
 		button.text("stop");
@@ -258,7 +289,7 @@ function get_crew_times() {
 	}
 
 	function UpdateStopTime(indx,crew_num,time){
-		var button = $("#button_"+crew_num);
+		var button = $('#'+crew_num);
 		crew_times[indx].end_time_local = time; //end time
 		crew_times[indx].stage=1;
 		crew_times[indx].stage_delta = crew_times[indx].end_time_local - crew_times[indx].start_time_local;
@@ -270,13 +301,13 @@ function get_crew_times() {
 		var delta_time_textElement = $("#delta_"+crew_num);
 		stop_time_textElement.text("stop: "+time.toTimeString().replace(/.*(\d{2}:\d{2}:\d{2}).*/, "$1")+"."+("00"+time.getMilliseconds().toString()).slice(-3));
 		delta_time_textElement.text("delta: "+delta);
-		stop_time_textElement.css("style","red");
-		delta_time_textElement.css("style","black");
+		stop_time_textElement.css("color","red");
+		delta_time_textElement.css("color","black");
 	}
 
 
 	function ClickButton(indx, crew_num, time, stage){
-		var button = $("#button_"+crew_num);
+		var button = $('#'+crew_num);
 		if (button.text() == "start") {
 			UpdateStartTime(indx, crew_num, time);
 			stage = 0;
@@ -304,7 +335,7 @@ function get_crew_times() {
 	}
 
 	function update_time(indx, crew_num) {
-		var button = $("#button_"+crew_num);
+		var button = $("#"+crew_num);
 		if (button.text() == "Finished"){   //this does not work if there is no button
 			refresh[indx] = false;
 			return;

@@ -21,12 +21,12 @@
 
 		{% for crew in crews %}
 		<li>
-			<img class="Iphone_oars" height = "42" width = "42" src="/images/blade-icons/{{crew.pic_file}}">{{crew.crew_type}}   {{crew.crew_number}}   {{crew.crew_name}}
+			<img class="Iphone_oars" height = "20" src="/images/blade-icons/{{crew.pic_file}}">{{crew.crew_type}}   {{crew.crew_number}}   {{crew.crew_name}}
 			<span class="ui-corner-all"  id="delta_{{crew.crew_number}}" type="datetime">   delta:</span>
 			<div class="more-data" hidden = "true">
 				<span class="ui-corner-all" id="start_{{crew.crew_number}}" type="datetime">   start:</span>
 				<span class="ui-corner-all"  id="stop_{{crew.crew_number}}"  type="datetime">   stop:</span>
-				<button id="button_{{crew.crew_number}}" class="more-data">start</button>
+				<button id="{{crew.crew_number}}" class="more-data">start</button>
 			</div>
 		</li>
 		{% endfor %}
