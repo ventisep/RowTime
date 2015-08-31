@@ -1,0 +1,80 @@
+
+
+
+<div data-role="page" id="crewtimes">
+ <script type="text/javascript">
+ //Set the gobal variables needed by the JavaScript in rcn_detail_script.js
+    var event_id_urlsafe = "{{event.urlsafe()}}";
+	var crew_data={{ data|safe }}; //get data passed from jinja2
+	var event_and_last_timestamp = {"event_id":event_id_urlsafe,
+							"last_timestamp":last_timestamp.toISOString()};
+ </script>
+	<div data-role="header">
+    	<h1 id="username">Hi Guest</h1>
+    	<a href="#" data-rel="back" data-icon="back" data-iconpos="notext">back</a>
+    	<a href="#settings" data-icon="gear" data-iconpos="notext">Settings</a>
+    	<span class="connection-status">Connecting...</span>
+  	</div>
+
+  <div data-role="main" class="ui-content ui-body-a ui-field-contain ui-corner-all jqm-content">
+	<table style="width: 100%">
+        <tr>
+            <td><input id="filterTable-input" data-type="search" /></td>
+            <td id="columnsTD" style="width: 75px; padding-top: 4px;"></td>
+        </tr>
+    </table>
+  	<table data-role="table" id="table-column-toggle" data-mode="columntoggle" class="ui-responsive table-stroke " data-filter="true" data-input="#filterTable-input">
+	  	<thead>
+	        <tr>
+	          <th data-priority="2">oar</th>
+	          <th>Crew No.</th>
+	          <th data-priority="1">Name</th>
+	          <th data-priority="4"><abbr title="Category">Cat</abbr></th>
+	          <th data-priority="5"><abbr title="Start Time">Start</th>
+	          <th data-priority="6"><abbr title="Stop Time">Stop</th>
+	          <th data-priority="3"><abbr title="Delta">Delta</th>
+	        </tr>
+	    </thead>
+	    <tbody>
+			{% for crew in crews %}
+			<tr>
+				<th><img class="Iphone_oars" height = "20" src="/images/blade-icons/{{crew.pic_file}}"></th>
+				<td>{{crew.crew_number}}</td>
+				<td>{{crew.crew_name}}</td>
+				<td>{{crew.crew_type}}</td>
+				<td id="start_{{crew.crew_number}}"></td>
+				<td id="stop_{{crew.crew_number}}"></td>
+				<td id="delta_{{crew.crew_number}}"></td>
+				<div class="more-data" hidden = "true">
+					<button id="{{crew.crew_number}}" class="more-data">start</button>
+				</div>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+	<div data-role="panel" data-display="overlay" data-theme="a" id="nav-panel">
+
+    	<ul data-role="listview">
+            	<li data-icon="delete"><a href="#" data-rel="close">Close menu</a></li>
+                <li><a href="/uploadentries">Create Entries</a></li>
+                <li><a href="#help">Help</a></li>
+                <li><a href="#about">About Row Time</a></li>
+    	</ul>
+
+   </div><!-- /panel -->
+   <div data-role="panel" data-position="right" data-display="reveal" data-theme="a" id="settings">
+          <h2>Settings</h2>
+
+			<label for="autoUpdate">Auto update:</label>
+			<select name="autoUpdate" id="autoUpdate" data-role="slider">
+			    <option value="off">Off</option>
+			    <option value="on">On</option>
+			</select>
+
+        <a data-ajax="false" href="/login" class="ui-btn ui-corner-all">Login</a>
+
+
+   </div><!-- /panel -->
+  </div><!-- /page -->
+</div>
+
