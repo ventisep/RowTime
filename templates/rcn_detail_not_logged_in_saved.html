@@ -12,8 +12,7 @@
 	<div data-role="header">
     	<h1 id="username">Hi Guest</h1>
     	<a href="#" data-rel="back" data-icon="back" data-iconpos="notext">back</a>
-    	<a href="#settings" data-icon="gear" data-iconpos="notext">Settings</a>
-    	<span class="connection-status">Connecting...</span>
+    	<a href="#settings-nl" data-icon="gear" data-iconpos="notext">Settings</a>
   	</div>
 
   <div data-role="main" class="ui-content jqm-content">
@@ -35,13 +34,12 @@
 
     	<ul data-role="listview">
             	<li data-icon="delete"><a href="#" data-rel="close">Close menu</a></li>
-                <li><a href="/uploadentries">Create Entries</a></li>
                 <li><a href="#help">Help</a></li>
                 <li><a href="#about">About Row Time</a></li>
     	</ul>
 
    </div><!-- /panel -->
-   <div data-role="panel" data-position="right" data-display="reveal" data-theme="a" id="settings">
+   <div data-role="panel" data-position="right" data-display="reveal" data-theme="a" id="settings-nl">
           <h2>Settings</h2>
 
 			<label for="autoUpdate">Auto update:</label>
@@ -54,6 +52,10 @@
 
 
    </div><!-- /panel -->
+   <div data-role="footer" data-position="fixed">
+   	<span class="connection-status">Connecting...</span>
+   </div>
+
   </div><!-- /page -->
 </div>
 

@@ -13,17 +13,16 @@
     	<h1 id="username">Hi Guest</h1>
     	<a href="#" data-rel="back" data-icon="back" data-iconpos="notext">back</a>
     	<a href="#settings" data-icon="gear" data-iconpos="notext">Settings</a>
-    	<span class="connection-status">Connecting...</span>
   	</div>
 
-  <div data-role="main" class="ui-content ui-body-a ui-field-contain ui-corner-all jqm-content">
-	<table style="width: 100%">
+  	<div data-role="main" class="ui-content ui-corner-all jqm-content">
+	  <table style="width: 100%" >
         <tr>
             <td><input id="filterTable-input" data-type="search" /></td>
             <td id="columnsTD" style="width: 75px; padding-top: 4px;"></td>
         </tr>
-    </table>
-  	<table data-role="table" id="table-column-toggle" data-mode="columntoggle" class="ui-responsive table-stroke " data-filter="true" data-input="#filterTable-input">
+      </table>
+  	  <table data-role="table" id="table-column-toggle" data-mode="columntoggle" class="ui-responsive table-stroke ui-body-a ui-corner-all" data-filter="true" data-input="#filterTable-input">
 	  	<thead>
 	        <tr>
 	          <th data-priority="2">oar</th>
@@ -51,7 +50,8 @@
 			</tr>
 			{% endfor %}
 		</tbody>
-	</table>
+	  </table>
+	</div>
 	<div data-role="panel" data-display="overlay" data-theme="a" id="nav-panel">
 
     	<ul data-role="listview">
@@ -75,6 +75,8 @@
 
 
    </div><!-- /panel -->
-  </div><!-- /page -->
-</div>
+   <div data-role="footer" data-position="fixed">
+    <span class="connection-status">Connecting...</span>
+   </div>
+</div><!-- /page -->
 
