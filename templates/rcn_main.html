@@ -17,7 +17,7 @@
 
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-</head>
+</head><!-- the swipe-delete and behind artifacts are taken out
     <style>
     .behind {
         width: 100%;
@@ -48,7 +48,7 @@
         background-color: orange;
         text-shadow: none;
     }
-</style>
+</style> comment back in to restore -->
 
 <body>
 
@@ -61,13 +61,13 @@
   	</div> <!-- /Header -->
 
 	<div data-role="main" id="eventList" class="ui-content jqm-content jqm-fullwidth">
-		<ul data-role="listview" class="swipe-delete ui-content jqm-content jqm-fullwidth" data-inset="true" data-filter="true">
+		<ul data-role="listview" class="ui-content jqm-content jqm-fullwidth" data-inset="true" data-filter="true">
 	{% for event in events %}
 			<li>
-          <div class="behind">
+      <!--   <div class="behind">
               <a href="#" class="ui-btn delete-btn">Delete</a>
               <a href="#" class="ui-btn edit-btn pull-left">Edit</a>
-          </div>
+          </div> -- taken out the swipe-delete function-->
           <a href="/loadcrews?event_key={{event.key.urlsafe()}}" data-transition="slide">{{event.event_name}} <br>on {{event.event_date}}</a>
       </li>
 	{% endfor %}
@@ -93,10 +93,21 @@
       <label for="email">E-mail:</label>
       <input type="text" placeholder="E-mail" id="email" name="email" value = "{{user.email}}" data-clear-btn="true" data-mini="true">
        <a data-ajax="false" href="/logout" class="ui-btn ui-corner-all">Logout</a>
-{% else %}
-      <h2>Login or Register</h2>
 
-       <a data-ajax="false" href="/login" class="ui-btn ui-corner-all">Login</a>
+{% else %}
+      <h2>Login</h2>
+        <form data-ajax="false" method="post" action="/login">
+
+            <label for="email">E-mail:</label>
+            <input type="text" placeholder="E-mail" id="login-signup-style" name="email" class="login_text-box2" value = "" data-clear-btn="true" data-mini="true"> 
+
+
+            <label for="password">Password:</label>
+            <input type="password" placeholder="Password" id="login-signup-style" name="password" class="login_text-box" data-clear-btn="true" autocomplete="off" data-mini="true">
+
+            <input type="submit" value="Login" id="login-button">
+        </form>
+
 {% endif %}
 
   </div><!-- /panel -->

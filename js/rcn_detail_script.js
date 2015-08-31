@@ -210,7 +210,8 @@ function get_crew_times() {
 }
 //initialise the API calls to the rowtime-26 server.//
   function init() {
-  	var ROWTIME_API = document.location.protocol + "//"+ document.location.host+"/_ah/api" //works for localhost but only for https:/rowtime if
+  	var host = document.location.host.replace(/www./i, "");
+  	var ROWTIME_API = document.location.protocol + "//"+ host+"/_ah/api" //works for localhost but only for https:/rowtime if
   																						// the user types in https://rowtime-26.appspot.com without the www and not http
 	//var ROWTIME_API = 'http://localhost:9000/_ah/api';
     //var ROWTIME_API = 'https://rowtime-26.appspot.com/_ah/api';
