@@ -266,20 +266,15 @@ class UploadHandler(blobstore_handlers.BlobstoreUploadHandler):
                 if count==0 and has_header:
                     logging.info("ignored first header line")
                 else:
-                    crew_number,
-                    crew_name,
-                    pic_file ,
-                    crew_type,
-                    rower_count,
-                    cox = row
+                    crew_number, crew_name, pic_file, crew_type, rower_count, cox = row
 
                     c = Crews(
-                        event_id = e,
-                        crew_number = crew_number,
+                        event_id = e.key,
+                        crew_number = int(crew_number),
                         crew_name = crew_name,
                         pic_file = pic_file,
                         crew_type = crew_type,
-                        rower_count = rower_count,
+                        rower_count = int(rower_count),
                         cox = (cox in ('Y', 'y', 't', 'T', '1')))
                     c.put()
             blobstore.delete(upload_file.key())  # optional: delete file after import
