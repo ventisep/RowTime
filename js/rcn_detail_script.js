@@ -64,6 +64,7 @@ $(function() {
 			stage = 0;
 			var observed_time = {event_id: event_id_urlsafe,
 								  timestamp: time,
+								  obs_type: 0,  //an add time to the record type 1 is delete
 								  crew: crew_num,
 								  stage: stage,
 								  time: time};
@@ -74,6 +75,7 @@ $(function() {
 			stage = 1;
 			var observed_time = {event_id: event_id_urlsafe,
 								  timestamp: time,
+								  obs_type: 0,
 								  crew: crew_num,
 								  stage: stage,
 								  time: time};
@@ -148,9 +150,43 @@ $(function() {
         e.preventDefault()
         $(this).parents('li').children('a').html('edited')
     });
+
+    $(document).on('swipe', '.swipeable', function(e) {
+    	//function to allow user to delete the last recorded time
+            console.log(e)
+            var time = new Date();
+            autoUpdate = false;
+            //get crew number that was swiped
+            var crew_num = $(this).attr("id").split('_')[1];
+            //move to a dialog to offer delete and edit options
+            //confirm user wants to delete the last recorded time
+            if (confirm("do you want to delete the last recorded time for crew "+crew_num+"?")) {
+            	//change the API to add a delete event to the recorded time events
+            	//create a function to proess the delete event
+				var observed_time = {event_id: event_id_urlsafe,
+									  timestamp: time,
+									  obs_type: 1,  //type 1 is delete the last stage entered for that crew
+									  crew: crew_num,
+									  stage: 0, //we can set this to anything - it is ignored
+									  time: time};
+				record_observed_time(observed_time);//when auto-update comes back on the event should be processed
+            	alert("delete time event added");
+            } else {
+            	alert("not deleted");
+            }
+            //if so then use API to delete the last recorded time by passing the url version
+            // of the key (must change the record time API to return the key and store it)
+            //return from dialogue
+            autoUpdate = true;
+            get_times();
+            e.preventDefault();
+            e.stopPropagation();
+
+    });
 });
 
 //ksloan/jquery-mobile-swipe-list end
+
 
 Number.prototype.pad = function(size) {
       var s = String(this);
@@ -246,7 +282,7 @@ function get_crew_times() {
    	//1.  for every hit against a crew number process the observed time//
    	for (var i=0; i<crew_times.length; i++) {
    		if (crew_times[i].crew_number == time.crew) {
-   			UpdateTimes(i, time.crew, new Date(time.time), time.stage);
+   			UpdateTimes(i, time.crew, new Date(time.time), time.stage, time.obs_type);
    			}
    		}
    	}
@@ -258,14 +294,24 @@ function get_crew_times() {
 		document.body.style.backgroundImage = background;
 	}
 
-	function UpdateTimes(indx, crew_num, time, stage){
-		if (stage == 0){
-			//a start time has been recorded//
-			UpdateStartTime(indx, crew_num, time);
-		} else if(stage ==1){
-			//a stop time has been recorded//
-			UpdateStopTime(indx,crew_num,time);
-		} else { alert("stage parameter not set properly")}
+	function UpdateTimes(indx, crew_num, time, stage, obs_type){
+		if (obs_type == 0) { //this is an time that has been added
+			if (stage == 0){
+				//a start time has been recorded//
+				UpdateStartTime(indx, crew_num, time);
+			} else if(stage ==1){
+				//a stop time has been recorded//
+				UpdateStopTime(indx,crew_num,time);
+			} else { alert("stage parameter not set properly")}
+		} else if (obs_type == 1) { //this is a time that is being deleted
+			if (stage == 0){
+				//delete of a start time has been recorded//
+				DeleteStartTime(indx, crew_num);
+			} else if(stage ==1){
+				//delete of a stop time has been recorded//
+				DeleteStopTime(indx, crew_num);
+			} else { console.log("stage parameter not set right")}
+		}
 	}
 
 	function UpdateStartTime(indx, crew_num, time){
@@ -284,8 +330,22 @@ function get_crew_times() {
 			var mytime=setTimeout('update_time('+indx+','+crew_num+')',REFRESH_TIME);
 			refresh[indx] = true;
 		}
+	}
 
-
+	function DeleteStartTime(indx, crew_num){
+		var button = $('#'+crew_num);
+		crew_times[indx].stage=0;
+		var start_time_textElement = $("#start_"+crew_num);
+		var stop_time_textElement = $("#stop_"+crew_num);
+		var delta_time_textElement = $("#delta_"+crew_num);
+		start_time_textElement.css("color","green");
+		start_time_textElement.text("start: ");
+		stop_time_textElement.text("stop: ");
+		delta_time_textElement.text("delta: ");
+		button.text("start");
+		button.css("background", "#f6f6f6");
+		button.prop("enabled");
+		refresh[indx] = false;
 	}
 
 	function UpdateStopTime(indx,crew_num,time){
@@ -305,6 +365,21 @@ function get_crew_times() {
 		delta_time_textElement.css("color","black");
 	}
 
+	function DeleteStopTime(indx, crew_num){
+		var button = $('#'+crew_num);
+		crew_times[indx].stage=0;
+		var start_time_textElement = $("#start_"+crew_num);
+		var stop_time_textElement = $("#stop_"+crew_num);
+		stop_time_textElement.text("stop: ");
+		button.text("stop");
+		button.css("background", "red");
+		button.prop("enabled");
+		if (refresh[indx] == false){
+			var mytime=setTimeout('update_time('+indx+','+crew_num+')',REFRESH_TIME);
+			refresh[indx] = true;
+		}
+	}
+
 
 	function ClickButton(indx, crew_num, time, stage){
 		var button = $('#'+crew_num);
@@ -313,6 +388,7 @@ function get_crew_times() {
 			stage = 0;
 			var observed_time = {event_id: event_id_urlsafe,
 								  timestamp: time,
+								  obs_type: 0, //an add time to the record type
 								  crew: crew_num,
 								  stage: stage,
 								  time: time};
@@ -323,6 +399,7 @@ function get_crew_times() {
 			stage = 1;
 			var observed_time = {event_id: event_id_urlsafe,
 								  timestamp: time,
+								  obs_type: 0, //add time to the record, 1 would be a delete time
 								  crew: crew_num,
 								  stage: stage,
 								  time: time};
@@ -336,7 +413,7 @@ function get_crew_times() {
 
 	function update_time(indx, crew_num) {
 		var button = $("#"+crew_num);
-		if (button.text() == "Finished"){   //this does not work if there is no button
+		if (button.text() == "Finished" || refresh[indx] == false){   //this does not work if there is no button
 			refresh[indx] = false;
 			return;
 		}

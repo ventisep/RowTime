@@ -36,9 +36,10 @@ class ObservedTime(messages.Message):
   """used to store an observered time from a user for a specific Crew."""
   event_id = messages.StringField(1)
   timestamp = message_types.DateTimeField(2)
-  crew = messages.IntegerField(3)
-  stage = messages.IntegerField(4)
-  time = message_types.DateTimeField(5)
+  obs_type = messages.IntegerField(3)
+  crew = messages.IntegerField(4)
+  stage = messages.IntegerField(5)
+  time = message_types.DateTimeField(6)
 
 class ObservedTimeList(messages.Message):
   """Used to provide a list of Observed times since last request for a specific event"""
@@ -77,6 +78,7 @@ class ObservedTimesApi(remote.Service):
         retrieved_times.times.append(ObservedTime())
         retrieved_times.times[i].event_id = request.event_id
         retrieved_times.times[i].timestamp = time.timestamp 
+        retrieved_times.times[i].obs_type = time.obs_type
         retrieved_times.times[i].crew = time.crew_number
         retrieved_times.times[i].stage = time.stage 
         retrieved_times.times[i].time = time.time_local
@@ -96,23 +98,51 @@ class ObservedTimesApi(remote.Service):
     logging.info(self)
 
     user="paul-backend"
-
     ot = ObservedTime()
-    utc_time = request.time - request.time.utcoffset()
     eventkey = ndb.Key(urlsafe = request.event_id)
-    saved_time = Observed_Times(event_id = eventkey,
-                        crew_number=request.crew,
-                        timestamp = current_time,
-                        stage=request.stage,
-                        time_local=utc_time.replace(tzinfo=None),
-                        time_server=current_time,
-                        recorded_by=user).put()
+    utc_time = request.time - request.time.utcoffset()
+   
+    if request.obs_type == 0:
+      saved_time = Observed_Times(event_id = eventkey,
+                          crew_number=request.crew,
+                          timestamp = current_time,
+                          obs_type = request.obs_type,
+                          stage=request.stage,
+                          time_local=utc_time.replace(tzinfo=None),
+                          time_server=current_time,
+                          recorded_by=user).put()
+      saved_stage = request.stage
+    else: 
+      if request.obs_type == 1:
+        last_time=Observed_Times.query(ndb.AND(ndb.AND(Observed_Times.event_id==eventkey,
+                                                  Observed_Times.crew_number==request.crew),
+                                                  Observed_Times.obs_type == 0)).order(-Observed_Times.timestamp).get()
+
+        #get the last valid add time event and add a delete record for that stage
+        if last_time:
+          saved_time = Observed_Times(event_id = eventkey,
+                          crew_number=request.crew,
+                          timestamp = current_time,
+                          obs_type = request.obs_type,
+                          stage=last_time.stage,
+                          time_local=utc_time.replace(tzinfo=None),
+                          time_server=current_time,
+                          recorded_by=user)
+          last_time.obs_type = 2 # 2 represents adds that have been cancelled
+          last_time.put()
+          saved_time.put()
+          saved_stage = last_time.stage
+          logging.info("got to the put statement")
+        else:
+          return("error")
 
     ot.timestamp=current_time
+    ot.obs_type=request.obs_type
     ot.crew=request.crew
-    ot.stage=request.stage
-    ot.time=request.time
+    ot.stage=saved_stage
+    ot.time=current_time
     
+
     return ot
 
 application = endpoints.api_server([ObservedTimesApi])
