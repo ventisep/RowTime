@@ -72,6 +72,7 @@ $(function() {
 
 	function record_stage(e) {
 		time = new Date();
+		autoUpdate = false;  //switch of reading from server till new time recorded
 		var button = $(this);
 		crew_num = button.attr("id");
 		indx = indexof[crew_num];
@@ -101,6 +102,9 @@ $(function() {
 			alert("this crew is already Finished");
 
 		}
+		autoUpdate = true;  //switch on reading from server
+		get_times();
+
 	};
 
 	if (touch_supported) {  //if this works delete clickButton function
@@ -169,9 +173,9 @@ $(function() {
 
     $(document).on('swipe', '.swipeable', function(e) {
     	//function to allow user to delete the last recorded time
-            console.log(e)
             var time = new Date();
             autoUpdate = false;
+            console.log(e)
             //get crew number that was swiped
             var crew_num = $(this).attr("id").split('_')[1];
             //move to a dialog to offer delete and edit options
@@ -270,7 +274,6 @@ function get_crew_times() {
   function get_times(){
    // Get the list of observed times since the last time it was requested//
    if (autoUpdate==false) {
-   		last_timestamp = new Date(800000);
    		return;
    }
  	var request = gapi.client.observedtimes.times.listtimes(event_and_last_timestamp);
