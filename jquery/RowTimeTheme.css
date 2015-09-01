@@ -219,6 +219,10 @@ html .ui-alt-icon .ui-radio-off:after {
 /* A
 -----------------------------------------------------------------------------------------------------------*/
 /* Bar: Toolbars, dividers, slider track */
+@font-face {
+    font-family: myFirstFont;
+    src: url(DavysRibbons.woff);
+}
 .ui-bar-a,
 .ui-page-theme-a .ui-bar-inherit,
 html .ui-bar-a .ui-bar-inherit,
@@ -229,6 +233,7 @@ html body .ui-group-theme-a .ui-bar-inherit {
 	color: #060a28 /*{a-bar-color}*/;
 	text-shadow: 0 /*{a-bar-shadow-x}*/ 1px /*{a-bar-shadow-y}*/ 0 /*{a-bar-shadow-radius}*/ #eeeeee /*{a-bar-shadow-color}*/;
 	font-weight: bold;
+	font-family: myFirstFont;
 }
 .ui-bar-a {
 	border-width: 1px;

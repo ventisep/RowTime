@@ -20,7 +20,8 @@ body{
 }
 
 h1{
-	font-family: Arial;
+	font-family: newFont;
+	src: url('DavysRibbons.ttf');
 	margin-top:0;
 	font-size: 40px;
 	font-weight: 900;

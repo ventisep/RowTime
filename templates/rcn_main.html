@@ -55,7 +55,7 @@
   <!-- Page - show events -->
 <div data-role="page" class="ui-responsive-panel" id="events">
 	<div data-role="header">
-    	<h1 id="username">Events Available</h1>
+    	<h1 id="username">RowTime</h1>
     	<a href="#nav-panel" data-icon="bars" data-iconpos="notext">Menu</a>
       <a href="#eventsettings" data-icon="gear" data-iconpos="notext">Settings</a>
   	</div> <!-- /Header -->
@@ -96,6 +96,7 @@
 
 {% else %}
       <h2>Login</h2>
+      <h5>(FOR EVENT ADMINS ONLY)</h5>
         <form data-ajax="false" method="post" action="/login">
 
             <label for="email">E-mail:</label>
@@ -124,8 +125,34 @@
     </div><!-- /header -->
 
     <div data-role="main" data-inset="true" class="ui-content ui-body-a ui-corner-all jqm-content">
+    	<h2>Help</h2>
+				<p>note: it is essential to have a form of connection to the internet to use this, however the connection doesn’t have to be very fast.</p>
+				<div data-role="collapsible">
+					<h1>Help for Spectators</h1>
+						<h2> What is Rowtime? </h2>
+						<p>This website is for rowing events and is dedicated to giving spectators and competitors instant feedback on what times they have achieved in time trial races. We also seek to make events easier and less time consuming to run for event hosts.</p></br>
 
-        <p>This is where the help text goes</p>
+						<h2> How does it work? </h2>
+						<p>You simply go to the URL of this website (which you must have already found to be reading this) and select the RowTime event that you are attending. Once you have done this you should see a page with all the boats and their current times and status (e.g. started, finished, not started). The information on this page will auto update so that you always know what’s going on, and you will immediately know the times of finished crews as well as the elapsed time of unfinished crews.</p>
+
+				</div>
+				<div data-role="collapsible">
+					<h1>Help For Event Hosts</h1>
+						<h2>How do I delete accidental inputs?</h2>
+						<p>If you accidentally start or stop a crew you can delete this input by swiping from left to right on the pink block containing the crew’s name, this will bring up a text box asking if this is what you meant to do, Click ‘ok’ and the data will be deleted as if they had never started/stopped.</p></br>
+						<h2>How does it work for event hosts?</h2>
+						<p>If you are looking to host an event using the RowTime system you can contact the developers of the website using this email: row.time@outlook.co.uk. Once you are given an account to host an event with you can input the crews which are attending your event by submitting a ‘.csv’ file to our ‘Create Event’ page. You can also establish when and where the event is, and give a short description of it. Now you can use our website to time your event, you will require a logged in person at your start point and another at your end point, both will use the event page to time from each point.</p></br>
+						<h2>How should I layout my ‘.csv’ file when creating an event?</h2>
+						<p>You should use excel to make this file, or use google spreadsheets. Use the first row to put in some headings (the computers will ignore the first row so these are just for your benefit knowing what each column relates to), the data should be arranged like this (left to right).</br></br>
+crew number</br>
+crew name</br>
+pic file</br>
+crew type</br>
+rower count</br>
+cox y/n</br></br>
+The Pic file is simply the name of the rowing club (no capitals and no spaces, and shortening ‘rowing club’ to rc, and ‘boat club’ to bc), and make sure to add ‘.gif’ at the end. This will insert the colors of the blades next to each crew.</p>
+
+        
 
 
     </div><!-- /content -->
