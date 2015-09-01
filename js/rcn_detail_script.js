@@ -5,15 +5,16 @@
 //   then process the sime entered, record it using API and check error status - if 
 //   record time is an error - make sure user does not see change in time and do not
 //   set refresh back to true.  on a retry, if successful, refresh will be set bck to true)
+//2. line 174 change the pop-up to a proper dialogue box to improve user experience
 //
-//2. load in content of detail page using a pagecreate event
-//5. add stage names to the button rather than start/stop these should be part of the event
+//3. load in content of detail page using a pagecreate event
+//4. add stage names to the button rather than start/stop these should be part of the event
 //   so add to data model as repeated group stage and stage desc.
-//6. add a verify option at the end of the stages which allow edit of official times with
+//5. add a verify option at the end of the stages which allow edit of official times with
 //   with the addition of an obs_type of 3 - design spike on whether to add these to the crew-times
 //   table or whether to get rid of that table all-together
 //
-//7. Use offline storage to store the events and send back and forth async to the server enabling
+//6. Use offline storage to store the events and send back and forth async to the server enabling
 //   offline use and times get synch'd when possible - precursor to this would be to save session
 //   in offline storage (not sure this will work)
 
