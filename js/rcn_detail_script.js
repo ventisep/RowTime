@@ -1,10 +1,21 @@
 
 //ToDos
-//1. prevent stop button changing twice s it reads from observed times and picks up the start time before the stope time is recorded
+//1. line 65 prevent stop button changing twice s it reads from observed times
+//   and picks up the start time before the stope time is recorded (set refresh = false
+//   then process the sime entered, record it using API and check error status - if 
+//   record time is an error - make sure user does not see change in time and do not
+//   set refresh back to true.  on a retry, if successful, refresh will be set bck to true)
+//
 //2. load in content of detail page using a pagecreate event
-//3. fix the right panel on detail page which acts funny (possible becasue it is loaded more than once or becasue of number of DIVs)
-//4. add clear option to the start/stop button on swipe
-//5. add stage names to the button rather than start/stop
+//5. add stage names to the button rather than start/stop these should be part of the event
+//   so add to data model as repeated group stage and stage desc.
+//6. add a verify option at the end of the stages which allow edit of official times with
+//   with the addition of an obs_type of 3 - design spike on whether to add these to the crew-times
+//   table or whether to get rid of that table all-together
+//
+//7. Use offline storage to store the events and send back and forth async to the server enabling
+//   offline use and times get synch'd when possible - precursor to this would be to save session
+//   in offline storage (not sure this will work)
 
  //variables that will have a global scope:
  //variables event_id_urlsafe and last_timestamp have to be set in the dynamic document by jinja2
@@ -64,7 +75,7 @@ $(function() {
 			stage = 0;
 			var observed_time = {event_id: event_id_urlsafe,
 								  timestamp: time,
-								  obs_type: 0,  //an add time to the record type 1 is delete
+								  obs_type: 0,  //an 0 = add time to the record type 1 = delete
 								  crew: crew_num,
 								  stage: stage,
 								  time: time};
@@ -82,7 +93,7 @@ $(function() {
 			record_observed_time(observed_time);
 		}
 		else {
-			alert("button not start or stop");
+			alert("this crew is already Finished");
 
 		}
 	};
@@ -211,8 +222,7 @@ function get_crew_times() {
 //initialise the API calls to the rowtime-26 server.//
   function init() {
   	var host = document.location.host.replace(/www./i, "");
-  	var ROWTIME_API = document.location.protocol + "//"+ host+"/_ah/api" //works for localhost but only for https:/rowtime if
-  																						// the user types in https://rowtime-26.appspot.com without the www and not http
+  	var ROWTIME_API = document.location.protocol + "//"+ host+"/_ah/api" 
 	//var ROWTIME_API = 'http://localhost:9000/_ah/api';
     //var ROWTIME_API = 'https://rowtime-26.appspot.com/_ah/api';
 
@@ -224,7 +234,7 @@ function get_crew_times() {
 	 	return("succesfully connected")
     }
     catch(err) {
-    	e = new $.Event({type: "connection", data: "Connection Error"});
+    	e = new $.Event({type: "connection", data: "Connection Error! try again"});
 		$(document).trigger(e);
     	return("error connecting...!");
     }
@@ -245,7 +255,7 @@ function get_crew_times() {
 		$(document).trigger(e);
 	  	});
 	} catch(err) {
-		e = new $.Event({type: "connection", data: "failed to record time"});
+		e = new $.Event({type: "connection", data: "failed to record time: try again"});
 		$(document).trigger(e);
 		console.log("recording time failed");
 		return("error connecting...!");
