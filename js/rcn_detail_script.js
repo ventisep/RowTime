@@ -1,11 +1,15 @@
 
 //ToDos
-//1. line 65 prevent stop button changing twice s it reads from observed times
+//1. line 65 prevent stop button changing twice as it reads from observed times
 //   and picks up the start time before the stope time is recorded (set refresh = false
 //   then process the sime entered, record it using API and check error status - if 
 //   record time is an error - make sure user does not see change in time and do not
-//   set refresh back to true.  on a retry, if successful, refresh will be set bck to true)
-//2. line 174 change the pop-up to a proper dialogue box to improve user experience
+//   set refresh back to true.  on a retry, if successful, refresh will be set back to true)
+//2. stop the system truncating the milleseconds from last timestamp so we keep getting the last
+//   time event to read and process every time
+//3. line 174 change the pop-up to a proper dialogue box to improve user experience
+//4. tidy up files that are not needed
+//5. tidy up the picture file names
 //
 //3. load in content of detail page using a pagecreate event
 //4. add stage names to the button rather than start/stop these should be part of the event
