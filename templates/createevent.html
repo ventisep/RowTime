@@ -7,19 +7,19 @@
   	<div data-role="content" class="ui-content jqm-content">
      	<form data-ajax="false" action="{{upload_url}}" method="POST" enctype="multipart/form-data">
           <div class="ui-body ui-body-a ui-field-contain ui-corner-all">
-            <label for="eventName">Event Name:</label>
+            <h2><label for="eventName">Event Name:</label></h2>
             <input type="text" placeholder="Event Name" id="eventName" name="eventName">
-            <label for="eventDay">Day (dd):</label>
+            <h2><label for="eventDay">Day (dd):</label></h2>
             <input type="text" placeholder="dd" id="eventDay" name="eventDay">
-            <label for="eventMonth">Month (mm):</label>
+            <h2><label for="eventMonth">Month (mm):</label></h2>
             <input type="text" placeholder="mm" id="eventMonth" name="eventMonth">
-            <label for="eventYear">Year (yyyy):</label>
+            <h2><label for="eventYear">Year (yyyy):</label></h2>
             <input type="text" placeholder="yyyy" id="eventYear" name="eventYear"><br>
 
-            <label for="eventDesc">Description of Event:</label>
+            <h2><label for="eventDesc">Description of Event:</label></h2>
             <textarea placeholder="enter full description including location" id="eventDesc" name="eventDesc"></textarea>
           </div>
-        Upload File:
+        <h2>Upload File:</h2>
         	<input type="file" name="file"> <br>
         	<input type="submit" name="submit" value="Submit">
         </form>
