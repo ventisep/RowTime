@@ -2,7 +2,7 @@
 //ToDos
 //1. line 65 prevent stop button changing twice as it reads from observed times
 //   and picks up the start time before the stope time is recorded (set refresh = false
-//   then process the sime entered, record it using API and check error status - if 
+//   then process the same entered, record it using API and check error status - if 
 //   record time is an error - make sure user does not see change in time and do not
 //   set refresh back to true.  on a retry, if successful, refresh will be set back to true)
 //2. stop the system truncating the milleseconds from last timestamp so we keep getting the last
@@ -28,9 +28,10 @@
 
 const REFRESH_TIME = 100; // for timer counting in milleseconds
 const REFRESH_TIME2 = 1000; //for checking server for times in milleseconds
+const LAST_TIMESTAMP_RESET = "2000-08-31T16:54:07.050741";
 var crew_times = [];
 var autoUpdate = true;
-var last_timestamp = new Date(800000);
+var last_timestamp = LAST_TIMESTAMP_RESET;  //iso format string
 var refresh = [];
 var indexof = [];
 var gae_connected_flag = false;
@@ -58,7 +59,7 @@ $(function() {
 	$(document).on( "pagehide" , "#crewtimes", function() {
 	    // stop the function calls to update time and reset last_timestamp
 	    autoUpdate = false;
-	    last_timestamp = new Date(800000);
+	    last_timestamp = LAST_TIMESTAMP_RESET;
 
 	    });
 
@@ -279,12 +280,13 @@ function get_crew_times() {
  	var request = gapi.client.observedtimes.times.listtimes(event_and_last_timestamp);
   	try {
 	   request.then(function(resp) {
-	    	last_timestamp = new Date(resp.result.last_timestamp);
-	    	event_and_last_timestamp.last_timestamp = last_timestamp.toISOString();
-
-	   		for(var i=0; i<resp.result.times.length; i++) {
-	    		update_time_list(resp.result.times[i]);
-	    	}
+	    	last_timestamp = resp.result.last_timestamp;
+	    	event_and_last_timestamp.last_timestamp = last_timestamp;
+	    	if (resp.result.times) {
+		   		for(var i=0; i<resp.result.times.length; i++) {
+		    		update_time_list(resp.result.times[i]);
+		    	}
+		    }
 	      });
 		e = new $.Event({type: "connection", data: "get times - success"});
 		$(document).trigger(e);	   	  

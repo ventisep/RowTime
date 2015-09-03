@@ -7,7 +7,7 @@
     var event_id_urlsafe = "{{event.urlsafe()}}";
 	var crew_data={{ data|safe }}; //get data passed from jinja2
 	var event_and_last_timestamp = {"event_id":event_id_urlsafe,
-							"last_timestamp":last_timestamp.toISOString()};
+							"last_timestamp":last_timestamp};
  </script>
 	<div data-role="header">
     	<h1 id="username">Hi {{user.name}}</h1>

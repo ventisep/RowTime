@@ -65,7 +65,8 @@ class ObservedTimesApi(remote.Service):
   def times_list(self, request):
 
     eventkey = ndb.Key(urlsafe = request.event_id)
-    last_timestamp = datetime.datetime.strptime(request.last_timestamp, "%Y-%m-%dT%H:%M:%S.%fZ")
+    last_timestamp = datetime.datetime.strptime(request.last_timestamp, "%Y-%m-%dT%H:%M:%S.%f")
+#    last_timestamp = request.last_timestamp
 
     retrieved_times = ObservedTimeList()
 
@@ -84,6 +85,8 @@ class ObservedTimesApi(remote.Service):
         retrieved_times.times[i].time = time.time_local
         retrieved_times.last_timestamp = time.timestamp
         i = i+1
+    else:
+      retrieved_times.last_timestamp = last_timestamp
 
     retrieved_times.event_id = request.event_id
 
