@@ -20,9 +20,13 @@
 	<ul data-role="listview" data-filter = "true" data-inset="true" class="ui-content jqm-content jqm-fullwidth">
 
 		{% for crew in crews %}
-		<li>
-			<div class="ui-corner-all">					
-              	<div class="swipeable ui-bar-a" id="crew_{{crew.crew_number}}" >		
+		<li class="swipeable" id="crew_{{crew.crew_number}}">
+			<div data-enhance="false" class="back">
+				<p style="text-align:center; color:white">Undo the last recorded time</p>
+				<button class="cancel back-button" data-enhance="false">cancel</button> <button class="confirm back-button" data-enhance="false">confirm</button>
+			</div>
+			<div class="front ui-corner-all">
+              	<div class="ui-bar-a">
 					<h2><img class="Iphone_oars" height="20" src="/images/blade-icons/{{crew.pic_file}}"> {{crew.crew_number}} {{crew.crew_name}} {{crew.crew_type}}</h2>
 				</div>
 				<div class="ui-body ui-grid-a">
@@ -34,8 +38,9 @@
 					<div class="ui-block-b">
 						<button id="{{crew.crew_number}}" class = "stopwatch ui-body ui-corner-all">start</button>
 					</div>
-				</div>
+			    </div>
 			</div>
+
 		</li>
 		{% endfor %}
 	</ul>

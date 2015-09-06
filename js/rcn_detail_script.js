@@ -1,7 +1,7 @@
 
 //ToDos
 //1. line 65 prevent stop button changing twice as it reads from observed times
-//   and picks up the start time before the stope time is recorded (set refresh = false
+//   and picks up the start time before the stop time is recorded (set refresh = false
 //   then process the same entered, record it using API and check error status - if 
 //   record time is an error - make sure user does not see change in time and do not
 //   set refresh back to true.  on a retry, if successful, refresh will be set back to true)
@@ -172,6 +172,83 @@ $(function() {
         $(this).parents('li').children('a').html('edited')
     });
 
+    function flip($front, $back, crew_num, time) {
+
+
+        $front.css({  //this works perfectly now need backside
+            transform: "rotateY(180deg)",
+            "backface-visibility": "hidden",
+        	"transform-style": "preserve-3d",
+        	perspective: $front["outerWidth"]()*2,
+        	transition: "all 1s ease-out",
+      		"z-index": "0"
+      	});
+      	$back.css({
+      		transform: "rotateY(0deg)",
+      		"transform-style": "preserve-3-d",
+      		perspective: $back["outerWidth"]()*2,
+      		transition:"all 1s ease-out",
+      		"z-index": "1"
+      	});
+
+      	$front.data("flipped", true);
+      	$confirm_button=$back.find('.confirm');
+      	$cancel_button=$back.find('.cancel');
+
+      	$confirm_button.data("crew_num", crew_num);
+      	$confirm_button.data("time", time);
+
+      	$cancel_button.on("click tap", function(){
+      		unflip($front, $back);
+      		$cancel_button.off("click tap");
+      	});
+
+      	$confirm_button.on("click tap", function(){
+      		var time = $(this).data("time");
+			var observed_time = {event_id: event_id_urlsafe,
+								  timestamp: time,
+								  obs_type: 1,  //type 1 is delete the last stage entered for that crew
+								  crew: $(this).data("crew_num"),
+								  stage: 0, //we can set this to anything - it is ignored
+								  time: time};
+			record_observed_time(observed_time);//when auto-update comes back on the event should be processed
+        	$confirm_button.off("click tap");
+        	unflip($front, $back);
+
+
+      	});
+
+
+      	$('.back.cancel').on
+    }
+
+
+    function unflip($front, $back) {
+    	console.log("got to unflip");
+
+      	$back.css({
+      		transform: "rotateY(180deg)",
+  			"-webkit-transform": "rotateY(180deg)",
+      		"transform-style": "preserve-3-d",
+      		perspective: $back["outerWidth"]()*2,
+      		transition:"all 1s ease-out",
+      		"z-index": "-1"
+      	});
+        $front.css({  //this works perfectly now need backside
+            transform: "rotateY(0deg)",
+            "backface-visibility": "hidden",
+        	"transform-style": "preserve-3d",
+        	perspective: $front["outerWidth"]()*2,
+        	transition: "all 1s ease-out",
+      		"z-index": "1"
+      	});
+
+      	$front.data("flipped", false);
+      	autoUpdate = true;
+      	get_times();
+
+    }
+
     $(document).on('swipe', '.swipeable', function(e) {
     	//function to allow user to delete the last recorded time
             var time = new Date();
@@ -179,27 +256,39 @@ $(function() {
             console.log(e)
             //get crew number that was swiped
             var crew_num = $(this).attr("id").split('_')[1];
+            var $frontside = $(this).find('.front');
+            var $backside = $(this).find('.back');
+            
+            if ($frontside.data("flipped")) {
+            	unflip($frontside, $backside, crew_num, time)
+            } else {
+            	flip($frontside, $backside, crew_num, time)
+            }
+
+          	//now bring the alternative backside into view to.....
+          	//then bind action on the back to the action I want of deleting the
+          	//last recorded time.... and then animate back to the original position.
+
             //move to a dialog to offer delete and edit options
             //confirm user wants to delete the last recorded time
-            if (confirm("do you want to delete the last recorded time for crew "+crew_num+"?")) {
+        //   if (confirm("do you want to delete the last recorded time for crew "+crew_num+"?")) {
             	//change the API to add a delete event to the recorded time events
             	//create a function to proess the delete event
-				var observed_time = {event_id: event_id_urlsafe,
-									  timestamp: time,
-									  obs_type: 1,  //type 1 is delete the last stage entered for that crew
-									  crew: crew_num,
-									  stage: 0, //we can set this to anything - it is ignored
-									  time: time};
-				record_observed_time(observed_time);//when auto-update comes back on the event should be processed
-            	alert("delete time event added");
-            } else {
-            	alert("not deleted");
-            }
+		//		var observed_time = {event_id: event_id_urlsafe,
+		//							  timestamp: time,
+		//							  obs_type: 1,  //type 1 is delete the last stage entered for that crew
+		//							  crew: crew_num,
+		//							  stage: 0, //we can set this to anything - it is ignored
+		//							  time: time};
+		//		record_observed_time(observed_time);//when auto-update comes back on the event should be processed
+        //    	alert("delete time event added");
+        //    } else {
+        //    	alert("not deleted");
+        //    }
             //if so then use API to delete the last recorded time by passing the url version
             // of the key (must change the record time API to return the key and store it)
             //return from dialogue
-            autoUpdate = true;
-            get_times();
+
             e.preventDefault();
             e.stopPropagation();
 
