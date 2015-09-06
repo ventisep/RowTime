@@ -198,7 +198,6 @@ $(function() {
 
       	$cancel_button.on("click tap", function(){
       		unflip($front, $back);
-      		$cancel_button.off("click tap");
         	e.preventDefault();
             e.stopPropagation();      		
       	});
@@ -212,7 +211,6 @@ $(function() {
 								  stage: 0, //we can set this to anything - it is ignored
 								  time: time};
 			record_observed_time(observed_time);//when auto-update comes back on the event should be processed
-        	$confirm_button.off("click tap");
         	unflip($front, $back);
         	e.preventDefault();
             e.stopPropagation();
@@ -241,6 +239,12 @@ $(function() {
         	transition: "all 1s ease-out",
       		"z-index": "1"
       	});
+
+      	$confirm_button=$back.find('.confirm');
+      	$cancel_button=$back.find('.cancel');
+        $confirm_button.off("click tap");
+        $cancel_button.off("click tap");
+
 
       	$front.data("flipped", false);
       	autoUpdate = true;
