@@ -179,14 +179,15 @@ $(function() {
             transform: "rotateY(180deg)",
             "backface-visibility": "hidden",
         	"transform-style": "preserve-3d",
-        	perspective: $front["outerWidth"]()*2,
+        	perspective: $front["outerWidth"]()*4,
         	transition: "all 1s ease-out",
       		"z-index": "0"
       	});
       	$back.css({
       		transform: "rotateY(0deg)",
+      		"margin-right": "5%",
       		"transform-style": "preserve-3-d",
-      		perspective: $back["outerWidth"]()*2,
+      		perspective: $back["outerWidth"]()*4,
       		transition:"all 1s ease-out",
       		"z-index": "1"
       	});
@@ -227,8 +228,8 @@ $(function() {
     	console.log("got to unflip");
 
       	$back.css({
-      		transform: "rotateY(180deg)",
-  			"-webkit-transform": "rotateY(180deg)",
+      		transform: "rotateY(-180deg)",
+  			"-webkit-transform": "rotateY(-180deg)",
       		"transform-style": "preserve-3-d",
       		perspective: $back["outerWidth"]()*2,
       		transition:"all 1s ease-out",
@@ -431,8 +432,8 @@ function get_crew_times() {
 		var start_time_textElement = $("#start_"+crew_num);
 		var stop_time_textElement = $("#stop_"+crew_num);
 		start_time_textElement.css("color","green");
-		start_time_textElement.text("start: "+time.toTimeString().replace(/.*(\d{2}:\d{2}:\d{2}).*/, "$1")+"."+("00"+time.getMilliseconds().toString()).slice(-3));
-		stop_time_textElement.text("stop: ");
+		start_time_textElement.text(time.toTimeString().replace(/.*(\d{2}:\d{2}:\d{2}).*/, "$1")+"."+("00"+time.getMilliseconds().toString()).slice(-3));
+		stop_time_textElement.text("");
 		button.text("stop");
 		button.css("background", "red");
 		button.prop("enabled");
@@ -449,9 +450,9 @@ function get_crew_times() {
 		var stop_time_textElement = $("#stop_"+crew_num);
 		var delta_time_textElement = $("#delta_"+crew_num);
 		start_time_textElement.css("color","green");
-		start_time_textElement.text("start: ");
-		stop_time_textElement.text("stop: ");
-		delta_time_textElement.text("delta: ");
+		start_time_textElement.text("");
+		stop_time_textElement.text("");
+		delta_time_textElement.text("");
 		button.text("start");
 		button.css("background", "#f6f6f6");
 		button.prop("enabled");
@@ -469,8 +470,8 @@ function get_crew_times() {
 		button.prop("disabled");
 		var stop_time_textElement = $("#stop_"+crew_num);
 		var delta_time_textElement = $("#delta_"+crew_num);
-		stop_time_textElement.text("stop: "+time.toTimeString().replace(/.*(\d{2}:\d{2}:\d{2}).*/, "$1")+"."+("00"+time.getMilliseconds().toString()).slice(-3));
-		delta_time_textElement.text("delta: "+delta);
+		stop_time_textElement.text(time.toTimeString().replace(/.*(\d{2}:\d{2}:\d{2}).*/, "$1")+"."+("00"+time.getMilliseconds().toString()).slice(-3));
+		delta_time_textElement.text(delta);
 		stop_time_textElement.css("color","red");
 		delta_time_textElement.css("color","black");
 	}
@@ -480,7 +481,7 @@ function get_crew_times() {
 		crew_times[indx].stage=0;
 		var start_time_textElement = $("#start_"+crew_num);
 		var stop_time_textElement = $("#stop_"+crew_num);
-		stop_time_textElement.text("stop: ");
+		stop_time_textElement.text("");
 		button.text("stop");
 		button.css("background", "red");
 		button.prop("enabled");
@@ -533,7 +534,7 @@ function get_crew_times() {
 		var tempnow = new Date();
 		var stage_delta = tempnow - crew_times[indx].start_time_local;
 		var dt = Convert_ms_tostring(stage_delta);
-		delta_time_textElement.text("delta: "+dt);
+		delta_time_textElement.text(dt);
 		var mytime=setTimeout('update_time('+indx+','+crew_num+')',REFRESH_TIME);
 		refresh[indx] = true;
 
