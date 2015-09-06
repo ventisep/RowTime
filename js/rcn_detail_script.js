@@ -5,9 +5,6 @@
 //   then process the same entered, record it using API and check error status - if 
 //   record time is an error - make sure user does not see change in time and do not
 //   set refresh back to true.  on a retry, if successful, refresh will be set back to true)
-//2. stop the system truncating the milleseconds from last timestamp so we keep getting the last
-//   time event to read and process every time
-//3. line 174 change the pop-up to a proper dialogue box to improve user experience
 //4. tidy up files that are not needed
 //5. tidy up the picture file names
 //
@@ -179,7 +176,7 @@ $(function() {
             transform: "rotateY(180deg)",
             "backface-visibility": "hidden",
         	"transform-style": "preserve-3d",
-        	perspective: $front["outerWidth"]()*4,
+        	perspective: $front["outerWidth"]()*2,
         	transition: "all 1s ease-out",
       		"z-index": "0"
       	});
@@ -187,7 +184,7 @@ $(function() {
       		transform: "rotateY(0deg)",
       		"margin-right": "5%",
       		"transform-style": "preserve-3-d",
-      		perspective: $back["outerWidth"]()*4,
+      		perspective: $back["outerWidth"]()*2,
       		transition:"all 1s ease-out",
       		"z-index": "1"
       	});
@@ -216,11 +213,8 @@ $(function() {
         	$confirm_button.off("click tap");
         	unflip($front, $back);
 
-
       	});
 
-
-      	$('.back.cancel').on
     }
 
 
@@ -261,7 +255,7 @@ $(function() {
             var $backside = $(this).find('.back');
             
             if ($frontside.data("flipped")) {
-            	unflip($frontside, $backside, crew_num, time)
+            	unflip($frontside, $backside)
             } else {
             	flip($frontside, $backside, crew_num, time)
             }
