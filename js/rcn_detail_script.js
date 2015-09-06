@@ -303,9 +303,6 @@ function get_crew_times() {
     try {
 		gapi.client.load('observedtimes', 'v1', function() {api_loading_init();
 	 	}, ROWTIME_API);
-	 	e = new $.Event({type: "connection", data: "Successfully connected"});
-		$(document).trigger(e);
-	 	return("succesfully connected")
     }
     catch(err) {
     	e = new $.Event({type: "connection", data: "Connection Error! try again"});
@@ -317,6 +314,9 @@ function get_crew_times() {
   function api_loading_init() {
   	//this function is called when the API is initialised, put anything here we need to do at the start, for example get an initial read of the obeserved times if we need it//
 	console.log("ROWTIME_API loaded and init function called");
+	e = new $.Event({type: "connection", data: "Successfully connected"});
+	$(document).trigger(e);
+	return("succesfully connected")
 	gae_connected_flag=true;
   }
 
