@@ -31,6 +31,7 @@ class Crews(ndb.Model):
 class Observed_Times(ndb.Model):
     event_id = ndb.KeyProperty(kind=Events)
     timestamp = ndb.DateTimeProperty()
+    obs_type = ndb.IntegerProperty()  #added 31/8 0 is an add 1 is a delete
     crew_number = ndb.IntegerProperty()
     stage = ndb.IntegerProperty()
     time_local = ndb.DateTimeProperty()

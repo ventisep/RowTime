@@ -1,0 +1,61 @@
+
+
+
+<div data-role="page" id="crewtimes">
+ <script type="text/javascript">
+ //Set the gobal variables needed by the JavaScript in rcn_detail_script.js
+    var event_id_urlsafe = "{{event.urlsafe()}}";
+	var crew_data={{ data|safe }}; //get data passed from jinja2
+	var event_and_last_timestamp = {"event_id":event_id_urlsafe,
+							"last_timestamp":last_timestamp.toISOString()};
+ </script>
+	<div data-role="header">
+    	<h1 id="username">Hi Guest</h1>
+    	<a href="#" data-rel="back" data-icon="back" data-iconpos="notext">back</a>
+    	<a href="#settings-nl" data-icon="gear" data-iconpos="notext">Settings</a>
+  	</div>
+
+  <div data-role="main" class="ui-content jqm-content">
+	<ul data-role="listview" data-inset="true" class="ui-content jqm-content jqm-fullwidth">
+
+		{% for crew in crews %}
+		<li>
+			<img class="Iphone_oars" height = "20" src="/images/blade-icons/{{crew.pic_file}}">{{crew.crew_type}}   {{crew.crew_number}}   {{crew.crew_name}}
+			<span class="ui-corner-all"  id="delta_{{crew.crew_number}}" type="datetime">   delta:</span>
+			<div class="more-data" hidden = "true">
+				<span class="ui-corner-all" id="start_{{crew.crew_number}}" type="datetime">   start:</span>
+				<span class="ui-corner-all"  id="stop_{{crew.crew_number}}"  type="datetime">   stop:</span>
+				<button id="{{crew.crew_number}}" class="more-data">start</button>
+			</div>
+		</li>
+		{% endfor %}
+	</ul>
+	<div data-role="panel" data-display="overlay" data-theme="a" id="nav-panel">
+
+    	<ul data-role="listview">
+            	<li data-icon="delete"><a href="#" data-rel="close">Close menu</a></li>
+                <li><a href="#help">Help</a></li>
+                <li><a href="#about">About Row Time</a></li>
+    	</ul>
+
+   </div><!-- /panel -->
+   <div data-role="panel" data-position="right" data-display="reveal" data-theme="a" id="settings-nl">
+          <h2>Settings</h2>
+
+			<label for="autoUpdate">Auto update:</label>
+			<select name="autoUpdate" id="autoUpdate" data-role="slider">
+			    <option value="off">Off</option>
+			    <option value="on">On</option>
+			</select>
+
+        <a data-ajax="false" href="/login" class="ui-btn ui-corner-all">Login</a>
+
+
+   </div><!-- /panel -->
+   <div data-role="footer" data-position="fixed">
+   	<span class="connection-status">Connecting...</span>
+   </div>
+
+  </div><!-- /page -->
+</div>
+

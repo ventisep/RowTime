@@ -1,43 +1,72 @@
-{% extends "templates/layout.html" %}
-{% block main %}
- <script src="https://apis.google.com/js/client.js?onload=init"></script>
- <button id="get_list" onClick = "get_times()">start getting time list</button>
- 
+
+
+
+<div data-role="page" id="crewtimes">
  <script type="text/javascript">
  //Set the gobal variables needed by the JavaScript in rcn_detail_script.js
     var event_id_urlsafe = "{{event.urlsafe()}}";
 	var crew_data={{ data|safe }}; //get data passed from jinja2
+	var event_and_last_timestamp = {"event_id":event_id_urlsafe,
+							"last_timestamp":last_timestamp};
  </script>
+	<div data-role="header">
+    	<h1 id="username">Hi {{user.name}}</h1>
+    	<a href="#" data-rel="back" data-icon="back" data-iconpos="notext">back</a>
+    	<a href="#settings" data-icon="gear" data-iconpos="notext">Settings</a>
+  	</div>
 
- <script type="text/javascript" src="js/rcn_detail_script.js"></script>
+  <div data-role="main" class="ui-content jqm-content">
 
-<body onload="init()" id="body">
+	<ul data-role="listview" data-filter = "true" data-inset="true" class="ui-content jqm-content jqm-fullwidth">
 
-  <header>
-    <h2>{{event.urlsafe}} timing</h2>
-  </header>
-  <span id="username">Hi {{user.name}}</span><br><br>
+		{% for crew in crews %}
+		<li class="swipeable" id="crew_{{crew.crew_number}}">
+			<div data-enhance="false" class="back">
+				<p style="text-align:center; color:white">Undo the last recorded time</p>
+				<button class="cancel back-button" data-enhance="false">cancel</button> <button class="confirm back-button" data-enhance="false">confirm</button>
+			</div>
+			<div class="front ui-corner-all">
+              	<div class="ui-bar-a">
+					<h2><img class="Iphone_oars" height="20" src="/images/blade-icons/{{crew.pic_file}}"> {{crew.crew_number}} {{crew.crew_name}} {{crew.crew_type}}</h2>
+				</div>
+				<div class="ui-body ui-grid-a">
+					<div class="ui-block-a">
+						<span >st't: <div  style="display: inline" class="ui-corner-all" id="start_{{crew.crew_number}}" type="datetime"></div></span><br>
+						<span>time: <div style="display: inline" class="ui-corner-all"  id="delta_{{crew.crew_number}}" type="datetime">delta:</div></span><br>
+						<span>st'p: <div style="display: inline" class="ui-corner-all"  id="stop_{{crew.crew_number}}"  type="datetime"></div></span><br>
+					</div>
+					<div class="ui-block-b">
+						<button id="{{crew.crew_number}}" class = "stopwatch ui-body ui-corner-all">start</button>
+					</div>
+			    </div>
+			</div>
 
-<table class = "timetable">
-	<tr class = "rowhead">
-		<td class = "colhead">Crew No.</td>
-		<td class = "colhead">Crew Oars</td>
-		<td class = "colhead">Crew Name</td>
-		<td class = "colhead">Start</td>
-		<td class = "colhead">Delta</td>
-		<td class = "colhead">Stop</td>
-	</tr>
-{% for crew in crews %}
-	<tr class = "row">
-		<td class = "cell">{{crew.crew_number}}</td>
-		<td class = "cell"><img class="Iphone_oars" src="/images/blade-icons/{{crew.pic_file}}"></td>
-		<td class = "cell"/>{{crew.crew_name}}</td>
-		<td class = "cell"><input class="input_RCNdetail" disabled id="start_{{crew.crew_number}}" type="datetime"/></td>
-		<td><input class="input_RCNdetail" disabled id="delta_{{crew.crew_number}}" type="datetime"/></td>
-		<td><input class="input_RCNdetail" disabled id="stop_{{crew.crew_number}}"  type="datetime"/></td>
-		<td><input class = "timer-button" type="button" value = "start" id="button_{{crew.crew_number}}" onClick="ClickButton({{loop.index-1}}, {{crew.crew_number}}, new Date(), 'none');"/></td>
-	</tr>
-{% endfor %}
-</table><br>
-</body>
-{% endblock %}
+		</li>
+		{% endfor %}
+	</ul>
+	<div data-role="panel" data-display="overlay" data-theme="a" id="nav-panel">
+
+    	<ul data-role="listview">
+            	<li data-icon="delete"><a href="#" data-rel="close">Close menu</a></li>
+                <li><a href="/uploadentries">Create Entries</a></li>
+                <li><a href="#help">Help</a></li>
+                <li><a href="#about">About Row Time</a></li>
+    	</ul>
+
+   </div><!-- /panel -->
+   <div data-role="panel" data-position="right" data-display="overlay" data-theme="a" id="settings">
+          <h2>Settings for {{user.name}}</h2>
+
+            <label for="email">E-mail:</label>
+            <input type="text" placeholder="E-mail" id="login-signup-style" name="email" class="login_text-box2" value = "{{user.email}}" data-clear-btn="true" data-mini="true">
+
+        <a data-ajax="false" href="/logout" class="ui-btn ui-corner-all">Logout</a>
+
+
+   </div><!-- /panel -->
+   <div data-role="footer" data-position="fixed">
+    <span class="connection-status">Connecting...</span>
+   </div>
+  </div><!-- /page -->
+</div>
+

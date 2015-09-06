@@ -17,5 +17,13 @@ indexes:
 
 - kind: Observed_Times
   properties:
+  - name: crew_number
+  - name: event_id
+  - name: obs_type
+  - name: timestamp
+    direction: desc
+
+- kind: Observed_Times
+  properties:
   - name: event_id
   - name: timestamp

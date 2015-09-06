@@ -1,3 +1,10 @@
+
+body{
+   background-image: url('/images/rowingpic.jpg');
+   background-repeat: no-repeat;
+   width: 100%;
+   overflow:hidden;
+
 .iphone_table{
    width: 100%;
    text-align: center;
@@ -204,10 +211,6 @@ h1{
 	font-size: 30px;
 }
 
-html{
-   width:90%;
-}
-
 h2{
 	font-family: Arial;
 }
@@ -217,11 +220,7 @@ meta{
    overflow: hidden;
 }
 
-body{
-   background-image: url('/images/rowingpic.jpg');
-	background-repeat: no-repeat;
-	width: 100%;
-   overflow:hidden;
+
 }
 .input_RCNdetail{
    border-width: 0px;
