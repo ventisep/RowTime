@@ -199,9 +199,11 @@ $(function() {
       	$cancel_button.on("click tap", function(){
       		unflip($front, $back);
       		$cancel_button.off("click tap");
+        	e.preventDefault();
+            e.stopPropagation();      		
       	});
 
-      	$confirm_button.on("click tap", function(){
+      	$confirm_button.on("click tap", function(e){
       		var time = $(this).data("time");
 			var observed_time = {event_id: event_id_urlsafe,
 								  timestamp: time,
@@ -212,6 +214,8 @@ $(function() {
 			record_observed_time(observed_time);//when auto-update comes back on the event should be processed
         	$confirm_button.off("click tap");
         	unflip($front, $back);
+        	e.preventDefault();
+            e.stopPropagation();
 
       	});
 
@@ -259,30 +263,6 @@ $(function() {
             } else {
             	flip($frontside, $backside, crew_num, time)
             }
-
-          	//now bring the alternative backside into view to.....
-          	//then bind action on the back to the action I want of deleting the
-          	//last recorded time.... and then animate back to the original position.
-
-            //move to a dialog to offer delete and edit options
-            //confirm user wants to delete the last recorded time
-        //   if (confirm("do you want to delete the last recorded time for crew "+crew_num+"?")) {
-            	//change the API to add a delete event to the recorded time events
-            	//create a function to proess the delete event
-		//		var observed_time = {event_id: event_id_urlsafe,
-		//							  timestamp: time,
-		//							  obs_type: 1,  //type 1 is delete the last stage entered for that crew
-		//							  crew: crew_num,
-		//							  stage: 0, //we can set this to anything - it is ignored
-		//							  time: time};
-		//		record_observed_time(observed_time);//when auto-update comes back on the event should be processed
-        //    	alert("delete time event added");
-        //    } else {
-        //    	alert("not deleted");
-        //    }
-            //if so then use API to delete the last recorded time by passing the url version
-            // of the key (must change the record time API to return the key and store it)
-            //return from dialogue
 
             e.preventDefault();
             e.stopPropagation();
