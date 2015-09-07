@@ -1,10 +1,7 @@
 
 //ToDos
-//1. line 65 prevent stop button changing twice as it reads from observed times
-//   and picks up the start time before the stop time is recorded (set refresh = false
-//   then process the same entered, record it using API and check error status - if 
-//   record time is an error - make sure user does not see change in time and do not
-//   set refresh back to true.  on a retry, if successful, refresh will be set back to true)
+//1. consider how to create an off-line version of the time recording to speed up the user experience
+//	 and allow use where the wifi or mobile connectivity is poor.
 //4. tidy up files that are not needed
 //5. tidy up the picture file names
 //
@@ -69,6 +66,19 @@ $(function() {
 		});
 
 	function record_stage(e) {
+		//todo this is called when the .stopwatch class of button is called
+		//it determines what to do depending on the current stage which is on the 
+		//button's text label.
+		//to make an offline version - this function should write the information into
+		//a local data store rather than direct to the server.  An event handler which triggers on
+		//the local store change then should call the write to the server
+		//we also would need to change the array crew_times[] to be held in the local store
+		//
+		//to make a multi-stage version we would need to line up each stage with a button text
+		//which would have to come from the event information. then do the following:
+		//if stage is in the list of possible stages, call a replacement for the UpdateStartTime
+		//function called UpdateStageTime.  Use stage as a parameter for this function and process
+		//accordingly.  
 		time = new Date();
 		autoUpdate = false;  //switch of reading from server till new time recorded
 		var button = $(this);
@@ -320,7 +330,6 @@ function get_crew_times() {
 	console.log("ROWTIME_API loaded and init function called");
 	e = new $.Event({type: "connection", data: "Successfully connected"});
 	$(document).trigger(e);
-	return("succesfully connected")
 	gae_connected_flag=true;
   }
 
@@ -466,37 +475,6 @@ function get_crew_times() {
 		if (refresh[indx] == false){
 			var mytime=setTimeout('update_time('+indx+','+crew_num+')',REFRESH_TIME);
 			refresh[indx] = true;
-		}
-	}
-
-
-	function ClickButton(indx, crew_num, time, stage){
-		var button = $('#'+crew_num);
-		if (button.text() == "start") {
-			UpdateStartTime(indx, crew_num, time);
-			stage = 0;
-			var observed_time = {event_id: event_id_urlsafe,
-								  timestamp: time,
-								  obs_type: 0, //an add time to the record type
-								  crew: crew_num,
-								  stage: stage,
-								  time: time};
-			record_observed_time(observed_time);
-		}
-		else if(button.text() == "stop") {
-			UpdateStopTime(indx, crew_num, time);
-			stage = 1;
-			var observed_time = {event_id: event_id_urlsafe,
-								  timestamp: time,
-								  obs_type: 0, //add time to the record, 1 would be a delete time
-								  crew: crew_num,
-								  stage: stage,
-								  time: time};
-			record_observed_time(observed_time);
-		}
-		else {
-			alert("button not start or stop");
-
 		}
 	}
 
