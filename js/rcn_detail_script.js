@@ -327,8 +327,9 @@ function get_crew_times() {
   function api_loading_init() {
   	//this function is called when the API is initialised, put anything here we need to do at the start, for example get an initial read of the obeserved times if we need it//
 	console.log("ROWTIME_API loaded and init function called now getting synch time");
-    // Set up our time object, synced by the HTTP DATE header
-    // Fetch the page over JS to get just the headers
+    // Get the time difference between the server and the device
+    // if greater than the latency of the connection inform the user that their time
+    // is not exact.
     console.log("syncing time")
     var client_time = {client_time: new Date()};  //needs to be an object like clocksyncrequest
     var clocksyncrequest = gapi.client.observedtimes.clock.clockcheck(client_time).execute(function(resp) {
@@ -339,9 +340,9 @@ function get_crew_times() {
 	  		console.log("diff time: "+resp.diff_in_ms);
 	  		console.log("latency: "+latency)
 	  		if (resp.diff_in_ms<latency && resp.diff_in_ms > 0){
-				e = new $.Event({type: "connection", data: "Successfully connected - time exact"});
+				e = new $.Event({type: "connection", data: "Successfully connected - your time is exact"});
 	  		} else {
-				e = new $.Event({type: "connection", data: "Successfully connected - time NOT EXACT"});
+				e = new $.Event({type: "connection", data: "Successfully connected - your time is NOT EXACT"});
 	  		}
 	  		$(document).trigger(e);
 	  	});
