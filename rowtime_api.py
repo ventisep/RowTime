@@ -32,6 +32,16 @@ class TimesRequest(messages.Message):
   event_id = messages.StringField(1)
   last_timestamp = messages.StringField(2)
 
+class ClockSyncRequest(messages.Message):
+  "used to store the request for a comparison of time between the server and the client"
+  client_time = message_types.DateTimeField(1)
+
+class ClockSyncReply(messages.Message):
+  "used to reply with the server time and comparison to the client time"
+  client_time = message_types.DateTimeField(1)
+  server_time = message_types.DateTimeField(2)
+  diff_in_ms = messages.FloatField(3)
+
 class ObservedTime(messages.Message):
   """used to store an observered time from a user for a specific Crew."""
   event_id = messages.StringField(1)
@@ -148,4 +158,28 @@ class ObservedTimesApi(remote.Service):
 
     return ot
 
+
+  @endpoints.method(ClockSyncRequest, ClockSyncReply,
+                    path='clock', http_method='POST',
+                    name='clock.clockcheck')
+  def clockcheck(self, request):
+
+    current_time = datetime.datetime.now()  #get current time as soon as possible for server time
+
+    time=ClockSyncReply()
+    logging.info("request %s", request.client_time)
+    utc_time = request.client_time
+
+    time.server_time = current_time
+    time.client_time = utc_time.replace(tzinfo=None)
+    time.diff_in_ms = (time.server_time - time.client_time).total_seconds()*1000
+    logging.info("time server %s", time.server_time)
+    return time
+
+
+
+
+
 application = endpoints.api_server([ObservedTimesApi])
+
+

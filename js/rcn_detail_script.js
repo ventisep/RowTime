@@ -115,13 +115,12 @@ $(function() {
 
 	};
 
-	if (touch_supported) {  //if this works delete clickButton function
+	if (touch_supported) {
 		$('body').on("tap", ".stopwatch", record_stage)
 	}
 	else {
 		$('body').on("click", ".stopwatch", record_stage)
 	}
-
 
 //original code from ksloan/jquery-mobile-swipe-list I updated to improve behaviour with JQuery Mobile
 
@@ -327,9 +326,25 @@ function get_crew_times() {
 
   function api_loading_init() {
   	//this function is called when the API is initialised, put anything here we need to do at the start, for example get an initial read of the obeserved times if we need it//
-	console.log("ROWTIME_API loaded and init function called");
-	e = new $.Event({type: "connection", data: "Successfully connected"});
-	$(document).trigger(e);
+	console.log("ROWTIME_API loaded and init function called now getting synch time");
+    // Set up our time object, synced by the HTTP DATE header
+    // Fetch the page over JS to get just the headers
+    console.log("syncing time")
+    var client_time = {client_time: new Date()};  //needs to be an object like clocksyncrequest
+    var clocksyncrequest = gapi.client.observedtimes.clock.clockcheck(client_time).execute(function(resp) {
+	  		var resp_time = new Date();
+	  		var latency = resp_time - client_time.client_time;
+	  		console.log("client time: "+resp.client_time);
+	  		console.log("server time: "+resp.server_time);
+	  		console.log("diff time: "+resp.diff_in_ms);
+	  		console.log("latency: "+latency)
+	  		if (resp.diff_in_ms<latency && resp.diff_in_ms > 0){
+				e = new $.Event({type: "connection", data: "Successfully connected - time exact"});
+	  		} else {
+				e = new $.Event({type: "connection", data: "Successfully connected - time NOT EXACT"});
+	  		}
+	  		$(document).trigger(e);
+	  	});
 	gae_connected_flag=true;
   }
 
