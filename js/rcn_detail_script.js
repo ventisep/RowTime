@@ -324,28 +324,45 @@ function get_crew_times() {
     }
   }
 
+  function clock_accuracy_async() {
+  	var accuracy = {client_time : null,
+  					server_time : null,
+  					diff_in_ms : null,
+  					latency : null};
+  	var resp_time = null;
+	var latency = null;				
+
+  	console.log("syncing time")
+    client_time = {client_time: new Date()};  //needs to be an object like clocksyncrequest
+    var clocksyncrequest = gapi.client.observedtimes.clock.clockcheck(client_time).execute(function(resp) {
+	  		resp_time = new Date();
+	  		accuracy.latency = resp_time - client_time.client_time;
+	  		accuracy.client_time = client_time.client_time;
+	  		accuracy.server_time = resp.server_time
+	  		accuracy.diff_in_ms = resp.diff_in_ms
+			console.log("client time: "+accuracy.client_time);
+			console.log("server time: "+accuracy.server_time);
+			console.log("diff time: "+accuracy.diff_in_ms);
+			console.log("latency: "+accuracy.latency)
+			$(document).data("accuracy", accuracy);
+			if (accuracy.diff_in_ms<accuracy.latency && accuracy.diff_in_ms > 0){
+				e = new $.Event({type: "connection", data: "Successfully connected - your time is exact"});
+				} else {
+				e = new $.Event({type: "connection", data: "Successfully connected - your time is NOT EXACT"});
+				}
+			$(document).trigger(e);
+	});
+  }
+
   function api_loading_init() {
   	//this function is called when the API is initialised, put anything here we need to do at the start, for example get an initial read of the obeserved times if we need it//
 	console.log("ROWTIME_API loaded and init function called now getting synch time");
-    // Get the time difference between the server and the device
-    // if greater than the latency of the connection inform the user that their time
-    // is not exact.
-    console.log("syncing time")
-    var client_time = {client_time: new Date()};  //needs to be an object like clocksyncrequest
-    var clocksyncrequest = gapi.client.observedtimes.clock.clockcheck(client_time).execute(function(resp) {
-	  		var resp_time = new Date();
-	  		var latency = resp_time - client_time.client_time;
-	  		console.log("client time: "+resp.client_time);
-	  		console.log("server time: "+resp.server_time);
-	  		console.log("diff time: "+resp.diff_in_ms);
-	  		console.log("latency: "+latency)
-	  		if (resp.diff_in_ms<latency && resp.diff_in_ms > 0){
-				e = new $.Event({type: "connection", data: "Successfully connected - your time is exact"});
-	  		} else {
-				e = new $.Event({type: "connection", data: "Successfully connected - your time is NOT EXACT"});
-	  		}
-	  		$(document).trigger(e);
-	  	});
+    // once the API is loaded check the connection latency and server/client times to
+    // establish how accurate the measurements will be.
+    clock_accuracy_async();
+
+	e = new $.Event({type: "connection", data: "Successfully connected"});
+	$(document).trigger(e);
 	gae_connected_flag=true;
   }
 
