@@ -5,7 +5,6 @@
 //4. tidy up files that are not needed
 //5. tidy up the picture file names
 //
-//3. load in content of detail page using a pagecreate event
 //4. add stage names to the button rather than start/stop these should be part of the event
 //   so add to data model as repeated group stage and stage desc.
 //5. add a verify option at the end of the stages which allow edit of official times with
@@ -106,12 +105,11 @@ $(function() {
 								  time: time};
 			record_observed_time(observed_time);
 		}
-		else {
-			alert("this crew is already Finished");
-
-		}
 		autoUpdate = true;  //switch on reading from server
 		get_times();
+		e.preventDefault();
+        e.stopPropagation();
+
 
 	};
 
@@ -122,61 +120,6 @@ $(function() {
 		$('body').on("click", ".stopwatch", record_stage)
 	}
 
-//original code from ksloan/jquery-mobile-swipe-list I updated to improve behaviour with JQuery Mobile
-
-	function change_click_to_swipe(oe) {  //bound to click or tap when swipeable item is open
-		oe.preventDefault();
-		oe.stopPropagation();
-		e= new $.Event({type: "swipe", data: "pvfired"});
-		$(this).trigger(e);
-	}
-
-    $(document).on('swipe', '.swipe-delete li > a', function(e) {
-            console.log(e)
-            var change = 0;
-            var new_left = '0px';
-	 		var left = parseInt(e.target.style.left);
- 			if (!left || left == 0) {  //the target is closed already then this is an action
- 				left = 0  			  //on a new item so close any other open ones
- 				$('.open').animate({left: 0}, 200);
- 				$('.open').removeClass('open');
- 			};
-  			if (typeof(e.swipestop) !== 'undefined') { //must have been a real swipe
-	            change = e.swipestop.coords[0] - e.swipestart.coords[0]; // get value of x axis change
- 				change = (change < 0) ? -100 : 100;
-	        } else {
-	        	change = -left;  //if not a real swipe - it was one of our trapped events so set change to zero
-	        }
-	        change=change+left;
-            if (change < -20) {
-                new_left = '-100px';
-             	$(e.target).addClass('open');
-             	$(e.target).on('tap click vclick', change_click_to_swipe);
-            } else if (change > 20) {
-            	$(e.target).addClass('open');
-             	$('.swipe-delete li > a').on('tap click vclick', change_click_to_swipe);
-                new_left = '100px';
-            } else {
-             	$(e.target).off('tap click vclick', change_click_to_swipe);
-            	$(e.target).removeClass('open');
-                new_left = '0px'
-            }
-            $(e.target).animate({left: new_left}, 200);
-            e.preventDefault();
-            e.stopPropagation();
-    });
-
-    $('li .delete-btn').on('vclick', function(e) {
-        e.preventDefault()
-        $(this).parents('li').slideUp('fast', function() {
-            $(this).remove()
-        })
-    });
-
-    $('li .edit-btn').on('vclick', function(e) {
-        e.preventDefault()
-        $(this).parents('li').children('a').html('edited')
-    });
 
     function flip($front, $back, crew_num, time) {
 
@@ -185,17 +128,19 @@ $(function() {
             transform: "rotateY(180deg)",
             "backface-visibility": "hidden",
         	"transform-style": "preserve-3d",
-        	perspective: $front["outerWidth"]()*2,
+      		"-webkit-perspective": 1,//$back["outerWidth"]()*1,
+        	perspective: 1,//$front["outerWidth"]()*1,
         	transition: "all 1s ease-out",
-      		"z-index": "0"
+      		"z-index": "-1"
       	});
       	$back.css({
       		transform: "rotateY(0deg)",
       		"margin-right": "5%",
-      		"transform-style": "preserve-3-d",
+      		"transform-style": "preserve-3d",
+      		"-webkit-perspective": $back["outerWidth"]()*2,
       		perspective: $back["outerWidth"]()*2,
       		transition:"all 1s ease-out",
-      		"z-index": "1"
+      		"z-index": "0"
       	});
 
       	$front.data("flipped", true);
@@ -233,9 +178,9 @@ $(function() {
     	console.log("got to unflip");
 
       	$back.css({
-      		transform: "rotateY(-180deg)",
+      		transform: "rotateY(180deg)",
   			"-webkit-transform": "rotateY(-180deg)",
-      		"transform-style": "preserve-3-d",
+      		"transform-style": "preserve-3d",
       		perspective: $back["outerWidth"]()*2,
       		transition:"all 1s ease-out",
       		"z-index": "-1"
@@ -246,7 +191,7 @@ $(function() {
         	"transform-style": "preserve-3d",
         	perspective: $front["outerWidth"]()*2,
         	transition: "all 1s ease-out",
-      		"z-index": "1"
+      		"z-index": "0"
       	});
 
       	$confirm_button=$back.find('.confirm');

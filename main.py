@@ -243,13 +243,12 @@ class UploadHandler(blobstore_handlers.BlobstoreUploadHandler):
     def post(self):
 
         event_name=self.request.get("eventName")
-        read_year=self.request.get("eventYear")
-        read_month=self.request.get("eventMonth")
-        read_day=self.request.get("eventDay")
+        read_date_string=self.request.get("eventDate")
         event_desc = self.request.get("eventDesc")
+        logging.info(read_date_string)
         e = Events(
                 event_name = event_name,
-                event_date = datetime.date(int(read_year), int(read_month), int(read_day)),
+                event_date = datetime.datetime.strptime(read_date_string, "%d/%m/%Y"),
                 event_desc = event_desc)
         e.put()
         if self.get_uploads('file'):
