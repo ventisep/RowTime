@@ -177,9 +177,6 @@ class ObservedTimesApi(remote.Service):
     return time
 
 
-
-
-
 application = endpoints.api_server([ObservedTimesApi])
 
 

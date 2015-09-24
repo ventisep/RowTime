@@ -269,6 +269,11 @@ function get_crew_times() {
     }
   }
 
+  function initgapi() {
+    	e = new $.Event({type: "connection", data: "Gapi - loaded"});
+		$(document).trigger(e);
+    }
+
   function clock_accuracy_async() {
   	var accuracy = {client_time : null,
   					server_time : null,
