@@ -79,7 +79,7 @@ $(function() {
 		//function called UpdateStageTime.  Use stage as a parameter for this function and process
 		//accordingly.  
 		time = new Date();
-		autoUpdate = false;  //switch of reading from server till new time recorded
+		autoUpdate = false;  //switch off reading from server till new time recorded
 		var button = $(this);
 		crew_num = button.attr("id");
 		indx = indexof[crew_num];
@@ -128,8 +128,8 @@ $(function() {
             transform: "rotateY(180deg)",
             "backface-visibility": "hidden",
         	"transform-style": "preserve-3d",
-      		"-webkit-perspective": 1,//$back["outerWidth"]()*1,
-        	perspective: 1,//$front["outerWidth"]()*1,
+      		"-webkit-perspective": $back["outerWidth"]()*2,
+        	perspective: $front["outerWidth"]()*2,
         	transition: "all 1s ease-out",
       		"z-index": "-1"
       	});
@@ -228,8 +228,6 @@ $(function() {
     });
 });
 
-//ksloan/jquery-mobile-swipe-list end
-
 
 Number.prototype.pad = function(size) {
       var s = String(this);
@@ -287,7 +285,7 @@ function get_crew_times() {
     var clocksyncrequest = gapi.client.observedtimes.clock.clockcheck(client_time).execute(function(resp) {
 	  		resp_time = new Date();
 	  		accuracy.latency = resp_time - client_time.client_time;
-	  		accuracy.client_time = client_time.client_time;
+	  		accuracy.client_time = resp.client_time;
 	  		accuracy.server_time = resp.server_time
 	  		accuracy.diff_in_ms = resp.diff_in_ms
 			console.log("client time: "+accuracy.client_time);
@@ -301,19 +299,23 @@ function get_crew_times() {
 				e = new $.Event({type: "connection", data: "Successfully connected - your time is NOT EXACT"});
 				}
 			$(document).trigger(e);
+			$(".ClientTime").text(accuracy.client_time);
+			$(".ServerTime").text(accuracy.server_time);
+			$(".TimeDiff").text(accuracy.diff_in_ms);
+			$(".Latency").text(accuracy.latency);
 	});
   }
 
   function api_loading_init() {
   	//this function is called when the API is initialised, put anything here we need to do at the start, for example get an initial read of the obeserved times if we need it//
 	console.log("ROWTIME_API loaded and init function called now getting synch time");
-    // once the API is loaded check the connection latency and server/client times to
-    // establish how accurate the measurements will be.
-    clock_accuracy_async();
-
-	e = new $.Event({type: "connection", data: "Successfully connected"});
+ 	e = new $.Event({type: "connection", data: "Successfully connected - checking time"});
 	$(document).trigger(e);
 	gae_connected_flag=true;
+
+	// once the API is loaded check the connection latency and server/client times to
+    // establish how accurate the measurements will be.
+    clock_accuracy_async();
   }
 
   function record_observed_time(observed_time) {
@@ -339,17 +341,20 @@ function get_crew_times() {
    }
  	var request = gapi.client.observedtimes.times.listtimes(event_and_last_timestamp);
   	try {
-	   request.then(function(resp) {
+		  e = new $.Event({type: "connection", data: "getting times"});
+		  $(document).trigger(e);
+		  request.then(function(resp) {
 	    	last_timestamp = resp.result.last_timestamp;
 	    	event_and_last_timestamp.last_timestamp = last_timestamp;
 	    	if (resp.result.times) {
 		   		for(var i=0; i<resp.result.times.length; i++) {
 		    		update_time_list(resp.result.times[i]);
+		    		e = new $.Event({type: "connection", data: "got times"});
+					$(document).trigger(e);	
 		    	}
 		    }
 	      });
-		e = new $.Event({type: "connection", data: "get times - success"});
-		$(document).trigger(e);	   	  
+ 
 	} catch(err) {
 	   	e = new $.Event({type: "connection", data: "get times - failed"});
 		$(document).trigger(e);
@@ -487,4 +492,5 @@ function get_crew_times() {
 		var dt = hours.pad()+":"+minutes.pad()+":"+seconds.pad()+"."+ms.pad(3);
 		return dt
 	}
+
 
