@@ -485,10 +485,10 @@ function get_crew_times() {
 	}
 
 	function Convert_ms_tostring(number){
-		var ms = number%1000;
-		var seconds=new Number(((number/1000)%60).toFixed(0));
-		var minutes=new Number(((number/(1000*60))%60).toFixed(0));
-		var hours=new Number(((number/(1000*60*60))%24).toFixed(0));
+		var ms = number%1000; //the number of ms left
+		var seconds=new Number((((number-ms)/1000)%60).toFixed(0));
+		var minutes=new Number((((((number-ms)/1000)-seconds)/60)%60).toFixed(0));
+		var hours=new Number((((((((number-ms)/1000)-seconds)/60)-minutes)/60)%24).toFixed(0));
 		var dt = hours.pad()+":"+minutes.pad()+":"+seconds.pad()+"."+ms.pad(3);
 		return dt
 	}
