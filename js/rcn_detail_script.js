@@ -19,8 +19,8 @@
  //variables event_id_urlsafe and last_timestamp have to be set in the dynamic document by jinja2
 
 
-const REFRESH_TIME = 100; // for timer counting in milleseconds
-const REFRESH_TIME2 = 1000; //for checking server for times in milleseconds
+const REFRESH_TIME = 1000; // for timer counting in milleseconds
+const REFRESH_TIME2 = 5000; //for checking server for times in milleseconds
 const LAST_TIMESTAMP_RESET = "2000-08-31T16:54:07.050741";
 var crew_times = [];
 var autoUpdate = true;
@@ -46,6 +46,7 @@ $(function() {
 	    autoUpdate = true;
 		get_times();
     	$(".ui-table-columntoggle-btn").appendTo($("#columnsTD"));
+        $("#table-column-toggle").tablesorter(); 
 
 	});
 
@@ -352,6 +353,7 @@ function get_crew_times() {
 		    		e = new $.Event({type: "connection", data: "got times"});
 					$(document).trigger(e);	
 		    	}
+	    		$("#table-column-toggle").trigger("update");
 		    }
 	      });
  
