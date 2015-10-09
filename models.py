@@ -21,6 +21,7 @@ class Rowers(ndb.Model):
 class Crews(ndb.Model):
     event_id = ndb.KeyProperty(kind= Events)
     crew_number = ndb.IntegerProperty()
+    division = ndb.IntegerProperty()
     crew_name = ndb.StringProperty()
     pic_file = ndb.StringProperty()
     crew_type = ndb.StringProperty()

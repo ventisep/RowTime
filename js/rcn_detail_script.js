@@ -19,8 +19,8 @@
  //variables event_id_urlsafe and last_timestamp have to be set in the dynamic document by jinja2
 
 
-const REFRESH_TIME = 1000; // for timer counting in milleseconds
-const REFRESH_TIME2 = 5000; //for checking server for times in milleseconds
+const REFRESH_TIME = 100; // for timer counting in tenths of seconds
+const REFRESH_TIME2 = 2000; //for checking server for times in milleseconds
 const LAST_TIMESTAMP_RESET = "2000-08-31T16:54:07.050741";
 var crew_times = [];
 var autoUpdate = true;
@@ -31,6 +31,11 @@ var gae_connected_flag = false;
 var connection_status;
 var touch_supported = (('ontouchstart' in window) || (navigator.msMaxTouchPoints > 0));
 
+Number.prototype.pad = function(size) {
+      var s = String(this);
+      while (s.length < (size || 2)) {s = "0" + s;}
+      return s;
+}
 //------- this section for event handling on the screens ------------//
 
 
@@ -46,8 +51,7 @@ $(function() {
 	    autoUpdate = true;
 		get_times();
     	$(".ui-table-columntoggle-btn").appendTo($("#columnsTD"));
-        $("#table-column-toggle").tablesorter(); 
-
+        $("#table-column-toggle").tablesorter({sortAppend: [[7,0]], headers: {7: {sorter:'shortTime'}}});
 	});
 
 	$(document).on( "pagehide" , "#crewtimes", function() {
@@ -230,12 +234,6 @@ $(function() {
 });
 
 
-Number.prototype.pad = function(size) {
-      var s = String(this);
-      while (s.length < (size || 2)) {s = "0" + s;}
-      return s;
-}
-
 //load the crew_times object with the crew times list retrieved from the database//
 function get_crew_times() {
 
@@ -300,8 +298,8 @@ function get_crew_times() {
 				e = new $.Event({type: "connection", data: "Successfully connected - your time is NOT EXACT"});
 				}
 			$(document).trigger(e);
-			$(".ClientTime").text(accuracy.client_time);
-			$(".ServerTime").text(accuracy.server_time);
+			$(".ClientTime").text(accuracy.client_time.slice(11,-3));
+			$(".ServerTime").text(accuracy.server_time.slice(11,-3));
 			$(".TimeDiff").text(accuracy.diff_in_ms);
 			$(".Latency").text(accuracy.latency);
 	});
@@ -441,7 +439,7 @@ function get_crew_times() {
 		crew_times[indx].end_time_local = time; //end time
 		crew_times[indx].stage=1;
 		crew_times[indx].stage_delta = crew_times[indx].end_time_local - crew_times[indx].start_time_local;
-		var delta = Convert_ms_tostring(crew_times[indx].stage_delta);
+		var delta = Convert_ms_tostring(crew_times[indx].stage_delta, true).slice(0,-2);
 		button.text("Finished");
 		button.css("background","grey");
 		button.prop("disabled");
@@ -479,19 +477,32 @@ function get_crew_times() {
 		var delta_time_textElement = $("#delta_"+crew_num);
 		var tempnow = new Date();
 		var stage_delta = tempnow - crew_times[indx].start_time_local;
-		var dt = Convert_ms_tostring(stage_delta);
+		var dt = Convert_ms_tostring(stage_delta, true).slice(0,-2);  //don't show milliseconds
 		delta_time_textElement.text(dt);
 		var mytime=setTimeout('update_time('+indx+','+crew_num+')',REFRESH_TIME);
 		refresh[indx] = true;
 
 	}
 
-	function Convert_ms_tostring(number){
+	function Convert_ms_tostring(number, nopad){
 		var ms = number%1000; //the number of ms left
-		var seconds=new Number((((number-ms)/1000)%60).toFixed(0));
-		var minutes=new Number((((((number-ms)/1000)-seconds)/60)%60).toFixed(0));
-		var hours=new Number((((((((number-ms)/1000)-seconds)/60)-minutes)/60)%24).toFixed(0));
-		var dt = hours.pad()+":"+minutes.pad()+":"+seconds.pad()+"."+ms.pad(3);
+		var seconds=(((number-ms)/1000)%60);
+		var minutes=(((((number-ms)/1000)-seconds)/60)%60);
+		var hours=(((((((number-ms)/1000)-seconds)/60)-minutes)/60)%24);
+		if (nopad) {
+			var dt;
+			if (hours>0) {
+				dt = String(hours)+":"+minutes.pad(2)+":"+seconds.pad(2)+"."+ms.pad(3);
+			} else if (minutes>0) {
+				dt= String(minutes)+":"+seconds.pad(2)+"."+ms.pad(3);
+			} else if (seconds>0) {
+				dt = String(seconds)+"."+ms.pad(3);
+			} else {
+				dt="."+ms.pad(3);		
+			}
+		} else {
+			var dt = hours.pad()+":"+minutes.pad()+":"+seconds.pad()+"."+ms.pad(3);
+		}
 		return dt
 	}
 

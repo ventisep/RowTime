@@ -87,6 +87,7 @@ class LoadCrews(BaseRequestHandler):
                     logging.info('put data %s', crew.crew_number)
                 else:
                     data.append({'crew_number' : crew.crew_number,
+                        'division' : crew.division,
                         'start_time_local' : crewtime.start_time_local,
                         'end_time_local' : crewtime.end_time_local,
                         'start_time_server' : crewtime.start_time_server,
@@ -265,11 +266,12 @@ class UploadHandler(blobstore_handlers.BlobstoreUploadHandler):
                 if count==0 and has_header:
                     logging.info("ignored first header line")
                 else:
-                    crew_number, crew_name, pic_file, crew_type, rower_count, cox = row
+                    crew_number, crew_name, pic_file, crew_type, rower_count, cox, division = row
 
                     c = Crews(
                         event_id = e.key,
                         crew_number = int(crew_number),
+                        division = int(division),
                         crew_name = crew_name,
                         pic_file = pic_file,
                         crew_type = crew_type,
@@ -282,7 +284,15 @@ class UploadHandler(blobstore_handlers.BlobstoreUploadHandler):
 app_config = {
   'webapp2_extras.sessions': {
     'cookie_name': '_simpleauth_sess',
-    'secret_key': SESSION_KEY
+    'secret_key': SESSION_KEY,
+    'cookie_args': {
+        'max_age':     None,
+        'expires':     datetime.datetime.now() + timedelta(weeks=4),
+        'domain':      None,
+        'path':        '/',
+        'secure':      None,
+        'httponly':    False,
+    }
   },
   'webapp2_extras.auth': {
     'user_attributes': []

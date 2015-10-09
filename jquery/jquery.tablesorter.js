@@ -749,6 +749,15 @@
                                 }
                                 // add column to sort list
                                 config.sortList.push([i, this.order]);
+                                // append forced column to sort 
+                                if (config.sortAppend != null) {
+                                    var a = config.sortAppend;
+                                    for (var j = 0; j < a.length; j++) {
+                                        if (a[j][0] != i) {
+                                            config.sortList.push(a[j]);
+                                        }
+                                    }
+                                }                                
                                 // multi column sorting
                             } else {
                                 // the user has clicked on an all
@@ -1000,6 +1009,16 @@
             return $.tablesorter.formatFloat(new Date("2000/01/01 " + s).getTime());
         }, type: "numeric"
     });
+
+    ts.addParser({
+        id: "shortTime",
+        is: function (s) {
+            return /^(([0-2]?[0-9]?:?[0-5]?[0-9]?:?[0-5]?[0-9].[0-9]))$/.test(s);
+        }, format: function (s) {
+            return $.tablesorter.formatFloat(s.replace(new RegExp(/:/g), ""));
+        }, type: "numeric"
+    });
+    
     ts.addParser({
         id: "metadata",
         is: function (s) {

@@ -22,28 +22,30 @@
             <td id="columnsTD" style="width: 75px; padding-top: 4px;"></td>
         </tr>
       </table>
-  	  <table data-role="table" id="table-column-toggle" data-mode="columntoggle" class="ui-responsive table-stroke ui-body-a ui-corner-all" data-filter="true" data-input="#filterTable-input">
+  	  <table data-role="table" id="table-column-toggle" data-mode="columntoggle" class="ui-responsive table-stroke ui-body-a ui-corner-all tablesorter" data-filter="true" data-input="#filterTable-input">
 	  	<thead>
 	        <tr>
 	          <th data-priority="3">Oar</th>
-	          <th>Crew No.</th>
+	          <th>Div</th>
+	          <th>Crew</th>
 	          <th data-priority="1">Name</th>
 	          <th data-priority="4"><abbr title="Category">Cat</abbr></th>
 	          <th data-priority="5"><abbr title="Start Time">Start</th>
 	          <th data-priority="6"><abbr title="Stop Time">Stop</th>
-	          <th>Time</th>
+	          <th style="text-align:right;">Time</th>
 	        </tr>
 	    </thead>
 	    <tbody>
 			{% for crew in crews %}
 			<tr>
-				<th><img class="Iphone_oars" height = "20" src="/images/blade-icons/{{crew.pic_file}}"></th>
+				<td><img class="Iphone_oars" height = "20" src="/images/blade-icons/{{crew.pic_file}}"></td>
+				<td>Div{{crew.division}}</td>
 				<td>{{crew.crew_number}}</td>
 				<td>{{crew.crew_name}}</td>
 				<td>{{crew.crew_type}}</td>
 				<td id="start_{{crew.crew_number}}"></td>
 				<td id="stop_{{crew.crew_number}}"></td>
-				<td id="delta_{{crew.crew_number}}"></td>
+				<td style="text-align:right;" id="delta_{{crew.crew_number}}"></td>
 				<div class="more-data" hidden = "true">
 					<button id="{{crew.crew_number}}" class="more-data">start</button>
 				</div>
