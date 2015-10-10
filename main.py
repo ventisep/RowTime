@@ -100,6 +100,7 @@ class LoadCrews(BaseRequestHandler):
         if self.logged_in:
 
             user=self.current_user
+
             template_values = {
                     'logged_in': self.logged_in,
                     'data': jsondata,
@@ -107,9 +108,13 @@ class LoadCrews(BaseRequestHandler):
                     'event' : requested_event_key,
                     'user' : user
                 }
-
-            template = JINJA_ENVIRONMENT.get_template('templates/rcn_detail.html')
-            self.response.write(template.render(template_values))
+                
+            if user.admin:
+                template = JINJA_ENVIRONMENT.get_template('templates/rcn_detail.html')
+                self.response.write(template.render(template_values))
+            else:
+                template = JINJA_ENVIRONMENT.get_template('templates/rcn_detail_not_logged_in.html')
+                self.response.write(template.render(template_values))
             return
 
         else:
@@ -206,9 +211,10 @@ class signup(AuthHandler):
             if email and password and name:
                 #add account
                 auth_id = "rcn:"+email
-                account = Accounts(email=email, username=name)
+                account = Accounts(email=email, admin = False, username=name)
                 account.key = account.put()
                 data = {"account" : account.key.id(),
+                        "admin" : False,
                         "name" : name,
                         "email" : email,
                         "password_raw":password}

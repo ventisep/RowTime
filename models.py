@@ -5,6 +5,7 @@ class Accounts(ndb.Model):
     auth_id = ndb.IntegerProperty()
     email = ndb.StringProperty()
     username = ndb.StringProperty()
+    admin = ndb.BooleanProperty()
 
 class Events(ndb.Model):
     event_name = ndb.StringProperty()

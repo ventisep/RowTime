@@ -96,6 +96,7 @@ class AuthHandler(BaseRequestHandler, SimpleAuthHandler):
     'rcn'      : {
       'account': 'id',
       'name'   : 'name',
+      'admin'  : 'admin',
       'email'  : 'email',
       'rower_id' : 'rower_id',
       'password_raw' : 'password_raw'
