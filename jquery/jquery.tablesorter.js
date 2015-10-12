@@ -1015,10 +1015,14 @@
         is: function (s) {
             return /^(([0-2]?[0-9]?:?[0-5]?[0-9]?:?[0-5]?[0-9].[0-9]))$/.test(s);
         }, format: function (s) {
-            return $.tablesorter.formatFloat(s.replace(new RegExp(/:/g), ""));
+                if (s>"") {
+                    return $.tablesorter.formatFloat(s.replace(new RegExp(/:/g), ""));
+                } else {
+                    return $.tablesorter.formatFloat(99999);  
+                }
         }, type: "numeric"
     });
-    
+
     ts.addParser({
         id: "metadata",
         is: function (s) {

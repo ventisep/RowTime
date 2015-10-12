@@ -64,10 +64,6 @@ th.header {
 		<ul data-role="listview" class="ui-content jqm-content jqm-fullwidth" data-inset="true" data-filter="true">
 	{% for event in events %}
 			<li>
-      <!--   <div class="behind">
-              <a href="#" class="ui-btn delete-btn">Delete</a>
-              <a href="#" class="ui-btn edit-btn pull-left">Edit</a>
-          </div> -- taken out the swipe-delete function-->
           <a href="/loadcrews?event_key={{event.key.urlsafe()}}" data-transition="slide">{{event.event_name}} <br>on {{event.event_date}}</a>
       </li>
 	{% endfor %}
@@ -78,7 +74,9 @@ th.header {
 
     <ul data-role="listview">
             <li data-icon="delete"><a href="#" data-rel="close">Close menu</a></li>
+            {% if user.admin %}
                 <li><a href="/uploadevents" data-transition="slide">Create Event</a></li>
+            {% endif %}
                 <li><a href="#help" data-transition="slide">Help</a></li>
                 <li><a href="#about" data-transition="slide">About Row Time</a></li>
     </ul>

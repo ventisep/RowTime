@@ -19,7 +19,7 @@
  //variables event_id_urlsafe and last_timestamp have to be set in the dynamic document by jinja2
 
 
-const REFRESH_TIME = 100; // for timer counting in tenths of seconds
+const REFRESH_TIME = 200; // for timer counting in tenths of seconds
 const REFRESH_TIME2 = 2000; //for checking server for times in milleseconds
 const LAST_TIMESTAMP_RESET = "2000-08-31T16:54:07.050741";
 var crew_times = [];
@@ -129,7 +129,7 @@ $(function() {
     function flip($front, $back, crew_num, time) {
 
 
-        $front.css({  //this works perfectly now need backside
+        $front.css({
             transform: "rotateY(180deg)",
             "backface-visibility": "hidden",
         	"transform-style": "preserve-3d",
@@ -147,6 +147,12 @@ $(function() {
       		transition:"all 1s ease-out",
       		"z-index": "0"
       	});
+
+      //	for (i=0; i<crew_times[indexof[crew_num]].observedtimes.length;i++) {
+	  //   		var divstring = "<div id='"+crew_times[indexof[crew_num]].observedtimes[i].time_id+"'>time: "+
+	  //    							crew_times[indexof[crew_num]].observedtimes[i].obs_type+"</div>"
+	  //    		$back.prepend(divstring);
+      //	};
 
       	$front.data("flipped", true);
       	$confirm_button=$back.find('.confirm');
@@ -243,7 +249,8 @@ function get_crew_times() {
     for (var i=0; i < crew_data.length; i++) {   //step through the crew_data passed and assign it to crew_times
     	crew_times.push(JSON.parse(crew_data[i])); //convert the JSON string to an object
     	indexof[crew_times[i].crew_number]=i; //create a lookup
-    	console.log("put crew number " + crew_times[i].crew_number+" into the object array");
+    	crew_times[i].observedtimes = new Array();
+    	// console.log("put crew number " + crew_times[i].crew_number+" into the object array");
     	refresh[i] = false;
 	}	
 
@@ -322,8 +329,8 @@ function get_crew_times() {
 	try {
 		var recordtime = gapi.client.observedtimes.times.timecreate(observed_time).execute(function(resp) {
 	  		console.log(resp);
-	  	e = new $.Event({type: "connection", data: "recorded time"});
-		$(document).trigger(e);
+		  	e = new $.Event({type: "connection", data: "recorded time"});
+			$(document).trigger(e);
 	  	});
 	} catch(err) {
 		e = new $.Event({type: "connection", data: "failed to record time: try again"});
@@ -365,12 +372,9 @@ function get_crew_times() {
 
    function update_time_list(time) {
    	//Update the times in the crew_times array and update the screen//
-   	//1.  for every hit against a crew number process the observed time//
-   	for (var i=0; i<crew_times.length; i++) {
-   		if (crew_times[i].crew_number == time.crew) {
-   			UpdateTimes(i, time.crew, new Date(time.time), time.stage, time.obs_type);
-   			}
-   		}
+   		var i=indexof[time.crew];
+   		UpdateTimes(i, time.crew, new Date(time.time), time.stage, time.obs_type);
+   		crew_times[i].observedtimes.push(time);
    	}
        	
 	function myFunction() {
@@ -381,7 +385,7 @@ function get_crew_times() {
 	}
 
 	function UpdateTimes(indx, crew_num, time, stage, obs_type){
-		if (obs_type == 0) { //this is an time that has been added
+		if (obs_type == 0) { //this is a time that has been added
 			if (stage == 0){
 				//a start time has been recorded//
 				UpdateStartTime(indx, crew_num, time);

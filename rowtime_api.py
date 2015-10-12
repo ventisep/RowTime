@@ -44,12 +44,13 @@ class ClockSyncReply(messages.Message):
 
 class ObservedTime(messages.Message):
   """used to store an observered time from a user for a specific Crew."""
-  event_id = messages.StringField(1)
-  timestamp = message_types.DateTimeField(2)
-  obs_type = messages.IntegerField(3)
-  crew = messages.IntegerField(4)
-  stage = messages.IntegerField(5)
-  time = message_types.DateTimeField(6)
+  time_id = messages.StringField(1)
+  event_id = messages.StringField(2)
+  timestamp = message_types.DateTimeField(3)
+  obs_type = messages.IntegerField(4)
+  crew = messages.IntegerField(5)
+  stage = messages.IntegerField(6)
+  time = message_types.DateTimeField(7)
 
 class ObservedTimeList(messages.Message):
   """Used to provide a list of Observed times since last request for a specific event"""
@@ -87,6 +88,7 @@ class ObservedTimesApi(remote.Service):
       i=0
       for time in searched_times:
         retrieved_times.times.append(ObservedTime())
+        retrieved_times.times[i].time_id = time.key.urlsafe()
         retrieved_times.times[i].event_id = request.event_id
         retrieved_times.times[i].timestamp = time.timestamp 
         retrieved_times.times[i].obs_type = time.obs_type

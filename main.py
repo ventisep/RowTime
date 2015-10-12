@@ -12,6 +12,7 @@ from google.appengine.ext import blobstore
 from google.appengine.ext.webapp import blobstore_handlers
 from handlers import BaseRequestHandler, AuthHandler
 import jinja2
+from jinja2.ext import autoescape
 from webapp2 import WSGIApplication, Route
 from secrets import SESSION_KEY
 import csv
@@ -21,7 +22,7 @@ if 'lib' not in sys.path:
 from models import *
 
 
-JINJA_ENVIRONMENT = jinja2.Environment(loader=jinja2.FileSystemLoader(os.getcwd())) 
+JINJA_ENVIRONMENT = jinja2.Environment(autoescape=True,extensions=['jinja2.ext.autoescape'],loader=jinja2.FileSystemLoader(os.getcwd()))
 
 class MainPage(BaseRequestHandler):
 
@@ -108,7 +109,7 @@ class LoadCrews(BaseRequestHandler):
                     'event' : requested_event_key,
                     'user' : user
                 }
-                
+
             if user.admin:
                 template = JINJA_ENVIRONMENT.get_template('templates/rcn_detail.html')
                 self.response.write(template.render(template_values))
@@ -236,6 +237,38 @@ class signup(AuthHandler):
                 self.response.write(template.render(template_values))            
                 return
 
+class DownloadHandler(BaseRequestHandler):
+  def get(self):
+
+    recs = Observed_Times.query().fetch();
+
+    self.response.headers['Content-Type'] = 'text/csv'
+    self.response.headers['Content-Disposition'] = 'attachment; filename=studenttransreqs.csv'
+    writer= csv.writer(self.response.out)
+    fieldnames = ['Key',
+                    'event_id',
+                    'timestamp',
+                    'obs_type',
+                    'crew_number',
+                    'stage',
+                    'time_local',
+                    'time_server',
+                    'recorded_by']
+    writer.writerow(fieldnames)
+
+    for rec in recs:
+        writer.writerow([rec.key,
+                    rec.event_id,
+                    rec.timestamp,
+                    rec.obs_type,
+                    rec.crew_number,
+                    rec.stage,
+                    rec.time_local,
+                    rec.time_server,
+                    rec.recorded_by ])
+
+
+
 class loadevent(BaseRequestHandler):
     def get(self):
         upload_url = blobstore.create_upload_url('/upload')
@@ -313,6 +346,7 @@ routes = [
   Route('/logout', handler='handlers.AuthHandler:logout', name='logout'),
   Route('/login', handler='main.login'),
   Route('/signup', handler='main.signup'),
+  Route('/downloadhandler',DownloadHandler),
   Route('/uploadevents', handler='main.loadevent'),
   Route('/upload', handler='main.UploadHandler'),
   Route('/testdata', handler='testing.CreateTestData'),
