@@ -27,6 +27,33 @@ from secrets import SESSION_KEY
 #doc and client libraries.
 package = 'RowTimePackage'
 
+class CrewsRequest(messages.Message):
+  "used to store the request for a list of crews for a specific event"
+  event_id = messages.StringField(1)
+
+class Stage(messages.Message):
+  "used to store the stages of the specific event to put in the CrewList message"
+  stage_index = messages.IntegerField(1)
+  label = messages.StringField(2)
+
+class Crew(messages.Message):
+  "used to store the crew information"
+  crew_id = messages.StringField(1)
+  crew_number = messages.IntegerField(2)
+  crew_name = messages.StringField(3)
+  division = messages.IntegerField(4)
+  stages = messages.MessageField(Stage, 5, repeated=True)
+  start_time_local = message_types.DateTimeField(6)
+  end_time_local = message_types.DateTimeField(7)
+  pic_file = messages.StringField(8)
+  category = messages.StringField(9)
+  rower_count = messages.IntegerField(10)
+  cox = messages.BooleanField(11)
+
+class CrewList(messages.Message):
+  event_id = messages.StringField(1)
+  crews = messages.MessageField(Crew, 2, repeated=True)
+
 class TimesRequest(messages.Message):
   "used to store the request for a list of times since the last timestamp"
   event_id = messages.StringField(1)
@@ -63,6 +90,8 @@ class CrewTime(messages.Message):
   event_id = messages.StringField(1)
   crew = messages.IntegerField(2)
   observed_time_list = messages.MessageField(ObservedTime, 3, repeated=True)
+
+
 
 @endpoints.api(name='observedtimes', version='v1')
 class ObservedTimesApi(remote.Service):
@@ -110,12 +139,11 @@ class ObservedTimesApi(remote.Service):
   def time_create(self, request):
 
     current_time = datetime.datetime.now()  #get current time as soon as possible for server time
-    logging.info(self)
+    eventkey = ndb.Key(urlsafe = request.event_id)
+    utc_time = request.time - request.time.utcoffset()
 
     user="paul-backend"
     ot = ObservedTime()
-    eventkey = ndb.Key(urlsafe = request.event_id)
-    utc_time = request.time - request.time.utcoffset()
    
     if request.obs_type == 0:
       saved_time = Observed_Times(event_id = eventkey,
@@ -147,7 +175,6 @@ class ObservedTimesApi(remote.Service):
           last_time.put()
           saved_time.put()
           saved_stage = last_time.stage
-          logging.info("got to the put statement")
         else:
           return("error")
 
@@ -177,6 +204,54 @@ class ObservedTimesApi(remote.Service):
     time.diff_in_ms = (time.server_time - time.client_time).total_seconds()*1000
     logging.info("time server %s", time.server_time)
     return time
+
+
+
+  @endpoints.method(CrewsRequest, CrewList,
+                    path='crew', http_method='GET',
+                    name='crew.list')
+  def crews_list(self, request):
+
+    eventkey = ndb.Key(urlsafe = request.event_id)
+
+    stage_list = list()
+    crew_list = list()
+    reply = CrewList()
+
+    event = Events.query(Events.key == eventkey).get()
+   # stage_list = Stages.query(Stages.event_id == eventkey).order(Stages.stage_index).fetch()
+    crew_list = Crews.query(Crews.event_id == eventkey).order(Crews.crew_number).fetch()
+
+    reply.event_id = request.event_id
+
+    if crew_list:
+      i=0
+      for crew in crew_list:
+      #for each crew get their details and fill the reply message
+        reply.crews.append(Crew())
+        reply.crews[i].crew_id = crew.key.urlsafe()
+        reply.crews[i].crew_number = crew.crew_number
+        reply.crews[i].crew_name = crew.crew_name
+        reply.crews[i].division = crew.division
+        reply.crews[i].pic_file = crew.pic_file
+        reply.crews[i].category = crew.crew_type
+        reply.crews[i].rower_count = crew.rower_count
+        reply.crews[i].cox = crew.cox
+
+    #    j=0
+    #    for stage in stage_list:
+    #      reply.crews[i].stages.append(Stage())
+    #      reply.crews[i].stages[j].stage_index = stage.stage_index
+    #      reply.crews[i].stages[j].label = stage.label
+    #      j=j+1
+    
+        i=i+1
+
+
+
+    return reply
+
+
 
 
 application = endpoints.api_server([ObservedTimesApi])

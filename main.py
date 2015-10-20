@@ -74,29 +74,12 @@ class LoadCrews(BaseRequestHandler):
         crews=Crews.query(Crews.event_id==requested_event_key).order(Crews.crew_number).fetch()
      
         if crews:
-            logging.info('got crew data %s', type(data))
             for crew in crews:
-                #for each crew get their times and if there is none
-                #in the database create a record for them
-                crewtime = ndb.Key('Crew_Times', crew.key.id(), parent=requested_event_key).get()
-                if not crewtime:
-                    crewtime_key=Crew_Times(id = crew.key.id(),
-                                        parent = requested_event_key,
-                                        event_id = requested_event_key,
-                                        crew_id = crew.key,
-                                        crew_number = crew.crew_number).put()
-                    logging.info('put data %s', crew.crew_number)
-                else:
-                    data.append({'crew_number' : crew.crew_number,
-                        'division' : crew.division,
-                        'start_time_local' : crewtime.start_time_local,
-                        'end_time_local' : crewtime.end_time_local,
-                        'start_time_server' : crewtime.start_time_server,
-                        'end_time_server' : crewtime.end_time_server})
-                    logging.info('appended data %s', crew.crew_number)
+
+                data.append({'crew_number' : crew.crew_number,
+                    'division' : crew.division})
                 
         jsondata=map(json.dumps, data)
-        logging.info('got crew jsondata %s', jsondata)
 
         if self.logged_in:
 

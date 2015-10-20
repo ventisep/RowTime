@@ -12,6 +12,11 @@ class Events(ndb.Model):
     event_date = ndb.DateProperty()
     event_desc = ndb.StringProperty()
 
+class Stages(ndb.Model):
+    event_id = ndb.KeyProperty(kind = Events)
+    stage_index = ndb.IntegerProperty
+    label = ndb.StringProperty()
+
 class Rowers(ndb.Model):
     account_id = ndb.KeyProperty(kind= Accounts)
     name = ndb.StringProperty()
@@ -40,14 +45,3 @@ class Observed_Times(ndb.Model):
     time_server = ndb.DateTimeProperty()
     recorded_by = ndb.StringProperty()
 
-class Crew_Times(ndb.Model):
-    event_id = ndb.KeyProperty(kind= Events)
-    crew_id = ndb.KeyProperty(kind= Crews)
-    crew_number = ndb.IntegerProperty()
-    start_time_local = ndb.DateTimeProperty()
-    end_time_local = ndb.DateTimeProperty()
-    start_time_server = ndb.DateTimeProperty()
-    end_time_server = ndb.DateTimeProperty()
-
-    def todict(o):
-        return o.__dict__
