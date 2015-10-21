@@ -29,11 +29,21 @@ class CreateTestData(BaseRequestHandler):
 			    	event_date = datetime.date(2015,8,20),
 			    	event_desc = "The last chance to excel before Henley").put()
 
+        		s=Stages(
+			    	event_id = e,
+			    	stage_index = 0,
+			    	label = "start").put()
+
+        		s=Stages(
+			    	event_id = e,
+			    	stage_index = 1,
+			    	label = "stop").put()
+
 	        	c=Crews(
 				    event_id = e,
 				    crew_number = 123,
 				    crew_name = "Eton College RC",
-				    pic_file = "Eton-RC.gif",
+				    pic_file = "etn.gif",
 				    crew_type = "Coxed Quad 4x+",
 				    rower_count = 4,
 				    cox = True).put()
@@ -42,18 +52,11 @@ class CreateTestData(BaseRequestHandler):
 				    event_id = e,
 				    crew_number = 124,
 				    crew_name = "Bedford Modern RC",
-				    pic_file = "Bedford-Modern-School-RC.gif",
+				    pic_file = "bms.gif",
 				    crew_type = "Coxed Quad 4x+",
 				    rower_count = 4,
 				    cox = True).put()
 
-	        	ct=Crew_Times(
-				    event_id = e,
-				    crew_id = c).put()
-
-	        	ct2=Crew_Times(
-				    event_id = e,
-				    crew_id = c2).put()
 
 	        except:
         		message = sys.exc_info()[0]

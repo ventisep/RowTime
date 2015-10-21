@@ -27,3 +27,8 @@ indexes:
   properties:
   - name: event_id
   - name: timestamp
+
+- kind: Stages
+  properties:
+  - name: event_id
+  - name: stage_index

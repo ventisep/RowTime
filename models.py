@@ -14,7 +14,7 @@ class Events(ndb.Model):
 
 class Stages(ndb.Model):
     event_id = ndb.KeyProperty(kind = Events)
-    stage_index = ndb.IntegerProperty
+    stage_index = ndb.IntegerProperty()
     label = ndb.StringProperty()
 
 class Rowers(ndb.Model):

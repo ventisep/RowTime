@@ -219,7 +219,7 @@ class ObservedTimesApi(remote.Service):
     reply = CrewList()
 
     event = Events.query(Events.key == eventkey).get()
-   # stage_list = Stages.query(Stages.event_id == eventkey).order(Stages.stage_index).fetch()
+    stage_list = Stages.query(Stages.event_id == eventkey).order(Stages.stage_index).fetch()
     crew_list = Crews.query(Crews.event_id == eventkey).order(Crews.crew_number).fetch()
 
     reply.event_id = request.event_id
@@ -238,13 +238,13 @@ class ObservedTimesApi(remote.Service):
         reply.crews[i].rower_count = crew.rower_count
         reply.crews[i].cox = crew.cox
 
-    #    j=0
-    #    for stage in stage_list:
-    #      reply.crews[i].stages.append(Stage())
-    #      reply.crews[i].stages[j].stage_index = stage.stage_index
-    #      reply.crews[i].stages[j].label = stage.label
-    #      j=j+1
-    
+        j=0
+        for stage in stage_list:
+          reply.crews[i].stages.append(Stage())
+          reply.crews[i].stages[j].stage_index = stage.stage_index
+          reply.crews[i].stages[j].label = stage.label
+          j=j+1
+
         i=i+1
 
 

@@ -5,7 +5,6 @@
  <script type="text/javascript">
  //Set the gobal variables needed by the JavaScript in rcn_detail_script.js
     var event_id_urlsafe = "{{event.urlsafe()}}";
-	var crew_data={{ data|safe }}; //get data passed from jinja2
 	var event_and_last_timestamp = {"event_id":event_id_urlsafe,
 							"last_timestamp":last_timestamp};
  </script>

@@ -72,22 +72,13 @@ class LoadCrews(BaseRequestHandler):
         crews=list()
         data = list()
         crews=Crews.query(Crews.event_id==requested_event_key).order(Crews.crew_number).fetch()
-     
-        if crews:
-            for crew in crews:
-
-                data.append({'crew_number' : crew.crew_number,
-                    'division' : crew.division})
-                
-        jsondata=map(json.dumps, data)
-
+    
         if self.logged_in:
 
             user=self.current_user
 
             template_values = {
                     'logged_in': self.logged_in,
-                    'data': jsondata,
                     'crews': crews,
                     'event' : requested_event_key,
                     'user' : user
@@ -104,7 +95,6 @@ class LoadCrews(BaseRequestHandler):
         else:
             template_values = {
                     'logged_in': self.logged_in,
-                    'data': jsondata,
                     'crews': crews,
                     'event' : requested_event_key,
                 }

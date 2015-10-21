@@ -43,7 +43,7 @@ function Rower(k,n) {
 	this.name = n;
 }
 
-function Stage(lt,st,t,l,c) {
+function Stage(l,c,lt,st,t) {
 	this.local_time = lt;
 	this.server_time = st;
 	this.time_textElement = t;
@@ -59,6 +59,7 @@ function Crew(k,e,n,cn,d,s,ss,stl,sts,etl,ets,f,t,c,x,r,o) {
   this.division = d;
   this.inProgress = false;
   this.stage = s;
+  this.nextstage = s;
   this.stages = ss; //array of Stage objects
   this.start_time_local = stl; //the time taken at the start line
   this.start_time_server - sts;
@@ -81,48 +82,82 @@ function Crew(k,e,n,cn,d,s,ss,stl,sts,etl,ets,f,t,c,x,r,o) {
 	this.delta_time_textElement.text(Convert_ms_tostring(this.delta_time, true).slice(0,-2));  //don't show milliseconds
   };
 
-  this.UpdateStartTime = function(time) {
-	this.start_time_local = time; //start time but could be a stage event
-	this.stage=0; //could take from time event
-	this.start_time_textElement.css("color","green");
-	this.start_time_textElement.text(time.toTimeString().replace(/.*(\d{2}:\d{2}:\d{2}).*/, "$1")+"."+("00"+time.getMilliseconds().toString()).slice(-3));
-	this.button.text("stop");
-	this.button.css("background", "red");
-	this.button.prop("enabled");
-	this.inProgress = true;
+  this.UpdateStartTime = function(time, type) {
+  	if (type == 0) { //add time
+  		time = new Date(time);
+		this.start_time_local = time; //start time but could be a stage event
+		this.start_time_textElement.css("color","green");
+		this.start_time_textElement.text(time.toTimeString().replace(/.*(\d{2}:\d{2}:\d{2}).*/, "$1")+"."+("00"+time.getMilliseconds().toString()).slice(-3));
+		this.inProgress = true;
+	} else if (type == 1) {  //delete time
+		this.start_time_textElement.css("color","green");
+		this.start_time_textElement.text("");
+		this.end_time_textElement.text("");
+		this.delta_time_textElement.text("");
+		this.button.removeClass(this.stages[this.nextstage].classname);
+		this.stage = -1;
+		this.nextstage = 0;
+		this.button.addClass(this.stages[this.nextstage].classname);
+		//this.stages[stage].time_textElement.text("");
+		this.button.text(this.stages[this.nextstage].label);
+		this.inProgress = false;
+	}
 	return;
- }  
+ } 
 
  this.AddTimeEvent = function(timeEvent) { //to do for a later version
- 	var stage = timeEvent.stage;
- 	if (stage = 0) {this.UpdateStartTime(timeEvent.local_time);} //stage 0 is always the start
- 	if (stage = this.stages.length) {this.UpdateStopTime(timeEvent.local_time);} //last stage is always the end
-	this.stages[stage].local_time = timeEvent.local_time; //start time
-	this.stages[stage].server_time = timeEvent.server_time; //start time
-	this.stage=stage;
-	this.stages[stage].time_textElement.css("color","green");
-	this.stages[stage].time_textElement.text(time.toTimeString().replace(/.*(\d{2}:\d{2}:\d{2}).*/, "$1")+"."+("00"+time.getMilliseconds().toString()).slice(-3));
-	this.button.text(this.stages[stage+1].label);
-	this.button.removeClass(this.stages[stage].classname);
-	this.button.addClass(this.stages[stage+1].classname);
+ 	var stage = parseInt(timeEvent.stage);
+ 	if (stage == 0) {this.UpdateStartTime(timeEvent.time, timeEvent.obs_type);} //stage 0 is always the start
+ 	if (stage == this.stages.length-2) {this.UpdateStopTime(timeEvent.time, timeEvent.obs_type, stage);} //last but one stage is always the end
+	if (timeEvent.obs_type == 0) {  //add the stage time provided
+		this.stages[stage].local_time = new Date(timeEvent.time); //start time
+		this.stages[stage].server_time = new Date(timeEvent.timestamp); //start time
+		this.stage=stage;
+		this.nextstage=this.stage+1;
+		//this.stages[stage].time_textElement.css("color","green");
+		//this.stages[stage].time_textElement.text(time.toTimeString().replace(/.*(\d{2}:\d{2}:\d{2}).*/, "$1")+"."+("00"+time.getMilliseconds().toString()).slice(-3));
+		this.button.text(this.stages[this.nextstage].label);
+		this.button.removeClass(this.stages[this.stage].classname);
+		this.button.addClass(this.stages[this.nextstage].classname);
+
+	} else if (timeEvent.obs_type == 1) { //delete the stage time provided but not the overall 
+										// stage of the crew this will be done only is start or
+										// end times are deleted.
+		this.stages[stage].local_time = null; //start time
+		this.stages[stage].server_time = null; //start time
+	}
+	this.observedTimes.push(timeEvent);
 	return;
  }
 
- this.UpdateStopTime = function(time){
-	this.end_time_local = time; //end time
-	this.inProgress = false;
-	this.stage=1;
-	this.delta_time = this.end_time_local - this.start_time_local;
-	this.button.text("Finished");
-	this.button.css("background","grey");
-	this.button.prop("disabled");
-	this.end_time_textElement.text(time.toTimeString().replace(/.*(\d{2}:\d{2}:\d{2}).*/, "$1")+"."+("00"+time.getMilliseconds().toString()).slice(-3));
-	this.delta_time_textElement.text(Convert_ms_tostring(this.delta_time, true).slice(0,-2));
-	this.end_time_textElement.css("color","red");
-	this.delta_time_textElement.css("color","black");
-
+ this.UpdateStopTime = function(time, type, stage){
+ 	if (type == 0) { //add time
+ 		time = new Date(time);
+		this.end_time_local = time; //end time
+		this.inProgress = false;
+		this.delta_time = this.end_time_local - this.start_time_local;
+		this.button.text("Finished");
+		this.button.css("background","grey");
+		this.button.prop("disabled");
+		this.end_time_textElement.text(time.toTimeString().replace(/.*(\d{2}:\d{2}:\d{2}).*/, "$1")+"."+("00"+time.getMilliseconds().toString()).slice(-3));
+		this.delta_time_textElement.text(Convert_ms_tostring(this.delta_time, true).slice(0,-2));
+		this.end_time_textElement.css("color","red");
+		this.delta_time_textElement.css("color","black");
+	} else if (type == 1){ //delete time
+		this.end_time_textElement.text("");
+		this.button.text("stop");
+		this.button.css("background", "red");
+		this.button.prop("enabled");
+		this.button.removeClass(this.stages[this.nextstage].classname);
+		this.stage = (stage >0) ? stage-1 : 0;
+		this.nextstage = this.stage+1;
+		this.button.addClass(this.stages[this.nextstage].classname);
+		//this.stages[stage].time_textElement.text("");
+		this.button.text(this.stages[this.nextstage].label);
+		this.inProgress = true;
+	}
+	return;
  }
-
 }
 
 function copyCrew(myParsedJSON, crewObj) {
@@ -140,10 +175,17 @@ function copyCrew(myParsedJSON, crewObj) {
 	if (crewObj.stages != undefined) {
 
 		for (var i=0; i<crewObj.stages.length; i++) {
-			crewObj.stages[i].time_textElement = $("#stage_"+crewObj.crew_number+crewObj.stages[i].name);
-			crewObj.stages[i].delta_time_textElement = $("#delta_"+crewObj.crew_number+crewObj.stages[i].name);
+			//crewObj.stages[i].time_textElement = $("#stage_"+crewObj.stages[i].label+crewObj.crew_number);
+			//crewObj.stages[i].delta_time_textElement = $("#delta_"+crewObj.stages[i].label+crewObj.crew_number);
+			crewObj.stages[i].classname = crewObj.stages[i].label+"Class";
 		}
+		crewObj.stages.push({label : 'Finished', classname : 'FinishedClass'});
+		crewObj.stage = -1; //not started
+		crewObj.nextstage = 0; //started
 	}
+
+	crewObj.observedTimes = new Array(); //initialise the array that will hold times
+
 
 	return crewObj;
 }  
@@ -173,10 +215,9 @@ $(function() {
 
 	$(document).on( "pagecreate", "#crewtimes", function() {
 
-		get_crew_times();  //initialise the crew_times array and set connection status
+		get_crew_list();  //initialise the crew_times array and set connection status
 		$(".connection-status").text(connection_status);
 	    autoUpdate = true;
-		get_times();
     	$(".ui-table-columntoggle-btn").appendTo($("#columnsTD"));
         $("#table-column-toggle").tablesorter({sortAppend: [[7,0]], headers: {7: {sorter:'shortTime'}}});
 	});
@@ -197,48 +238,21 @@ $(function() {
 		});
 
 	function record_stage(e) {
-		//todo this is called when the .stopwatch class of button is called
-		//it determines what to do depending on the current stage which is on the 
-		//button's text label.
-		//to make an offline version - this function should be a method of the 
-		//Crew object and should write the information into
-		//a local data store rather than direct to the server.  An event handler which triggers on
-		//the local store change then should call the write to the server handling gracefully if 
-		//the server is not available.
-		//we also would need to change the array crew_times[] to be held in the local store
-		//
-		//to make a multi-stage version we would need to line up each stage with a button text
-		//which would have to come from the event information. then do the following:
-		//if stage is in the list of possible stages, call a replacement for the UpdateStartTime
-		//function called UpdateStageTime.  Use stage as a parameter for this function and process
-		//accordingly.  
+
 		time = new Date();
 		autoUpdate = false;  //switch off reading from server till new time recorded
 		var button = $(this);
 		crew_num = button.attr("id");
 		indx = indexof[crew_num];
-		if (button.text() == "start") {
-			crew_times[indx].UpdateStartTime(time);
-			stage = 0;
-			var observed_time = {event_id: event_id_urlsafe,
-								  timestamp: time,
-								  obs_type: 0,  //an 0 = add time to the record type 1 = delete
-								  crew: crew_num,
-								  stage: stage,
-								  time: time};
-			record_observed_time(observed_time);
-		}
-		else if(button.text() == "stop") {
-			crew_times[indx].UpdateStopTime(time);
-			stage = 1;
-			var observed_time = {event_id: event_id_urlsafe,
-								  timestamp: time,
-								  obs_type: 0,
-								  crew: crew_num,
-								  stage: stage,
-								  time: time};
-			record_observed_time(observed_time);
-		}
+		var observed_time = {event_id: event_id_urlsafe,
+							 timestamp: time,
+							 obs_type: 0,  //an 0 = add time to the record type 1 = delete
+							 stage: crew_times[indx].nextstage,
+							 crew: crew_num,
+							 time: time};		
+
+		crew_times[indx].AddTimeEvent(observed_time);
+		record_observed_time(observed_time);
 		autoUpdate = true;  //switch on reading from server
 		get_times();
 		e.preventDefault();
@@ -298,11 +312,13 @@ $(function() {
 
       	$confirm_button.on("click tap", function(e){
       		var time = $(this).data("time");
+      		var crew_num = $(this).data("crew_num");
+      		indx = indexof[crew_num];
 			var observed_time = {event_id: event_id_urlsafe,
 								  timestamp: time,
 								  obs_type: 1,  //type 1 is delete the last stage entered for that crew
-								  crew: $(this).data("crew_num"),
-								  stage: 0, //we can set this to anything - it is ignored
+								  crew: crew_num,
+								  stage: crew_times[indx].stage, //we can set this to anything - it is ignored
 								  time: time};
 			record_observed_time(observed_time);//when auto-update comes back on the event should be processed
         	unflip($front, $back);
@@ -371,21 +387,22 @@ $(function() {
 
 
 //load the crew_times object with the crew times list retrieved from the database//
-function get_crew_times() {
+function get_crew_list() {
 	//if using the API version then call the API here to get back a JSON string
 	crew_times.length = 0; // initialise crew Array before filling it with the crew list
 	indexof.length = 0;
 	var eventRequest = {event_id: event_id_urlsafe};
 	var crewListRequest = gapi.client.observedtimes.crew.list(eventRequest).execute(function(resp) {
 
-	    for (var i=0; i < resp.result.crews.length; i++) {   //step through the crew_data passed and assign it to crew_times
-	    	var tmpcrew = new Crew();
-	    	tmpcrew = copyCrew(resp.result.crews[i],tmpcrew);//convert the JSON string to an object
-	    	crew_times.push(tmpcrew); 
-	    	indexof[crew_times[i].crew_number]=i; //create a lookup
-	    	crew_times[i].observedTimes = new Array();
-	    	// console.log("put crew number " + crew_times[i].crew_number+" into the object array");
-		}
+    for (var i=0; i < resp.result.crews.length; i++) {   //step through the crew_data passed and assign it to crew_times
+    	var tmpcrew = new Crew();
+    	tmpcrew = copyCrew(resp.result.crews[i],tmpcrew);//convert the JSON string to an object
+    	crew_times.push(tmpcrew); 
+    	indexof[crew_times[i].crew_number]=i; //create a lookup
+    	// console.log("put crew number " + crew_times[i].crew_number+" into the object array");
+	}
+	get_times(); //now the crews are loaded it is safe to load any times already recorded
+
 	});	
 
 }
@@ -488,87 +505,22 @@ function get_crew_times() {
 	    	event_and_last_timestamp.last_timestamp = last_timestamp;
 	    	if (resp.result.times) {
 		   		for(var i=0; i<resp.result.times.length; i++) {
-		    		update_time_list(resp.result.times[i]);
+		    		crew_times[indexof[resp.result.times[i].crew]].AddTimeEvent(resp.result.times[i]);
 		    		e = new $.Event({type: "connection", data: "got times"});
 					$(document).trigger(e);	
 		    	}
 	    		$("#table-column-toggle").trigger("update");
-		    }
+		   }
+   		   var mytime=setTimeout('get_times()',REFRESH_TIME2);
 	      });
  
 	} catch(err) {
 	   	e = new $.Event({type: "connection", data: "get times - failed"});
 		$(document).trigger(e);
+		var mytime=setTimeout('get_times()',REFRESH_TIME2); //keep trying
    	}
-   	var mytime=setTimeout('get_times()',REFRESH_TIME2);
 
    }
-
-   function update_time_list(time) {
-   	//Update the times in the crew_times array and update the screen//
-   		var i=indexof[time.crew];
-   		UpdateTimes(i, time.crew, new Date(time.time), time.stage, time.obs_type);
-   		crew_times[i].observedTimes.push(time);
-   	}
-       	
-	function myFunction() {
-
-		var rand_num = Math.floor((Math.random() * 10) + 1);
-		background = "url('/images/rowingpic" + String(rand_num) + ".jpg')";
-		document.body.style.backgroundImage = background;
-	}
-
-	function UpdateTimes(indx, crew_num, time, stage, obs_type){
-		if (obs_type == 0) { //this is a time that has been added
-			if (stage == 0){
-				//a start time has been recorded//
-				crew_times[indx].UpdateStartTime(time);
-			} else if(stage ==1){
-				//a stop time has been recorded//
-				crew_times[indx].UpdateStopTime(time);
-			} else { alert("stage parameter not set properly")}
-		} else if (obs_type == 1) { //this is a time that is being deleted
-			if (stage == 0){
-				//delete of a start time has been recorded//
-				DeleteStartTime(indx, crew_num);
-			} else if(stage ==1){
-				//delete of a stop time has been recorded//
-				DeleteStopTime(indx, crew_num);
-			} else { console.log("stage parameter not set right")}
-		}
-	}
-
-
-	function DeleteStartTime(indx, crew_num){
-		var button = $('#'+crew_num);
-		crew_times[indx].stage=0;
-		var start_time_textElement = $("#start_"+crew_num);
-		var stop_time_textElement = $("#stop_"+crew_num);
-		var delta_time_textElement = $("#delta_"+crew_num);
-		start_time_textElement.css("color","green");
-		start_time_textElement.text("");
-		stop_time_textElement.text("");
-		delta_time_textElement.text("");
-		button.text("start");
-		button.css("background", "#f6f6f6");
-		button.prop("enabled");
-		crew_times[indx].inProgress = false;
-	}
-
-
-
-	function DeleteStopTime(indx, crew_num){
-		var button = $('#'+crew_num);
-		crew_times[indx].stage=0;
-		var start_time_textElement = $("#start_"+crew_num);
-		var stop_time_textElement = $("#stop_"+crew_num);
-		stop_time_textElement.text("");
-		button.text("stop");
-		button.css("background", "red");
-		button.prop("enabled");
-		crew_times[indx].inProgress = true;
-		refreshCount = refreshCount+1;
-	}
 
 
 	function Convert_ms_tostring(number, nopad){
