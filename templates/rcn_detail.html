@@ -1,24 +1,41 @@
+<!doctype html>
+<html >
+<head>
+  <meta charset="utf-8">
+  <meta name="Paul Ventisei" content="Rowing Times">
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<!--
+  <link rel="stylesheet" href="jquery/jquery.mobile-1.4.5.min.css"/>
+-->
+  <link rel="stylesheet" href="jquery/RowTimeTheme.min.css" />
+  <link rel="stylesheet" href="jquery/jquery.mobile.icons.min.css" />
+  <link rel="stylesheet" href="jquery/jquery.mobile.structure-1.4.5.min.css" />
+  <script src="jquery/jquery-1.11.3.min.js"></script>
+  <script src="jquery/jquery.mobile-1.4.5.min.js"></script>
+  <script src="jquery/jquery.tablesorter.js"></script>
+  <script type="text/javascript" src="js/rcn_detail_script.js"></script>
+  <script src="https://apis.google.com/js/client.js?onload=init"></script>
 
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
-<div data-role="page" id="crewtimes">
- <script type="text/javascript">
- //Set the gobal variables needed by the JavaScript in rcn_detail_script.js
-    var event_id_urlsafe = "{{event.urlsafe()}}";
-	var event_and_last_timestamp = {"event_id":event_id_urlsafe,
-							"last_timestamp":last_timestamp};
- </script>
+</head>
+
+<div data-role="page" data-event-id = "{{event.urlsafe()}}" id="crewtimes" data-dom-cache="true">
 	<div data-role="header" data-position="fixed">
     	<h1 id="username">Hi {{user.name}}</h1>
     	<a href="#" data-rel="back" data-icon="back" data-iconpos="notext">back</a>
     	<a href="#settings" data-icon="gear" data-iconpos="notext">Settings</a>
-  	</div>
+  </div>
+
 
   <div data-role="main" class="ui-content jqm-content">
 
-	<ul data-role="listview" data-filter = "true" data-inset="true" class="ui-content jqm-content jqm-fullwidth">
+  <div id="my-wrapper">
+    <ul id="CrewList" data-role="listview" data-filter = "true" data-inset="true" class="ui-content jqm-content jqm-fullwidth">
 
 		{% for crew in crews %}
-		<li class="swipeable" id="crew_{{crew.crew_number}}">
+		<li class="swipeable" id="{{event.urlsafe()}}_crew_{{crew.crew_number}}" data-crew = "{{crew.crew_number}}">
 			<div data-enhance="false" class="back">
 				<p style="text-align:center; color:white">Undo the last recorded time</p>
 				<button class="cancel back-button" data-enhance="false">cancel</button> <button class="confirm back-button" data-enhance="false">confirm</button>
@@ -29,19 +46,34 @@
 				</div>
 				<div class="ui-body ui-grid-a">
 					<div class="ui-block-a">
-						<span>time: <div style="display: inline" class="ui-corner-all"  id="delta_{{crew.crew_number}}" type="datetime"></div></span><br>
-						<span >start: <div  style="display: inline" class="ui-corner-all" id="start_{{crew.crew_number}}" type="datetime"></div></span><br>
-						<span>stop: <div style="display: inline" class="ui-corner-all"  id="stop_{{crew.crew_number}}"  type="datetime"></div></span><br>
+						<span>time: <div style="display: inline" class="ui-corner-all"  id="{{event.urlsafe()}}_delta_{{crew.crew_number}}" type="datetime"></div></span><br>
+						<span>start: <div  style="display: inline" class="ui-corner-all" id="{{event.urlsafe()}}_start_{{crew.crew_number}}" type="datetime"></div></span><br>
+						<span>stop: <div style="display: inline" class="ui-corner-all"  id="{{event.urlsafe()}}_stop_{{crew.crew_number}}"  type="datetime"></div></span><br>
 					</div>
 					<div class="ui-block-b">
-						<button id="{{crew.crew_number}}" class = "stopwatch ui-body ui-corner-all">start</button>
+						<button id="{{event.urlsafe()}}_{{crew.crew_number}}" data-crew = "{{crew.crew_number}}" class = "stopwatch startClass ui-body ui-corner-all">start</button>
 					</div>
 			    </div>
 			</div>
 
 		</li>
 		{% endfor %}
-	</ul>
+	 </ul>
+  </div>
+</div>
+
+
+<div data-role="popup" id="addtime" data-theme="a" class="ui-corner-all">
+        <div style="padding:10px 20px;">
+            <h3>Record a time and put a crew to it now or later</h3>
+            <label for="crew" class="ui-hidden-accessible">crew number:</label>
+            <input type="number" name="user" id="crew" value="" placeholder="crew number" data-theme="a">
+            <label for="time" class="ui-hidden-accessible">Time:</label>
+            <input type="time" name="time" id="time" value="" placeholder="time" data-theme="a">
+            <button data-crew="TimeOnly" class="stopwatch ui-btn ui-corner-all ui-shadow ui-btn-b ui-btn-icon-left ui-icon-check">Time Now</button>
+        </div>
+</div>
+
 	<div data-role="panel" data-display="overlay" data-theme="a" id="nav-panel">
 
     	<ul data-role="listview">
@@ -52,7 +84,14 @@
 
    </div><!-- /panel -->
    <div data-role="panel" data-position="right" data-display="overlay" data-theme="a" id="settings">
-          <h2>Settings for {{user.name}}</h2>
+          <h2>Recording Settings for {{user.name}}</h2>
+
+          {% for stage in stages %}
+           <button onclick = "choose_recording_position('{{stage.label}}');" class="ui-btn ui-corner-all">record {{stage.label}}</button>
+          {% endfor %}
+           <button onclick = "choose_recording_position('all');" class="ui-btn ui-corner-all">see all</button>
+
+            <a href="#addtime" data-rel="popup" data-icon="clock" data-iconpos="left">addtime</a>
 
             <label for="email">E-mail:</label>
             <input type="text" placeholder="E-mail" id="login-signup-style" name="email" class="login_text-box2" value = "{{user.email}}" data-clear-btn="true" data-mini="true">
@@ -62,9 +101,9 @@
 
    </div><!-- /panel -->
    <div data-role="footer" data-position="fixed">
-    <span class="connection-status">Connecting...</span>
+     <h1 class="connection-status">Connecting...</h1>
    </div>
   </div><!-- /page -->
-</div>
+
 
 

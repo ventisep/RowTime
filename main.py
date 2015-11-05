@@ -71,7 +71,9 @@ class LoadCrews(BaseRequestHandler):
 
         crews=list()
         data = list()
+        stages = list()
         crews=Crews.query(Crews.event_id==requested_event_key).order(Crews.crew_number).fetch()
+        stages=Stages.query(Stages.event_id==requested_event_key).order(Stages.stage_index).fetch()
     
         if self.logged_in:
 
@@ -80,6 +82,7 @@ class LoadCrews(BaseRequestHandler):
             template_values = {
                     'logged_in': self.logged_in,
                     'crews': crews,
+                    'stages': stages,
                     'event' : requested_event_key,
                     'user' : user
                 }
@@ -323,6 +326,7 @@ routes = [
   Route('/uploadevents', handler='main.loadevent'),
   Route('/upload', handler='main.UploadHandler'),
   Route('/testdata', handler='testing.CreateTestData'),
+  Route('/convertdata', handler='testing.ConvertData'),
   Route('/auth/<provider>', handler='handlers.AuthHandler:_simple_auth', name='auth_login'),
   Route('/auth/<provider>/callback', handler='handlers.AuthHandler:_auth_callback', name='auth_callback')
 ]

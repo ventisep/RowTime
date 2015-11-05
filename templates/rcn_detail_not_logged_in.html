@@ -1,13 +1,28 @@
+<!doctype html>
+<html >
+<head>
+  <meta charset="utf-8">
+  <meta name="Paul Ventisei" content="Rowing Times">
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<!--
+  <link rel="stylesheet" href="jquery/jquery.mobile-1.4.5.min.css"/>
+-->
+  <link rel="stylesheet" href="jquery/RowTimeTheme.min.css" />
+  <link rel="stylesheet" href="jquery/jquery.mobile.icons.min.css" />
+  <link rel="stylesheet" href="jquery/jquery.mobile.structure-1.4.5.min.css" />
+  <script src="jquery/jquery-1.11.3.min.js"></script>
+  <script src="jquery/jquery.mobile-1.4.5.min.js"></script>
+  <script src="jquery/jquery.tablesorter.js"></script>
+  <script type="text/javascript" src="js/rcn_detail_script.js"></script>
+  <script src="https://apis.google.com/js/client.js?onload=init"></script>
+
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+</head>
 
 
-
-<div data-role="page" id="crewtimes">
- <script type="text/javascript">
- //Set the gobal variables needed by the JavaScript in rcn_detail_script.js
-    var event_id_urlsafe = "{{event.urlsafe()}}";
-	var event_and_last_timestamp = {"event_id":event_id_urlsafe,
-							"last_timestamp":last_timestamp};
- </script>
+<div data-role="page" data-event-id = "{{event.urlsafe()}}" id="crewtimes">
 	<div data-role="header" data-position="fixed">
     	<h1 id="username">NOT OFFICIAL TIMES</h1>
     	<a href="#" data-rel="back" data-icon="back" data-iconpos="notext">back</a>
@@ -42,11 +57,11 @@
 				<td>{{crew.crew_number}}</td>
 				<td>{{crew.crew_name}}</td>
 				<td>{{crew.crew_type}}</td>
-				<td id="start_{{crew.crew_number}}"></td>
-				<td id="stop_{{crew.crew_number}}"></td>
-				<td style="text-align:right;" id="delta_{{crew.crew_number}}"></td>
+				<td id="{{event.urlsafe()}}_start_{{crew.crew_number}}"></td>
+				<td id="{{event.urlsafe()}}_stop_{{crew.crew_number}}"></td>
+				<td style="text-align:right;" id="{{event.urlsafe()}}_delta_{{crew.crew_number}}"></td>
 				<div class="more-data" hidden = "true">
-					<button id="{{crew.crew_number}}" class="more-data">start</button>
+					<button id="{{event.urlsafe()}}_{{crew.crew_number}}" data-crew = "{{crew.crew_number}}" class="more-data">start</button>
 				</div>
 			</tr>
 			{% endfor %}

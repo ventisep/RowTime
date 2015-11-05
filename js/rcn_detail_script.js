@@ -25,7 +25,11 @@ const LAST_TIMESTAMP_RESET = "2000-08-31T16:54:07.050741";
 var crew_times = [];
 var autoUpdate = true;
 var last_timestamp = LAST_TIMESTAMP_RESET;  //iso format string
-var refreshCount = 0;
+var last_event_id = "";
+var event_id_urlsafe="";
+var user_at_stage="all";
+var event_and_last_timestamp = {"event_id":event_id_urlsafe,
+							"last_timestamp":last_timestamp};
 var indexof = [];
 var gae_connected_flag = false;
 var connection_status;
@@ -36,7 +40,6 @@ Number.prototype.pad = function(size) {
       while (s.length < (size || 2)) {s = "0" + s;}
       return s;
 }
-
 
 function Rower(k,n) {
 	this.rower_id = k;
@@ -98,17 +101,28 @@ function Crew(k,e,n,cn,d,s,ss,stl,sts,etl,ets,f,t,c,x,r,o) {
 		this.stage = -1;
 		this.nextstage = 0;
 		this.button.addClass(this.stages[this.nextstage].classname);
-		//this.stages[stage].time_textElement.text("");
 		this.button.text(this.stages[this.nextstage].label);
 		this.inProgress = false;
 	}
 	return;
- } 
+ }
 
- this.AddTimeEvent = function(timeEvent) { //to do for a later version
+ this.isDupTimeId = function(timeEvent){
+ 	for (var i=0;i<this.observedTimes.length;i++){
+ 		if (timeEvent.time_id == this.observedTimes[i].time_id) {return true;}
+ 	}
+ 	return false;
+ }
+
+ this.AddTimeEvent = function(timeEvent) { 
  	var stage = parseInt(timeEvent.stage);
+ 	if (timeEvent.time_id != undefined) {
+ 		if (this.isDupTimeId(timeEvent)){return;}//check for duplicates, do any of the times already processed have the same id?
+		this.observedTimes.push(timeEvent);
+ 	}
  	if (stage == 0) {this.UpdateStartTime(timeEvent.time, timeEvent.obs_type);} //stage 0 is always the start
  	if (stage == this.stages.length-2) {this.UpdateStopTime(timeEvent.time, timeEvent.obs_type, stage);} //last but one stage is always the end
+	if (stage > this.stages.length-2){return;};
 	if (timeEvent.obs_type == 0) {  //add the stage time provided
 		this.stages[stage].local_time = new Date(timeEvent.time); //start time
 		this.stages[stage].server_time = new Date(timeEvent.timestamp); //start time
@@ -120,13 +134,19 @@ function Crew(k,e,n,cn,d,s,ss,stl,sts,etl,ets,f,t,c,x,r,o) {
 		this.button.removeClass(this.stages[this.stage].classname);
 		this.button.addClass(this.stages[this.nextstage].classname);
 
+
 	} else if (timeEvent.obs_type == 1) { //delete the stage time provided but not the overall 
 										// stage of the crew this will be done only is start or
 										// end times are deleted.
 		this.stages[stage].local_time = null; //start time
 		this.stages[stage].server_time = null; //start time
+
 	}
-	this.observedTimes.push(timeEvent);
+	if (user_at_stage != "all"){
+		var classselector = "."+user_at_stage+"Class";//this to sort out
+		this.button.filter(classselector).closest("li").show(400);
+		this.button.not(classselector).closest("li").hide(400);
+	}
 	return;
  }
 
@@ -136,23 +156,16 @@ function Crew(k,e,n,cn,d,s,ss,stl,sts,etl,ets,f,t,c,x,r,o) {
 		this.end_time_local = time; //end time
 		this.inProgress = false;
 		this.delta_time = this.end_time_local - this.start_time_local;
-		this.button.text("Finished");
-		this.button.css("background","grey");
-		this.button.prop("disabled");
 		this.end_time_textElement.text(time.toTimeString().replace(/.*(\d{2}:\d{2}:\d{2}).*/, "$1")+"."+("00"+time.getMilliseconds().toString()).slice(-3));
 		this.delta_time_textElement.text(Convert_ms_tostring(this.delta_time, true).slice(0,-2));
 		this.end_time_textElement.css("color","red");
 		this.delta_time_textElement.css("color","black");
 	} else if (type == 1){ //delete time
 		this.end_time_textElement.text("");
-		this.button.text("stop");
-		this.button.css("background", "red");
-		this.button.prop("enabled");
 		this.button.removeClass(this.stages[this.nextstage].classname);
-		this.stage = (stage >0) ? stage-1 : 0;
+		this.stage = (stage >-1) ? stage-1 : -1;
 		this.nextstage = this.stage+1;
 		this.button.addClass(this.stages[this.nextstage].classname);
-		//this.stages[stage].time_textElement.text("");
 		this.button.text(this.stages[this.nextstage].label);
 		this.inProgress = true;
 	}
@@ -167,32 +180,32 @@ function copyCrew(myParsedJSON, crewObj) {
 		crewObj[prop] = myParsedJSON[prop];
 	}
 
-	crewObj.button = $('#'+crewObj.crew_number);
-	crewObj.start_time_textElement = $('#start_'+crewObj.crew_number);
-	crewObj.end_time_textElement = $('#stop_'+crewObj.crew_number);
-	crewObj.delta_time_textElement = $('#delta_'+crewObj.crew_number);
+	crewObj.event_id = event_id_urlsafe;
+	crewObj.button = $('#'+event_id_urlsafe+'_'+crewObj.crew_number);
+	crewObj.start_time_textElement = $('#'+event_id_urlsafe+'_start_'+crewObj.crew_number);
+	crewObj.end_time_textElement = $('#'+event_id_urlsafe+'_stop_'+crewObj.crew_number);
+	crewObj.delta_time_textElement = $('#'+event_id_urlsafe+'_delta_'+crewObj.crew_number);
 
-	if (crewObj.stages != undefined) {
+	if (crewObj.stages !== undefined) {
 
 		for (var i=0; i<crewObj.stages.length; i++) {
 			//crewObj.stages[i].time_textElement = $("#stage_"+crewObj.stages[i].label+crewObj.crew_number);
 			//crewObj.stages[i].delta_time_textElement = $("#delta_"+crewObj.stages[i].label+crewObj.crew_number);
 			crewObj.stages[i].classname = crewObj.stages[i].label+"Class";
 		}
-		crewObj.stages.push({label : 'Finished', classname : 'FinishedClass'});
+		crewObj.stages.push({label : 'Finished', classname : 'finishedClass'});
 		crewObj.stage = -1; //not started
 		crewObj.nextstage = 0; //started
 	}
 
-	crewObj.observedTimes = new Array(); //initialise the array that will hold times
+	crewObj.observedTimes = new Array(); //initialise the array that will hold timing events
 
 
 	return crewObj;
 }  
 
 function RefreshDeltaTimes() {
-	//only get's called on the first refresh need and then calls itself from there
-	//until the refreshCount falls below 1
+
 	var localArray = crew_times;
 	var len = localArray.length; 
 	for (i=0;i<len;i++) {
@@ -205,6 +218,21 @@ function RefreshDeltaTimes() {
 		var timer = setTimeout(RefreshDeltaTimes,REFRESH_TIME); 
 	};
 }
+
+function choose_recording_position(label) {
+
+	user_at_stage = label;
+	if (label === "all"){
+		$("li").show();
+	} else {
+		var classselector = "."+label+"Class";//this to sort out
+		$(classselector).closest("li").show();
+		$(".stopwatch").not(classselector).closest("li").hide();
+	}
+	return;
+
+}
+
 //------- this section for event handling on the screens ------------//
 
 
@@ -213,19 +241,26 @@ $(function() {
     // call the initialisation function for the Google App Engine API
     connection_status=init();
 
-	$(document).on( "pagecreate", "#crewtimes", function() {
-
-		get_crew_list();  //initialise the crew_times array and set connection status
-		$(".connection-status").text(connection_status);
-	    autoUpdate = true;
-    	$(".ui-table-columntoggle-btn").appendTo($("#columnsTD"));
-        $("#table-column-toggle").tablesorter({sortAppend: [[7,0]], headers: {7: {sorter:'shortTime'}}});
+	$(document).on( "pageshow", "#crewtimes", function(e,u) {
+		var page_event_id = $(this).attr('data-event-id');
+		if (page_event_id != last_event_id) {  //the event has changed
+			event_id_urlsafe = page_event_id;
+		    last_timestamp = LAST_TIMESTAMP_RESET;
+			event_and_last_timestamp = {"event_id":event_id_urlsafe,
+							"last_timestamp":last_timestamp};
+			get_crew_list();  //initialise the crew_times array and times and set connection status
+			$(".connection-status").text(connection_status);
+		    autoUpdate = true;
+	    	$(".ui-table-columntoggle-btn").appendTo($("#columnsTD"));
+	        $("#table-column-toggle").tablesorter({sortAppend: [[7,0]], headers: {7: {sorter:'shortTime'}}});
+	        last_event_id = page_event_id;
+	    }
+    
 	});
 
 	$(document).on( "pagehide" , "#crewtimes", function() {
 	    // stop the function calls to update time and reset last_timestamp
 	    autoUpdate = false;
-	    last_timestamp = LAST_TIMESTAMP_RESET;
 
 	    });
 
@@ -242,7 +277,11 @@ $(function() {
 		time = new Date();
 		autoUpdate = false;  //switch off reading from server till new time recorded
 		var button = $(this);
-		crew_num = button.attr("id");
+		crew_num = button.attr("data-crew");
+		if (crew_num === "TimeOnly") {
+			add_time_div(time);
+			return;
+		}
 		indx = indexof[crew_num];
 		var observed_time = {event_id: event_id_urlsafe,
 							 timestamp: time,
@@ -250,16 +289,39 @@ $(function() {
 							 stage: crew_times[indx].nextstage,
 							 crew: crew_num,
 							 time: time};		
-
 		crew_times[indx].AddTimeEvent(observed_time);
 		record_observed_time(observed_time);
 		autoUpdate = true;  //switch on reading from server
 		get_times();
 		e.preventDefault();
         e.stopPropagation();
-
-
 	};
+
+	function add_time_div(time) {
+		var htmlsegment = '<li class="swipeable" id="'+event_id_urlsafe+'_crew_null" data-crew = "{{crew.crew_number}}"> \
+			<div data-enhance="false" class="back">\
+				<p style="text-align:center; color:white">Undo the last recorded time</p> \
+				<button class="cancel back-button" data-enhance="false">cancel</button> <button class="confirm back-button" data-enhance="false">confirm</button> \
+			</div>\
+			<div class="front ui-corner-all">\
+              	<div class="ui-bar-a">\
+					<h2><img class="Iphone_oars" height="20" src="/images/blade-icons/noname.png">  Noname</h2>\
+				</div>\
+				<div class="ui-body ui-grid-a">\
+					<div class="ui-block-a">\
+						<span>time: <div style="display: inline" class="ui-corner-all"  id="'+event_id_urlsafe+'_delta_null" type="datetime"></div></span><br>\
+						<span >start: <div  style="display: inline" class="ui-corner-all" id="'+event_id_urlsafe+'_start_null" type="datetime"></div></span><br>\
+						<span>stop: <div style="display: inline" class="ui-corner-all"  id="'+event_id_urlsafe+'_stop_null"  type="datetime"></div></span><br>\
+					</div>\
+					<div class="ui-block-b">\
+						<button id="'+event_id_urlsafe+'_null" data-crew = "null" class = "stopwatch ui-body ui-corner-all">start</button>\
+					</div>\
+			    </div>\
+			</div>\
+\
+		</li>';
+		$('#CrewList').append(htmlsegment);
+	}
 
 	if (touch_supported) {
 		$('body').on("tap", ".stopwatch", record_stage)
@@ -368,7 +430,7 @@ $(function() {
             autoUpdate = false;
             console.log(e)
             //get crew number that was swiped
-            var crew_num = $(this).attr("id").split('_')[1];
+            var crew_num = $(this).attr("data-crew");
             var $frontside = $(this).find('.front');
             var $backside = $(this).find('.back');
             
@@ -423,11 +485,6 @@ function get_crew_list() {
     	return("error connecting...!");
     }
   }
-
-  function initgapi() {
-    	e = new $.Event({type: "connection", data: "Gapi - loaded"});
-		$(document).trigger(e);
-    }
 
   function clock_accuracy_async() {
   	var accuracy = {client_time : null,

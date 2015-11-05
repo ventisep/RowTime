@@ -10,9 +10,69 @@
 */
 
 
+/*PV added*/
+/* front and back classes used for flipping divisions with these classes in them*/
+.front{
+  background-color: white;
+}
+.back {
+  position: absolute;
+  background-color: grey;
+  width: 93%;
+  height: 80%;
+  -webkit-transform: rotateY(180deg);
+  transform: rotateY(180deg);
+  z-index: -1;
+}
+button.back-button {
+  width: 40% !important;
+  margin: 4.5%;
+  display: inline;
+}
+/*these classes set out the styles applied to the stopwatch button as the competitors go through
+different stages*/
+.startClass .stopwatch {
+  background-color: white;
+}
+.stopClass .stopwatch {
+  background-color: red; 
+}
+.finishedClass .stopwatch {
+  background-color: grey;
+  filter: Alpha(Opacity=60);
+  opacity: .6;
+  cursor: default !important;
+  pointer-events: none;
+}
+th.headerSortUp { 
+    background-color: #f0957a; 
+}
+th.headerSortDown { 
+    background-color: #f0957a; 
+}
+th.header { 
+    cursor: pointer; 
+}
+
+#my-wrapper {
+    padding-top : 45px;
+}
+#my-wrapper form {
+    position :fixed;
+    top      : 40px;
+    left     : 20px;
+    right    : 20px;
+    z-index  : 1;
+}
+
+
+
 /* Globals */
 /* Font
 -----------------------------------------------------------------------------------------------------------*/
+
+
+
 html {
 	font-size: 100%;
 }

@@ -178,6 +178,8 @@ class ObservedTimesApi(remote.Service):
         else:
           return("error")
 
+    ot.time_id=saved_time.key.urlsafe()
+    ot.event_id=request.event_id
     ot.timestamp=current_time
     ot.obs_type=request.obs_type
     ot.crew=request.crew
