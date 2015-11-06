@@ -202,10 +202,15 @@ function copyCrew(myParsedJSON, crewObj) {
 
 
 	return crewObj;
-}  
+}
 
-function RefreshDeltaTimes() {
 
+function RefreshDeltaTimes(state, refreshTime) {
+
+	if (state == "stop") {
+		clearTimeout(updatetimer);
+		return;
+	}
 	var localArray = crew_times;
 	var len = localArray.length; 
 	for (i=0;i<len;i++) {
@@ -214,8 +219,8 @@ function RefreshDeltaTimes() {
 		}
 	}
 
-	if (refreshCount>0){
-		var timer = setTimeout(RefreshDeltaTimes,REFRESH_TIME); 
+	if (len>0){
+		updatetimer = setTimeout(RefreshDeltaTimes,refreshTime); 
 	};
 }
 
@@ -261,6 +266,7 @@ $(function() {
 	$(document).on( "pagehide" , "#crewtimes", function() {
 	    // stop the function calls to update time and reset last_timestamp
 	    autoUpdate = false;
+	    RefreshDeltaTimes("stop");
 
 	    });
 
@@ -456,14 +462,16 @@ function get_crew_list() {
 	var eventRequest = {event_id: event_id_urlsafe};
 	var crewListRequest = gapi.client.observedtimes.crew.list(eventRequest).execute(function(resp) {
 
-    for (var i=0; i < resp.result.crews.length; i++) {   //step through the crew_data passed and assign it to crew_times
-    	var tmpcrew = new Crew();
-    	tmpcrew = copyCrew(resp.result.crews[i],tmpcrew);//convert the JSON string to an object
-    	crew_times.push(tmpcrew); 
-    	indexof[crew_times[i].crew_number]=i; //create a lookup
-    	// console.log("put crew number " + crew_times[i].crew_number+" into the object array");
-	}
-	get_times(); //now the crews are loaded it is safe to load any times already recorded
+	    for (var i=0; i < resp.result.crews.length; i++) {   //step through the crew_data passed and assign it to crew_times
+	    	var tmpcrew = new Crew();
+	    	tmpcrew = copyCrew(resp.result.crews[i],tmpcrew);//convert the JSON string to an object
+	    	crew_times.push(tmpcrew); 
+	    	indexof[crew_times[i].crew_number]=i; //create a lookup
+	    	// console.log("put crew number " + crew_times[i].crew_number+" into the object array");
+		}
+		get_times(); //now the crews are loaded it is safe to load any times already recorded
+		RefreshDeltaTimes("start", REFRESH_TIME); //and to refresh the times
+
 
 	});	
 
@@ -563,10 +571,10 @@ function get_crew_list() {
 	    	if (resp.result.times) {
 		   		for(var i=0; i<resp.result.times.length; i++) {
 		    		crew_times[indexof[resp.result.times[i].crew]].AddTimeEvent(resp.result.times[i]);
-		    		e = new $.Event({type: "connection", data: "got times"});
-					$(document).trigger(e);	
 		    	}
 	    		$("#table-column-toggle").trigger("update");
+	    		e = new $.Event({type: "connection", data: "got times"});
+				$(document).trigger(e);	
 		   }
    		   var mytime=setTimeout('get_times()',REFRESH_TIME2);
 	      });
