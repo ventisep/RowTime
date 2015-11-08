@@ -31,17 +31,17 @@ button.back-button {
 }
 /*these classes set out the styles applied to the stopwatch button as the competitors go through
 different stages*/
-.startClass .stopwatch {
+li button.startClass.stopwatch {
   background-color: white;
 }
-.stopClass .stopwatch {
+li button.stopClass.stopwatch {
   background-color: red; 
 }
-.finishedClass .stopwatch {
+li button.finishedClass.stopwatch{
   background-color: grey;
   filter: Alpha(Opacity=60);
   opacity: .6;
-  cursor: default !important;
+  cursor: default;
   pointer-events: none;
 }
 th.headerSortUp { 

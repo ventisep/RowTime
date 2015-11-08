@@ -19,8 +19,8 @@
  //variables event_id_urlsafe and last_timestamp have to be set in the dynamic document by jinja2
 
 
-const REFRESH_TIME = 200; // for timer counting in tenths of seconds
-const REFRESH_TIME2 = 2000; //for checking server for times in milleseconds
+const REFRESH_TIME = 500; // for timer counting in tenths of seconds
+const REFRESH_TIME2 = 3000; //for checking server for times in milleseconds
 const LAST_TIMESTAMP_RESET = "2000-08-31T16:54:07.050741";
 var crew_times = [];
 var autoUpdate = true;
@@ -79,9 +79,8 @@ function Crew(k,e,n,cn,d,s,ss,stl,sts,etl,ets,f,t,c,x,r,o) {
   this.rowers = r;
   this.observedTimes = o; //array of observed times
 
-  this.refreshDeltaTime = function(){
-	var tempnow = new Date();
-	this.delta_time = tempnow - this.start_time_local;
+  this.refreshDeltaTime = function(time){
+	this.delta_time = time - this.start_time_local;
 	this.delta_time_textElement.text(Convert_ms_tostring(this.delta_time, true).slice(0,-2));  //don't show milliseconds
   };
 
@@ -208,21 +207,23 @@ function copyCrew(myParsedJSON, crewObj) {
 function RefreshDeltaTimes(state, refreshTime) {
 
 	if (state == "stop") {
-		clearTimeout(updatetimer);
+		if (updatetimer != undefined) {
+			clearTimeout(updatetimer);
+		}
 		return;
-	}
+	} else {
+	var tempnow = new Date();
 	var localArray = crew_times;
 	var len = localArray.length; 
 	for (i=0;i<len;i++) {
 		if (localArray[i].inProgress) {
-			crew_times[i].refreshDeltaTime();
+			crew_times[i].refreshDeltaTime(tempnow);
 		}
-	}
-
-	if (len>0){
-		updatetimer = setTimeout(RefreshDeltaTimes,refreshTime); 
-	};
+	  }
+	updatetimer = setTimeout(RefreshDeltaTimes,refreshTime);
+ 	}
 }
+
 
 function choose_recording_position(label) {
 
@@ -259,6 +260,8 @@ $(function() {
 	    	$(".ui-table-columntoggle-btn").appendTo($("#columnsTD"));
 	        $("#table-column-toggle").tablesorter({sortAppend: [[7,0]], headers: {7: {sorter:'shortTime'}}});
 	        last_event_id = page_event_id;
+	    }else{
+	    	RefreshDeltaTimes("start",REFRESH_TIME);
 	    }
     
 	});

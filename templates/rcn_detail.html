@@ -91,7 +91,7 @@
           {% endfor %}
            <button onclick = "choose_recording_position('all');" class="ui-btn ui-corner-all">see all</button>
 
-            <a href="#addtime" data-rel="popup" data-icon="clock" data-iconpos="left">addtime</a>
+            <a href="#addtime" data-rel="popup" class = "ui-btn" data-icon="clock" data-iconpos="notext">addtime</a>
 
             <label for="email">E-mail:</label>
             <input type="text" placeholder="E-mail" id="login-signup-style" name="email" class="login_text-box2" value = "{{user.email}}" data-clear-btn="true" data-mini="true">
@@ -101,7 +101,7 @@
 
    </div><!-- /panel -->
    <div data-role="footer" data-position="fixed">
-     <h1 class="connection-status">Connecting...</h1>
+     <span class="connection-status">Connecting...</span>
    </div>
   </div><!-- /page -->
 
