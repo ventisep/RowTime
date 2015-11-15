@@ -24,6 +24,7 @@ const REFRESH_TIME2 = 3000; //for checking server for times in milleseconds
 const LAST_TIMESTAMP_RESET = "2000-08-31T16:54:07.050741";
 var crew_times = [];
 var autoUpdate = true;
+var UpdateHash = {};
 var last_timestamp = LAST_TIMESTAMP_RESET;  //iso format string
 var last_event_id = "";
 var event_id_urlsafe="";
@@ -91,6 +92,7 @@ function Crew(k,e,n,cn,d,s,ss,stl,sts,etl,ets,f,t,c,x,r,o) {
 		this.start_time_textElement.css("color","green");
 		this.start_time_textElement.text(time.toTimeString().replace(/.*(\d{2}:\d{2}:\d{2}).*/, "$1")+"."+("00"+time.getMilliseconds().toString()).slice(-3));
 		this.inProgress = true;
+		UpdateHash[this.crew_number]=this;
 	} else if (type == 1) {  //delete time
 		this.start_time_textElement.css("color","green");
 		this.start_time_textElement.text("");
@@ -102,6 +104,8 @@ function Crew(k,e,n,cn,d,s,ss,stl,sts,etl,ets,f,t,c,x,r,o) {
 		this.button.addClass(this.stages[this.nextstage].classname);
 		this.button.text(this.stages[this.nextstage].label);
 		this.inProgress = false;
+		delete UpdateHash[this.crew_number];
+
 	}
 	return;
  }
@@ -154,6 +158,7 @@ function Crew(k,e,n,cn,d,s,ss,stl,sts,etl,ets,f,t,c,x,r,o) {
  		time = new Date(time);
 		this.end_time_local = time; //end time
 		this.inProgress = false;
+		delete UpdateHash[this.crew_number];
 		this.delta_time = this.end_time_local - this.start_time_local;
 		this.end_time_textElement.text(time.toTimeString().replace(/.*(\d{2}:\d{2}:\d{2}).*/, "$1")+"."+("00"+time.getMilliseconds().toString()).slice(-3));
 		this.delta_time_textElement.text(Convert_ms_tostring(this.delta_time, true).slice(0,-2));
@@ -167,6 +172,7 @@ function Crew(k,e,n,cn,d,s,ss,stl,sts,etl,ets,f,t,c,x,r,o) {
 		this.button.addClass(this.stages[this.nextstage].classname);
 		this.button.text(this.stages[this.nextstage].label);
 		this.inProgress = true;
+		UpdateHash[this.crew_number]=this;
 	}
 	return;
  }
@@ -206,22 +212,14 @@ function copyCrew(myParsedJSON, crewObj) {
 
 function RefreshDeltaTimes(state, refreshTime) {
 
-	if (state == "stop") {
-		if (updatetimer != undefined) {
-			clearTimeout(updatetimer);
-		}
+	if (UpdateHash.length === 0) {
 		return;
 	} else {
 	var tempnow = new Date();
-	var localArray = crew_times;
-	var len = localArray.length; 
-	for (i=0;i<len;i++) {
-		if (localArray[i].inProgress) {
-			crew_times[i].refreshDeltaTime(tempnow);
+	for (var crew in UpdateHash) {
+			UpdateHash[crew].refreshDeltaTime(tempnow);
 		}
-	  }
-	updatetimer = setTimeout(RefreshDeltaTimes,refreshTime);
- 	}
+	 }
 }
 
 
@@ -239,16 +237,40 @@ function choose_recording_position(label) {
 
 }
 
+function record_a_time_event() {
+	time = new Date();
+	var timetxt = time.toTimeString().replace(/.*(\d{2}:\d{2}:\d{2}).*/, "$1")+"."+("00"+time.getMilliseconds().toString()).slice(-3);
+	var htmlsegment = '<li class="ui-corner-all ui-body-a" data-crew = "TimeOnly"> \
+		<div class="ui-corner-all ui-content">\
+          	<div class="ui-bar-a">\
+				<h2><img class="Iphone_oars" height="20" src="/images/blade-icons/noname.png">  Time</h2>\
+			</div>\
+			<div class="ui-body ui-grid-a">\
+				<div class="ui-block-a">\
+					<span>time: <div style="display: inline" class="ui-corner-all" type="datetime">'+timetxt+'</div></span><br>\
+					<input placeholder = "Crew" data-mini="true" class="crew-number ui-corner-all" type="number"></input>\
+					<input placeholder = "Stage" class="stage ui-corner-all" type="text"></input>\
+				</div>\
+				<div class="ui-block-b">\
+					<button data-crew = "TimeOnly" class = "saveevent ui-body ui-btn ui-corner-all">save time</button>\
+				</div>\
+		    </div>\
+		</div>\
+	</li>';
+	var newelement=$(htmlsegment).prependTo('#CrewList');
+	$(newelement).data("datetime", time);
+}
+
 //------- this section for event handling on the screens ------------//
 
 
 $(function() {
 
-    // call the initialisation function for the Google App Engine API
-    connection_status=init();
-
 	$(document).on( "pageshow", "#crewtimes", function(e,u) {
 		var page_event_id = $(this).attr('data-event-id');
+		updatetimer = setInterval(RefreshDeltaTimes,REFRESH_TIME);
+	    getServerInterval=setInterval(get_times,REFRESH_TIME2);
+		autoUpdate = true;
 		if (page_event_id != last_event_id) {  //the event has changed
 			event_id_urlsafe = page_event_id;
 		    last_timestamp = LAST_TIMESTAMP_RESET;
@@ -256,20 +278,18 @@ $(function() {
 							"last_timestamp":last_timestamp};
 			get_crew_list();  //initialise the crew_times array and times and set connection status
 			$(".connection-status").text(connection_status);
-		    autoUpdate = true;
 	    	$(".ui-table-columntoggle-btn").appendTo($("#columnsTD"));
 	        $("#table-column-toggle").tablesorter({sortAppend: [[7,0]], headers: {7: {sorter:'shortTime'}}});
 	        last_event_id = page_event_id;
-	    }else{
-	    	RefreshDeltaTimes("start",REFRESH_TIME);
 	    }
-    
+
 	});
 
 	$(document).on( "pagehide" , "#crewtimes", function() {
-	    // stop the function calls to update time and reset last_timestamp
+	    // stop the function calls to update time
 	    autoUpdate = false;
-	    RefreshDeltaTimes("stop");
+	    clearInterval(getServerInterval);
+	    clearInterval(updatetimer);
 
 	    });
 
@@ -283,14 +303,10 @@ $(function() {
 
 	function record_stage(e) {
 
-		time = new Date();
+		var time = new Date();
 		autoUpdate = false;  //switch off reading from server till new time recorded
 		var button = $(this);
-		crew_num = button.attr("data-crew");
-		if (crew_num === "TimeOnly") {
-			add_time_div(time);
-			return;
-		}
+		var crew_num = button.attr("data-crew");
 		indx = indexof[crew_num];
 		var observed_time = {event_id: event_id_urlsafe,
 							 timestamp: time,
@@ -306,37 +322,39 @@ $(function() {
         e.stopPropagation();
 	};
 
-	function add_time_div(time) {
-		var htmlsegment = '<li class="swipeable" id="'+event_id_urlsafe+'_crew_null" data-crew = "{{crew.crew_number}}"> \
-			<div data-enhance="false" class="back">\
-				<p style="text-align:center; color:white">Undo the last recorded time</p> \
-				<button class="cancel back-button" data-enhance="false">cancel</button> <button class="confirm back-button" data-enhance="false">confirm</button> \
-			</div>\
-			<div class="front ui-corner-all">\
-              	<div class="ui-bar-a">\
-					<h2><img class="Iphone_oars" height="20" src="/images/blade-icons/noname.png">  Noname</h2>\
-				</div>\
-				<div class="ui-body ui-grid-a">\
-					<div class="ui-block-a">\
-						<span>time: <div style="display: inline" class="ui-corner-all"  id="'+event_id_urlsafe+'_delta_null" type="datetime"></div></span><br>\
-						<span >start: <div  style="display: inline" class="ui-corner-all" id="'+event_id_urlsafe+'_start_null" type="datetime"></div></span><br>\
-						<span>stop: <div style="display: inline" class="ui-corner-all"  id="'+event_id_urlsafe+'_stop_null"  type="datetime"></div></span><br>\
-					</div>\
-					<div class="ui-block-b">\
-						<button id="'+event_id_urlsafe+'_null" data-crew = "null" class = "stopwatch ui-body ui-corner-all">start</button>\
-					</div>\
-			    </div>\
-			</div>\
-\
-		</li>';
-		$('#CrewList').append(htmlsegment);
-	}
+
+	function record_time_stage(e) {
+		autoUpdate = false;  //switch off reading from server till new time recorded
+		var $li = $(this).closest("li");
+		var $button = $(this);
+		var crew_num = $li.find(".crew-number").val();
+		var time = $li.data("datetime");
+		var stage = $li.find(".stage").val()
+
+		indx = indexof[crew_num];
+		var observed_time = {event_id: event_id_urlsafe,
+							 timestamp: time,
+							 obs_type: 0,  //an 0 = add time to the record type 1 = delete
+							 stage: stage,
+							 crew: crew_num,
+							 time: time};		
+		crew_times[indx].AddTimeEvent(observed_time);
+		record_observed_time(observed_time);
+		autoUpdate = true;  //switch on reading from server
+		get_times();
+		e.preventDefault();
+        e.stopPropagation();
+	};
+
 
 	if (touch_supported) {
 		$('body').on("tap", ".stopwatch", record_stage)
+		$('body').on("tap", ".saveevent", record_time_stage)
 	}
 	else {
 		$('body').on("click", ".stopwatch", record_stage)
+		$('body').on("click", ".saveevent", record_time_stage)
+
 	}
 
 
@@ -354,6 +372,8 @@ $(function() {
       	});
       	$back.css({
       		transform: "rotateY(0deg)",
+      		width: $front["width"](),
+      		height: $front["height"](),
       		"margin-right": "5%",
       		"transform-style": "preserve-3d",
       		"-webkit-perspective": $back["outerWidth"]()*2,
@@ -456,6 +476,7 @@ $(function() {
 });
 
 
+var retryCount = 1;
 
 //load the crew_times object with the crew times list retrieved from the database//
 function get_crew_list() {
@@ -463,20 +484,28 @@ function get_crew_list() {
 	crew_times.length = 0; // initialise crew Array before filling it with the crew list
 	indexof.length = 0;
 	var eventRequest = {event_id: event_id_urlsafe};
-	var crewListRequest = gapi.client.observedtimes.crew.list(eventRequest).execute(function(resp) {
+	try {
+		var crewListRequest = gapi.client.observedtimes.crew.list(eventRequest).execute(function(resp) {
 
-	    for (var i=0; i < resp.result.crews.length; i++) {   //step through the crew_data passed and assign it to crew_times
-	    	var tmpcrew = new Crew();
-	    	tmpcrew = copyCrew(resp.result.crews[i],tmpcrew);//convert the JSON string to an object
-	    	crew_times.push(tmpcrew); 
-	    	indexof[crew_times[i].crew_number]=i; //create a lookup
-	    	// console.log("put crew number " + crew_times[i].crew_number+" into the object array");
-		}
-		get_times(); //now the crews are loaded it is safe to load any times already recorded
-		RefreshDeltaTimes("start", REFRESH_TIME); //and to refresh the times
+		    for (var i=0; i < resp.result.crews.length; i++) {   //step through the crew_data passed and assign it to crew_times
+		    	var tmpcrew = new Crew();
+		    	tmpcrew = copyCrew(resp.result.crews[i],tmpcrew);//convert the JSON string to an object
+		    	crew_times.push(tmpcrew); 
+		    	indexof[crew_times[i].crew_number]=i; //create a lookup
+		    	// console.log("put crew number " + crew_times[i].crew_number+" into the object array");
+			}
+			get_times(); //now the crews are loaded it is safe to load any times already recorded
 
+		});
+	} catch(err) {
+		var e = new $.Event({type: "connection", data: "Connection Error! retry "+retryCount});
+		$(document).trigger(e);
+		if (retryCount <= 5){
+			setTimeout(get_crew_list, 2000);
+			retryCount++;
+		} else {retryCount = 1}
 
-	});	
+	}
 
 }
 //initialise the API calls to the rowtime-26 server.//
@@ -491,7 +520,7 @@ function get_crew_list() {
 	 	}, ROWTIME_API);
     }
     catch(err) {
-    	e = new $.Event({type: "connection", data: "Connection Error! try again"});
+    	var e = new $.Event({type: "connection", data: "Connection Error! try again"});
 		$(document).trigger(e);
     	return("error connecting...!");
     }
@@ -550,6 +579,8 @@ function get_crew_list() {
 	  		console.log(resp);
 		  	e = new $.Event({type: "connection", data: "recorded time"});
 			$(document).trigger(e);
+			crew_times[indexof[resp.result.crew]].AddTimeEvent(resp.result);
+
 	  	});
 	} catch(err) {
 		e = new $.Event({type: "connection", data: "failed to record time: try again"});
@@ -579,13 +610,12 @@ function get_crew_list() {
 	    		e = new $.Event({type: "connection", data: "got times"});
 				$(document).trigger(e);	
 		   }
-   		   var mytime=setTimeout('get_times()',REFRESH_TIME2);
+
 	      });
  
 	} catch(err) {
 	   	e = new $.Event({type: "connection", data: "get times - failed"});
 		$(document).trigger(e);
-		var mytime=setTimeout('get_times()',REFRESH_TIME2); //keep trying
    	}
 
    }

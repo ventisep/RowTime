@@ -11,9 +11,9 @@
   <link rel="stylesheet" href="jquery/jquery.mobile.icons.min.css" />
   <link rel="stylesheet" href="jquery/jquery.mobile.structure-1.4.5.min.css" />
   <script src="jquery/jquery-1.11.3.min.js"></script>
-  <script src="jquery/jquery.mobile-1.4.5.min.js"></script>
   <script src="jquery/jquery.tablesorter.js"></script>
   <script type="text/javascript" src="js/rcn_detail_script.js"></script>
+  <script src="jquery/jquery.mobile-1.4.5.min.js"></script>
   <script src="https://apis.google.com/js/client.js?onload=init"></script>
 
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -35,14 +35,14 @@
     <ul id="CrewList" data-role="listview" data-filter = "true" data-inset="true" class="ui-content jqm-content jqm-fullwidth">
 
 		{% for crew in crews %}
-		<li class="swipeable" id="{{event.urlsafe()}}_crew_{{crew.crew_number}}" data-crew = "{{crew.crew_number}}">
-			<div data-enhance="false" class="back">
+		<li class="swipeable ui-corner-all" id="{{event.urlsafe()}}_crew_{{crew.crew_number}}" data-crew = "{{crew.crew_number}}">
+			<div data-enhance="true" class="back ui-corner-all">
 				<p style="text-align:center; color:white">Undo the last recorded time</p>
 				<button class="cancel back-button" data-enhance="false">cancel</button> <button class="confirm back-button" data-enhance="false">confirm</button>
 			</div>
 			<div class="front ui-corner-all">
-              	<div class="ui-bar-a">
-					<h2><img class="Iphone_oars" height="20" src="/images/blade-icons/{{crew.pic_file}}"> {{crew.crew_number}} {{crew.crew_name}} {{crew.crew_type}}</h2>
+        <div class="ui-bar-a">
+					<h2 ><img class="Iphone_oars" height="20" src="/images/blade-icons/{{crew.pic_file}}"> {{crew.crew_number}} {{crew.crew_name}} {{crew.crew_type}}</h2>
 				</div>
 				<div class="ui-body ui-grid-a">
 					<div class="ui-block-a">
@@ -85,13 +85,16 @@
    </div><!-- /panel -->
    <div data-role="panel" data-position="right" data-display="overlay" data-theme="a" id="settings">
           <h2>Recording Settings for {{user.name}}</h2>
+          <h3>Choose a recording position</h3>
 
           {% for stage in stages %}
            <button onclick = "choose_recording_position('{{stage.label}}');" class="ui-btn ui-corner-all">record {{stage.label}}</button>
           {% endfor %}
            <button onclick = "choose_recording_position('all');" class="ui-btn ui-corner-all">see all</button>
 
-            <a href="#addtime" data-rel="popup" class = "ui-btn" data-icon="clock" data-iconpos="notext">addtime</a>
+           <h2>Record a Time</h2>
+
+           <button onclick = "record_a_time_event();" class="ui-btn ui-corner-all">Take Time</button>
 
             <label for="email">E-mail:</label>
             <input type="text" placeholder="E-mail" id="login-signup-style" name="email" class="login_text-box2" value = "{{user.email}}" data-clear-btn="true" data-mini="true">

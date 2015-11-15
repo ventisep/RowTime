@@ -153,7 +153,8 @@ class ObservedTimesApi(remote.Service):
                           stage=request.stage,
                           time_local=utc_time.replace(tzinfo=None),
                           time_server=current_time,
-                          recorded_by=user).put()
+                          recorded_by=user)
+      saved_time.put()
       saved_stage = request.stage
     else: 
       if request.obs_type == 1:
@@ -184,7 +185,7 @@ class ObservedTimesApi(remote.Service):
     ot.obs_type=request.obs_type
     ot.crew=request.crew
     ot.stage=saved_stage
-    ot.time=current_time
+    ot.time=saved_time.time_local
     
 
     return ot

@@ -43,7 +43,7 @@ class MainPage(BaseRequestHandler):
         #query the Events entities looking for events that have an event date
         #greater than 2 weeks ago
 
-        searchdate = datetime.date.today() - timedelta(weeks=4)
+        searchdate = datetime.date.today() - timedelta(weeks=12)
 
         eventlist = list()
         eventlist = Events.query(Events.event_date >= searchdate).order(Events.event_date).fetch()
