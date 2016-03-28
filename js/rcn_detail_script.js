@@ -85,6 +85,34 @@ function Crew(k,e,n,cn,d,s,ss,stl,sts,etl,ets,f,t,c,x,r,o) {
 	this.delta_time_textElement.text(Convert_ms_tostring(this.delta_time, true).slice(0,-2));  //don't show milliseconds
   };
 
+  this.paint_crew = function(){
+	var htmlsegment = 	'<li class="swipeable ui-corner-all" id="'+event_id_urlsafe+'_crew_'+this.crew_number+'" data-crew = "'+this.crew_number+'"> \
+        <div class="back ui-corner-all" width="100%"> \
+          	<div class="ui-body"> \
+  				<p style="text-align:center; color:white">Undo the last recorded time</p> \
+          		<button class="cancel back-button">cancel</button> <button class="confirm back-button" >confirm</button> \
+        	</div> \
+        </div> \
+  			<div class="front ui-corner-all"> \
+          <div class="ui-bar-a ui-corner-all"> \
+  					<h2><img class="Iphone_oars" height="20" src="/images/blade-icons/'+this.pic_file+'"> '+this.crew_number+' '+this.crew_name+' '+this.crew_type+'</h2> \
+  				</div> \
+  				<div class="ui-body ui-grid-a"> \
+  					<div class="ui-block-a"> \
+  						<span>time: <div style="display: inline" class="ui-corner-all"  id="'+event_id_urlsafe+'_delta_'+this.crew_number+'" type="datetime"></div></span><br> \
+  						<span>start: <div  style="display: inline" class="ui-corner-all" id="'+event_id_urlsafe+'_start_'+this.crew_number+'" type="datetime"></div></span><br> \
+  						<span>stop: <div style="display: inline" class="ui-corner-all"  id="'+event_id_urlsafe+'_stop_'+this.crew_number+'"  type="datetime"></div></span><br> \
+  					</div> \
+  					<div class="ui-block-b"> \
+  						<button id="'+event_id_urlsafe+'_'+this.crew_number+'" data-crew = "'+this.crew_number+'" class = "stopwatch startClass ui-body ui-corner-all">start</button> \
+  					</div> \
+  			    </div> \
+        </div> \
+		</li>'
+
+		var newelement=$(htmlsegment).appendTo('#CrewList');
+	}
+
   this.UpdateStartTime = function(time, type) {
   	if (type == 0) { //add time
   		time = new Date(time);
@@ -139,7 +167,7 @@ function Crew(k,e,n,cn,d,s,ss,stl,sts,etl,ets,f,t,c,x,r,o) {
 
 
 	} else if (timeEvent.obs_type == 1) { //delete the stage time provided but not the overall 
-										// stage of the crew this will be done only is start or
+										// stage of the crew this will be done only if start or
 										// end times are deleted.
 		this.stages[stage].local_time = null; //start time
 		this.stages[stage].server_time = null; //start time
@@ -186,6 +214,7 @@ function copyCrew(myParsedJSON, crewObj) {
 	}
 
 	crewObj.event_id = event_id_urlsafe;
+	crewObj.paint_crew();
 	crewObj.button = $('#'+event_id_urlsafe+'_'+crewObj.crew_number);
 	crewObj.start_time_textElement = $('#'+event_id_urlsafe+'_start_'+crewObj.crew_number);
 	crewObj.end_time_textElement = $('#'+event_id_urlsafe+'_stop_'+crewObj.crew_number);
@@ -229,7 +258,7 @@ function choose_recording_position(label) {
 	if (label === "all"){
 		$("li").show();
 	} else {
-		var classselector = "."+label+"Class";//this to sort out
+		var classselector = "."+label+"Class";
 		$(classselector).closest("li").show();
 		$(".stopwatch").not(classselector).closest("li").hide();
 	}
@@ -248,8 +277,8 @@ function record_a_time_event() {
 			<div class="ui-body ui-grid-a">\
 				<div class="ui-block-a">\
 					<span>time: <div style="display: inline" class="ui-corner-all" type="datetime">'+timetxt+'</div></span><br>\
-					<input placeholder = "Crew" data-mini="true" class="crew-number ui-corner-all" type="number"></input>\
-					<input placeholder = "Stage" class="stage ui-corner-all" type="text"></input>\
+					<input placeholder = "Crew" style="width: 60%" data-mini="true" class="crew-number ui-corner-all" type="number"></input><br>\
+					<input placeholder = "Stage" style="width: 60%" class="stage ui-corner-all" type="text"></input>\
 				</div>\
 				<div class="ui-block-b">\
 					<button data-crew = "TimeOnly" class = "saveevent ui-body ui-btn ui-corner-all">save time</button>\
@@ -272,15 +301,15 @@ $(function() {
 	    getServerInterval=setInterval(get_times,REFRESH_TIME2);
 		autoUpdate = true;
 		if (page_event_id != last_event_id) {  //the event has changed
+	    	$(".ui-table-columntoggle-btn").appendTo($("#columnsTD"));
 			event_id_urlsafe = page_event_id;
+	        last_event_id = page_event_id;
 		    last_timestamp = LAST_TIMESTAMP_RESET;
 			event_and_last_timestamp = {"event_id":event_id_urlsafe,
 							"last_timestamp":last_timestamp};
 			get_crew_list();  //initialise the crew_times array and times and set connection status
 			$(".connection-status").text(connection_status);
-	    	$(".ui-table-columntoggle-btn").appendTo($("#columnsTD"));
 	        $("#table-column-toggle").tablesorter({sortAppend: [[7,0]], headers: {7: {sorter:'shortTime'}}});
-	        last_event_id = page_event_id;
 	    }
 
 	});
@@ -293,12 +322,39 @@ $(function() {
 
 	    });
 
+	$(document).on( "pagecreate", "#paint-crewtimes", function(e,u) {
+		$.mobile.loading( 'show');
+		var page_event_id = $(this).attr('data-event-id');
+		updatetimer = setInterval(RefreshDeltaTimes,REFRESH_TIME);
+	    getServerInterval=setInterval(get_times,REFRESH_TIME2);
+		autoUpdate = true;
+		if (page_event_id != last_event_id) {  //the event has changed
+			event_id_urlsafe = page_event_id;
+	        last_event_id = page_event_id;
+		    last_timestamp = LAST_TIMESTAMP_RESET;
+			event_and_last_timestamp = {"event_id":event_id_urlsafe,
+							"last_timestamp":last_timestamp};
+			get_crew_list();  //initialise the crew_times array and times and set connection status
+			$(".connection-status").text(connection_status);
+	    }
+
+	});
+
+
+
+	$(document).on( "pagehide" , "#paint-crewtimes", function() {
+	    // stop the function calls to update time
+	    autoUpdate = false;
+	    clearInterval(getServerInterval);
+	    clearInterval(updatetimer);
+
+	    });
 
 	$( document ).on( "connection", function(e) {
 
 		connection_status = e.originalEvent.data;
 		$(".connection-status").text(connection_status);
-
+//TODO - possible place to put in loading activity when needed
 		});
 
 	function record_stage(e) {
@@ -316,7 +372,7 @@ $(function() {
 							 time: time};		
 		crew_times[indx].AddTimeEvent(observed_time);
 		record_observed_time(observed_time);
-		autoUpdate = true;  //switch on reading from server
+		autoUpdate = true;  //switch on reading from server - TODO this doesn't work right as actions are asynch - need to be event based
 		get_times();
 		e.preventDefault();
         e.stopPropagation();
@@ -362,24 +418,22 @@ $(function() {
 
 
         $front.css({
-            transform: "rotateY(180deg)",
+            transform: "rotateY(-180deg)",
+  			"-webkit-transform": "rotateY(-180deg)",
             "backface-visibility": "hidden",
         	"transform-style": "preserve-3d",
-      		"-webkit-perspective": $back["outerWidth"]()*2,
+      		"-webkit-perspective": $front["outerWidth"]()*2,
         	perspective: $front["outerWidth"]()*2,
         	transition: "all 1s ease-out",
-      		"z-index": "-1"
       	});
       	$back.css({
       		transform: "rotateY(0deg)",
-      		width: $front["width"](),
-      		height: $front["height"](),
-      		"margin-right": "5%",
+  			"-webkit-transform": "rotateY(0deg)",
+            "backface-visibility": "hidden",
       		"transform-style": "preserve-3d",
-      		"-webkit-perspective": $back["outerWidth"]()*2,
-      		perspective: $back["outerWidth"]()*2,
+      		"-webkit-perspective": $front["outerWidth"]()*2,
+      		perspective: $front["outerWidth"]()*2,
       		transition:"all 1s ease-out",
-      		"z-index": "0"
       	});
 
       //	for (i=0; i<crew_times[indexof[crew_num]].observedtimes.length;i++) {
@@ -426,19 +480,19 @@ $(function() {
 
       	$back.css({
       		transform: "rotateY(180deg)",
-  			"-webkit-transform": "rotateY(-180deg)",
+  			"-webkit-transform": "rotateY(180deg)",
+            "backface-visibility": "hidden",
       		"transform-style": "preserve-3d",
-      		perspective: $back["outerWidth"]()*2,
+      		perspective: $front["outerWidth"]()*2,
       		transition:"all 1s ease-out",
-      		"z-index": "-1"
       	});
         $front.css({  //this works perfectly now need backside
             transform: "rotateY(0deg)",
+            "-webkit-transform": "rotateY(0deg)",
             "backface-visibility": "hidden",
         	"transform-style": "preserve-3d",
         	perspective: $front["outerWidth"]()*2,
         	transition: "all 1s ease-out",
-      		"z-index": "0"
       	});
 
       	$confirm_button=$back.find('.confirm');

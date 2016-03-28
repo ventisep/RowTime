@@ -39,11 +39,11 @@ class MainPage(BaseRequestHandler):
         else:
             user=""
 
-        #retrieve the events in the future and up to 2 weeks ago **TODO***
+        #retrieve the events in the future and up to 52 weeks ago **TODO***
         #query the Events entities looking for events that have an event date
         #greater than 2 weeks ago
 
-        searchdate = datetime.date.today() - timedelta(weeks=12)
+        searchdate = datetime.date.today() - timedelta(weeks=52)
 
         eventlist = list()
         eventlist = Events.query(Events.event_date >= searchdate).order(Events.event_date).fetch()

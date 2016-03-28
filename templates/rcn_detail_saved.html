@@ -4,6 +4,9 @@
   <meta charset="utf-8">
   <meta name="Paul Ventisei" content="Rowing Times">
   <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<!--
+  <link rel="stylesheet" href="jquery/jquery.mobile-1.4.5.min.css"/>
+-->
   <link rel="stylesheet" href="jquery/RowTimeTheme.min.css" />
   <link rel="stylesheet" href="jquery/jquery.mobile.icons.min.css" />
   <link rel="stylesheet" href="jquery/jquery.mobile.structure-1.4.5.min.css" />
@@ -18,7 +21,7 @@
 
 </head>
 
-<div data-role="page" data-event-id = "{{event.urlsafe()}}" id="paint-crewtimes" data-dom-cache="true">
+<div data-role="page" data-event-id = "{{event.urlsafe()}}" id="crewtimes" data-dom-cache="true">
 	<div data-role="header" data-update-page-padding="false" data-position="fixed">
     	<h1 id="username">Hi {{user.name}}</h1>
     	<a href="#" data-rel="back" data-icon="back" data-iconpos="notext">back</a>
@@ -37,11 +40,33 @@
   <div data-role="main" class="ui-content">
 
     <ul id="CrewList" data-role="listview" data-filter = "true" data-input="#search-input" data-inset="true" class="ui-content">
-      <li id="loadingGif"> <img src="/images/rowingpic.jpg">loading...</li>
+
+		{% for crew in crews %}
+		<li class="swipeable ui-corner-all" id="{{event.urlsafe()}}_crew_{{crew.crew_number}}" data-crew = "{{crew.crew_number}}">
+        <div class="back ui-body ui-corner-all">
+          <p style="text-align:center; color:white">Undo the last recorded time</p>
+          <button class="cancel back-button">cancel</button> <button class="confirm back-button" >confirm</button>
+        </div>
+  			<div class="front ui-corner-all">
+          <div class="ui-bar-a">
+  					<h2><img class="Iphone_oars" height="20" src="/images/blade-icons/{{crew.pic_file}}"> {{crew.crew_number}} {{crew.crew_name}} {{crew.crew_type}}</h2>
+  				</div>
+  				<div class="ui-body ui-grid-a">
+  					<div class="ui-block-a">
+  						<span>time: <div style="display: inline" class="ui-corner-all"  id="{{event.urlsafe()}}_delta_{{crew.crew_number}}" type="datetime"></div></span><br>
+  						<span>start: <div  style="display: inline" class="ui-corner-all" id="{{event.urlsafe()}}_start_{{crew.crew_number}}" type="datetime"></div></span><br>
+  						<span>stop: <div style="display: inline" class="ui-corner-all"  id="{{event.urlsafe()}}_stop_{{crew.crew_number}}"  type="datetime"></div></span><br>
+  					</div>
+  					<div class="ui-block-b">
+  						<button id="{{event.urlsafe()}}_{{crew.crew_number}}" data-crew = "{{crew.crew_number}}" class = "stopwatch startClass ui-body ui-corner-all">start</button>
+  					</div>
+  			    </div>
+        </div>
+		</li>
+		{% endfor %}
 	 </ul>
   </div>
-  
-  <div data-role="panel" data-position="right" data-display="overlay" data-theme="a" id="settings">
+<div data-role="panel" data-position="right" data-display="overlay" data-theme="a" id="settings">
           <h2>Recording Settings for {{user.name}}</h2>
           <h3>Choose a recording position</h3>
 

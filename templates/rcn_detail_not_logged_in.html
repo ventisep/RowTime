@@ -10,7 +10,7 @@
   <link rel="stylesheet" href="jquery/RowTimeTheme.min.css" />
   <link rel="stylesheet" href="jquery/jquery.mobile.icons.min.css" />
   <link rel="stylesheet" href="jquery/jquery.mobile.structure-1.4.5.min.css" />
-  <script src="jquery/jquery-1.11.3.min.js"></script>
+  <script src="jquery/jquery-2.2.0.min.js"></script>
   <script src="jquery/jquery.tablesorter.js"></script>
   <script type="text/javascript" src="js/rcn_detail_script.js"></script>
   <script src="jquery/jquery.mobile-1.4.5.min.js"></script>
@@ -26,7 +26,7 @@
 	<div data-role="header" data-position="fixed">
     	<h1 id="username">NOT OFFICIAL TIMES</h1>
     	<a href="#" data-rel="back" data-icon="back" data-iconpos="notext">back</a>
-    	<a href="#eventsettings" data-icon="gear" data-iconpos="notext">Settings</a>
+    	<a href="#eventsettings2" data-icon="gear" data-iconpos="notext">Settings</a>
   	</div>
 
   	<div data-role="main" class="ui-content ui-corner-all jqm-content">
@@ -46,7 +46,7 @@
 	          <th data-priority="4"><abbr title="Category">Cat</abbr></th>
 	          <th data-priority="5"><abbr title="Start Time">Start</th>
 	          <th data-priority="6"><abbr title="Stop Time">Stop</th>
-	          <th style="text-align:right;">Time</th>
+	          <th style="text-align:right; width:76px">Time</th>
 	        </tr>
 	    </thead>
 	    <tbody>
@@ -68,17 +68,7 @@
 		</tbody>
 	  </table>
 	</div>
-	<div data-role="panel" data-display="overlay" data-theme="a" id="nav-panel">
-
-    	<ul data-role="listview">
-            	<li data-icon="delete"><a href="#" data-rel="close">Close menu</a></li>
-                <li><a href="/uploadentries">Create Entries</a></li>
-                <li><a href="#help">Help</a></li>
-                <li><a href="#about">About Row Time</a></li>
-    	</ul>
-
-   </div><!-- /panel -->
-     <div data-role="panel" data-position="right" data-display="overlay" data-theme="a" id="eventsettings">
+  <div data-role="panel" data-position="right" data-display="overlay" data-theme="a" id="eventsettings2">
 
 {% if logged_in %}
       <h2>Settings for {{user.name}}</h2>

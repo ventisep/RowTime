@@ -77,8 +77,10 @@ handlers:
 
 - url: /_ah/spi/.*
   script: rowtime_api.application
+  secure: always
 
 # This handler catches all requests that don't match a previous handler.
 - url: /.*
   script: main.application
+  secure: always
 

@@ -10,7 +10,7 @@
   <link rel="stylesheet" href="jquery/RowTimeTheme.min.css" />
   <link rel="stylesheet" href="jquery/jquery.mobile.icons.min.css" />
   <link rel="stylesheet" href="jquery/jquery.mobile.structure-1.4.5.min.css" />
-  <script src="jquery/jquery-1.11.3.min.js"></script>
+  <script src="jquery/jquery-2.2.0.min.js"></script>
   <script src="jquery/jquery.tablesorter.js"></script>
   <script type="text/javascript" src="js/rcn_detail_script.js"></script>
   <script src="jquery/jquery.mobile-1.4.5.min.js"></script>
@@ -29,7 +29,7 @@
     	<h2><img src="/images/logo.jpg" style="margin:0px; padding:0px;" width="50px"/></h2>
     	<a href="#nav-panel" data-icon="bars" data-iconpos="notext">Menu</a>
       <a href="#eventsettings" data-icon="gear" data-iconpos="notext">Settings</a>
-  	</div> <!-- /Header -->
+  </div> <!-- /Header -->
 
 	<div data-role="main" id="eventList" class="ui-content jqm-content jqm-fullwidth">
 		<ul data-role="listview" class="ui-content jqm-content jqm-fullwidth" data-inset="true" data-filter="true">
@@ -41,7 +41,7 @@
 		</ul>
 	</div> <!-- /Content -->
 
-  <div data-role="panel" data-display="overlay" data-theme="a" id="nav-panel">
+  <div data-role="panel" data-position="left" data-display="overlay" data-theme="a" id="nav-panel">
 
     <ul data-role="listview">
             <li data-icon="delete"><a href="#" data-rel="close">Close menu</a></li>
@@ -87,9 +87,10 @@
           latency in ms: <span class="Latency"></span>
       </div>
   </div><!-- /panel -->
-   <div data-role="footer" data-position="fixed">
+
+  <div data-role="footer" data-position="fixed">
     <span class="connection-status">Connecting...</span>
-   </div>
+  </div>
  </div><!-- /page -->
 
 <div data-role="page" id="help">

@@ -77,7 +77,7 @@ class ConvertData(BaseRequestHandler):
 
     def get(self):
 
-        """put code in here to load the test data"""
+        """This code converts old databases to the new format with a stages section"""
 
         # First check if user is signed in and if not redirect to sign-in page
         if self.logged_in:
