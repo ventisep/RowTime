@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="jquery/RowTimeTheme.min.css" />
   <link rel="stylesheet" href="jquery/jquery.mobile.icons.min.css" />
   <link rel="stylesheet" href="jquery/jquery.mobile.structure-1.4.5.min.css" />
-  <script src="jquery/jquery-2.2.0.min.js"></script>
+  <script src="jquery/jquery-1.11.3.min.js"></script>
   <script src="jquery/jquery.tablesorter.js"></script>
   <script type="text/javascript" src="js/rcn_detail_script.js"></script>
   <script src="jquery/jquery.mobile-1.4.5.min.js"></script>
@@ -19,25 +19,16 @@
 </head>
 
 <div data-role="page" data-event-id = "{{event.urlsafe()}}" id="paint-crewtimes" data-dom-cache="true">
-	<div data-role="header" data-update-page-padding="false" data-position="fixed">
+	<div data-role="header" data-position="fixed">
     	<h1 id="username">Hi {{user.name}}</h1>
     	<a href="#" data-rel="back" data-icon="back" data-iconpos="notext">back</a>
     	<a href="#settings" data-icon="gear" data-iconpos="notext">Settings</a>
-      <div class="ui-grid-a">
-        <div class="ui-block-a">
-          <input id="search-input" data-inline="true" data-mini="true" data-type="search" />
-        </div>
-        <div class="ui-block-b">
-          <button onclick = "record_a_time_event();" data-inline="true" data-icon="clock" data-mini="true" class="ui-btn ui-corner-all">Add Time</button>
-        </div>
-      </div>
-  </div>
+  </div> <!-- /Header -->
 
-
-  <div data-role="main" class="ui-content">
+  <div data-role="main" class="ui-content" data-mini="true">
+    <input type="text" id="search-input" data-mini="true" data-type="search" />
 
     <ul id="CrewList" data-role="listview" data-filter = "true" data-input="#search-input" data-inset="true" class="ui-content">
-      <li id="loadingGif"> <img src="/images/rowingpic.jpg">loading...</li>
 	 </ul>
   </div>
   

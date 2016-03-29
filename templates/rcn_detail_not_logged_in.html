@@ -10,7 +10,7 @@
   <link rel="stylesheet" href="jquery/RowTimeTheme.min.css" />
   <link rel="stylesheet" href="jquery/jquery.mobile.icons.min.css" />
   <link rel="stylesheet" href="jquery/jquery.mobile.structure-1.4.5.min.css" />
-  <script src="jquery/jquery-2.2.0.min.js"></script>
+  <script src="jquery/jquery-1.11.3.min.js"></script>
   <script src="jquery/jquery.tablesorter.js"></script>
   <script type="text/javascript" src="js/rcn_detail_script.js"></script>
   <script src="jquery/jquery.mobile-1.4.5.min.js"></script>
@@ -35,17 +35,17 @@
             <td><input id="filterTable-input" data-type="search" /></td>
             <td id="columnsTD" style="width: 75px; padding-top: 4px;"></td>
         </tr>
-      </table>
-  	  <table data-role="table" id="table-column-toggle" data-mode="columntoggle" class="ui-responsive table-stroke ui-body-a ui-corner-all tablesorter" data-filter="true" data-input="#filterTable-input">
+    </table>
+  	<table data-role="table" id="table-column-toggle" data-mode="columntoggle" class="ui-responsive table-stripe ui-body-a ui-corner-all tablesorter" data-filter="true" data-input="#filterTable-input">
 	  	<thead>
 	        <tr>
-	          <th data-priority="3">Oar</th>
+	          <th data-priority="2">Oar</th>
 	          <th>Div</th>
 	          <th>Crew</th>
 	          <th data-priority="1">Name</th>
-	          <th data-priority="4"><abbr title="Category">Cat</abbr></th>
-	          <th data-priority="5"><abbr title="Start Time">Start</th>
-	          <th data-priority="6"><abbr title="Stop Time">Stop</th>
+	          <th data-priority="3"><abbr title="Category">Cat</abbr></th>
+	          <th data-priority="4"><abbr title="Start Time">Start</abbr></th>
+	          <th data-priority="5"><abbr title="Stop Time">Stop</abbr></th>
 	          <th style="text-align:right; width:76px">Time</th>
 	        </tr>
 	    </thead>
@@ -60,12 +60,9 @@
 				<td id="{{event.urlsafe()}}_start_{{crew.crew_number}}"></td>
 				<td id="{{event.urlsafe()}}_stop_{{crew.crew_number}}"></td>
 				<td style="text-align:right;" id="{{event.urlsafe()}}_delta_{{crew.crew_number}}"></td>
-				<div class="more-data" hidden = "true">
-					<button id="{{event.urlsafe()}}_{{crew.crew_number}}" data-crew = "{{crew.crew_number}}" class="more-data">start</button>
-				</div>
 			</tr>
 			{% endfor %}
-		</tbody>
+		  </tbody>
 	  </table>
 	</div>
   <div data-role="panel" data-position="right" data-display="overlay" data-theme="a" id="eventsettings2">

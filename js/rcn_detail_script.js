@@ -86,29 +86,30 @@ function Crew(k,e,n,cn,d,s,ss,stl,sts,etl,ets,f,t,c,x,r,o) {
   };
 
   this.paint_crew = function(){
-	var htmlsegment = 	'<li class="swipeable ui-corner-all" id="'+event_id_urlsafe+'_crew_'+this.crew_number+'" data-crew = "'+this.crew_number+'"> \
-        <div class="back ui-corner-all" width="100%"> \
+	var htmlsegment = 	'\
+	  <li class="swipeable ui-corner-all" style="margin: 5px" id="'+event_id_urlsafe+'_crew_'+this.crew_number+'" data-crew = "'+this.crew_number+'"> \
+        <div class="back ui-corner-all"> \
           	<div class="ui-body"> \
   				<p style="text-align:center; color:white">Undo the last recorded time</p> \
           		<button class="cancel back-button">cancel</button> <button class="confirm back-button" >confirm</button> \
         	</div> \
         </div> \
-  			<div class="front ui-corner-all"> \
+  		<div class="front ui-corner-all"> \
           <div class="ui-bar-a ui-corner-all"> \
-  					<h2><img class="Iphone_oars" height="20" src="/images/blade-icons/'+this.pic_file+'"> '+this.crew_number+' '+this.crew_name+' '+this.crew_type+'</h2> \
-  				</div> \
-  				<div class="ui-body ui-grid-a"> \
-  					<div class="ui-block-a"> \
-  						<span>time: <div style="display: inline" class="ui-corner-all"  id="'+event_id_urlsafe+'_delta_'+this.crew_number+'" type="datetime"></div></span><br> \
-  						<span>start: <div  style="display: inline" class="ui-corner-all" id="'+event_id_urlsafe+'_start_'+this.crew_number+'" type="datetime"></div></span><br> \
-  						<span>stop: <div style="display: inline" class="ui-corner-all"  id="'+event_id_urlsafe+'_stop_'+this.crew_number+'"  type="datetime"></div></span><br> \
-  					</div> \
-  					<div class="ui-block-b"> \
-  						<button id="'+event_id_urlsafe+'_'+this.crew_number+'" data-crew = "'+this.crew_number+'" class = "stopwatch startClass ui-body ui-corner-all">start</button> \
-  					</div> \
-  			    </div> \
+  			<h2><img class="Iphone_oars" height="20" src="/images/blade-icons/'+this.pic_file+'"> '+this.crew_number+' '+this.crew_name+' '+this.crew_type+'</h2> \
+  		  </div> \
+  		  <div class="ui-body ui-grid-a"> \
+  			<div class="ui-block-a"> \
+				<span>time: <div style="display: inline" class="ui-corner-all"  id="'+event_id_urlsafe+'_delta_'+this.crew_number+'" type="datetime"></div></span><br> \
+				<span>start: <div  style="display: inline" class="ui-corner-all" id="'+event_id_urlsafe+'_start_'+this.crew_number+'" type="datetime"></div></span><br> \
+				<span>stop: <div style="display: inline" class="ui-corner-all"  id="'+event_id_urlsafe+'_stop_'+this.crew_number+'"  type="datetime"></div></span><br> \
+  			</div> \
+  			<div class="ui-block-b"> \
+  				<button id="'+event_id_urlsafe+'_'+this.crew_number+'" data-crew = "'+this.crew_number+'" class = "stopwatch startClass ui-body ui-corner-all">start</button> \
+  			</div> \
+  		  </div> \
         </div> \
-		</li>'
+	  </li>'
 
 		var newelement=$(htmlsegment).appendTo('#CrewList');
 	}
@@ -322,8 +323,7 @@ $(function() {
 
 	    });
 
-	$(document).on( "pagecreate", "#paint-crewtimes", function(e,u) {
-		$.mobile.loading( 'show');
+	$(document).on( "pageshow", "#paint-crewtimes", function(e,u) {
 		var page_event_id = $(this).attr('data-event-id');
 		updatetimer = setInterval(RefreshDeltaTimes,REFRESH_TIME);
 	    getServerInterval=setInterval(get_times,REFRESH_TIME2);
@@ -334,9 +334,8 @@ $(function() {
 		    last_timestamp = LAST_TIMESTAMP_RESET;
 			event_and_last_timestamp = {"event_id":event_id_urlsafe,
 							"last_timestamp":last_timestamp};
-			get_crew_list();  //initialise the crew_times array and times and set connection status
-			$(".connection-status").text(connection_status);
-	    }
+			get_crew_list();  //initialise the crew_times array
+		}
 
 	});
 
@@ -538,6 +537,7 @@ function get_crew_list() {
 	crew_times.length = 0; // initialise crew Array before filling it with the crew list
 	indexof.length = 0;
 	var eventRequest = {event_id: event_id_urlsafe};
+	$.mobile.loading( 'show'); //show user that they have to wait
 	try {
 		var crewListRequest = gapi.client.observedtimes.crew.list(eventRequest).execute(function(resp) {
 
@@ -554,6 +554,7 @@ function get_crew_list() {
 	} catch(err) {
 		var e = new $.Event({type: "connection", data: "Connection Error! retry "+retryCount});
 		$(document).trigger(e);
+		$.mobile.loading( 'hide');
 		if (retryCount <= 5){
 			setTimeout(get_crew_list, 2000);
 			retryCount++;
@@ -661,15 +662,17 @@ function get_crew_list() {
 		    		crew_times[indexof[resp.result.times[i].crew]].AddTimeEvent(resp.result.times[i]);
 		    	}
 	    		$("#table-column-toggle").trigger("update");
-	    		e = new $.Event({type: "connection", data: "got times"});
-				$(document).trigger(e);	
-		   }
-
+		   	}
+			e = new $.Event({type: "connection", data: "got times"});
+			$(document).trigger(e);
+			$.mobile.loading( 'hide');
 	      });
  
 	} catch(err) {
 	   	e = new $.Event({type: "connection", data: "get times - failed"});
 		$(document).trigger(e);
+		$.mobile.loading( 'hide');
+
    	}
 
    }
