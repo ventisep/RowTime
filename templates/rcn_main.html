@@ -31,8 +31,8 @@
       <a href="#eventsettings" data-icon="gear" data-iconpos="notext">Settings</a>
   </div> <!-- /Header -->
 
-	<div data-role="main" id="eventList" class="ui-content jqm-content jqm-fullwidth">
-		<ul data-role="listview" class="ui-content jqm-content jqm-fullwidth" data-inset="true" data-filter="true">
+	<div data-role="main" id="eventList" class="ui-content">
+		<ul data-role="listview" class="ui-content" data-inset="true" data-filter="true">
 	{% for event in events %}
 			<li>
           <a href="/loadcrews?event_key={{event.key.urlsafe()}}" data-transition="slide">{{event.event_name}} <br>on {{event.event_date}}</a>

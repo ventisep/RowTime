@@ -95,7 +95,7 @@ function Crew(k,e,n,cn,d,s,ss,stl,sts,etl,ets,f,t,c,x,r,o) {
         	</div> \
         </div> \
   		<div class="front ui-corner-all"> \
-          <div class="ui-bar-a ui-corner-all"> \
+          <div class="ui-bar-a ui-corner-top"> \
   			<h2><img class="Iphone_oars" height="20" src="/images/blade-icons/'+this.pic_file+'"> '+this.crew_number+' '+this.crew_name+' '+this.crew_type+'</h2> \
   		  </div> \
   		  <div class="ui-body ui-grid-a"> \
@@ -111,8 +111,8 @@ function Crew(k,e,n,cn,d,s,ss,stl,sts,etl,ets,f,t,c,x,r,o) {
         </div> \
 	  </li>'
 
-		var newelement=$(htmlsegment).appendTo('#CrewList');
-	}
+	var newelement=$(htmlsegment).appendTo('#CrewList');
+  }
 
   this.UpdateStartTime = function(time, type) {
   	if (type == 0) { //add time
@@ -137,16 +137,16 @@ function Crew(k,e,n,cn,d,s,ss,stl,sts,etl,ets,f,t,c,x,r,o) {
 
 	}
 	return;
- }
+  }
 
- this.isDupTimeId = function(timeEvent){
+  this.isDupTimeId = function(timeEvent){
  	for (var i=0;i<this.observedTimes.length;i++){
  		if (timeEvent.time_id == this.observedTimes[i].time_id) {return true;}
  	}
  	return false;
- }
+  }
 
- this.AddTimeEvent = function(timeEvent) { 
+  this.AddTimeEvent = function(timeEvent) { 
  	var stage = parseInt(timeEvent.stage);
  	if (timeEvent.time_id != undefined) {
  		if (this.isDupTimeId(timeEvent)){return;}//check for duplicates, do any of the times already processed have the same id?
@@ -180,9 +180,9 @@ function Crew(k,e,n,cn,d,s,ss,stl,sts,etl,ets,f,t,c,x,r,o) {
 		this.button.not(classselector).closest("li").hide(400);
 	}
 	return;
- }
+  }
 
- this.UpdateStopTime = function(time, type, stage){
+  this.UpdateStopTime = function(time, type, stage){
  	if (type == 0) { //add time
  		time = new Date(time);
 		this.end_time_local = time; //end time
@@ -204,7 +204,7 @@ function Crew(k,e,n,cn,d,s,ss,stl,sts,etl,ets,f,t,c,x,r,o) {
 		UpdateHash[this.crew_number]=this;
 	}
 	return;
- }
+  }
 }
 
 function copyCrew(myParsedJSON, crewObj) {
@@ -270,7 +270,8 @@ function choose_recording_position(label) {
 function record_a_time_event() {
 	time = new Date();
 	var timetxt = time.toTimeString().replace(/.*(\d{2}:\d{2}:\d{2}).*/, "$1")+"."+("00"+time.getMilliseconds().toString()).slice(-3);
-	var htmlsegment = '<li class="ui-corner-all ui-body-a" data-crew = "TimeOnly"> \
+	var htmlsegment = '\
+	<li class="ui-corner-all ui-body-a" data-crew = "TimeOnly"> \
 		<div class="ui-corner-all ui-content">\
           	<div class="ui-bar-a">\
 				<h2><img class="Iphone_oars" height="20" src="/images/blade-icons/noname.png">  Time</h2>\
@@ -299,7 +300,6 @@ $(function() {
 	$(document).on( "pageshow", "#crewtimes", function(e,u) {
 		var page_event_id = $(this).attr('data-event-id');
 		updatetimer = setInterval(RefreshDeltaTimes,REFRESH_TIME);
-	    getServerInterval=setInterval(get_times,REFRESH_TIME2);
 		autoUpdate = true;
 		if (page_event_id != last_event_id) {  //the event has changed
 	    	$(".ui-table-columntoggle-btn").appendTo($("#columnsTD"));
@@ -308,9 +308,10 @@ $(function() {
 		    last_timestamp = LAST_TIMESTAMP_RESET;
 			event_and_last_timestamp = {"event_id":event_id_urlsafe,
 							"last_timestamp":last_timestamp};
-			get_crew_list();  //initialise the crew_times array and times and set connection status
-			$(".connection-status").text(connection_status);
+			get_crew_list();  //initialise the crew_times array and times
 	        $("#table-column-toggle").tablesorter({sortAppend: [[7,0]], headers: {7: {sorter:'shortTime'}}});
+	    } else {
+	    	get_times();
 	    }
 
 	});
@@ -318,15 +319,13 @@ $(function() {
 	$(document).on( "pagehide" , "#crewtimes", function() {
 	    // stop the function calls to update time
 	    autoUpdate = false;
-	    clearInterval(getServerInterval);
+	    clearTimeout(getServerInterval);
 	    clearInterval(updatetimer);
 
 	    });
 
 	$(document).on( "pageshow", "#paint-crewtimes", function(e,u) {
 		var page_event_id = $(this).attr('data-event-id');
-		updatetimer = setInterval(RefreshDeltaTimes,REFRESH_TIME);
-	    getServerInterval=setInterval(get_times,REFRESH_TIME2);
 		autoUpdate = true;
 		if (page_event_id != last_event_id) {  //the event has changed
 			event_id_urlsafe = page_event_id;
@@ -335,8 +334,10 @@ $(function() {
 			event_and_last_timestamp = {"event_id":event_id_urlsafe,
 							"last_timestamp":last_timestamp};
 			get_crew_list();  //initialise the crew_times array
-		}
-
+	    } else {
+	    	get_times();
+	    }
+		updatetimer = setInterval(RefreshDeltaTimes,REFRESH_TIME);
 	});
 
 
@@ -344,15 +345,13 @@ $(function() {
 	$(document).on( "pagehide" , "#paint-crewtimes", function() {
 	    // stop the function calls to update time
 	    autoUpdate = false;
-	    clearInterval(getServerInterval);
+	    clearTimeout(getServerInterval);
 	    clearInterval(updatetimer);
 
 	    });
 
-	$( document ).on( "connection", function(e) {
-
-		connection_status = e.originalEvent.data;
-		$(".connection-status").text(connection_status);
+	$( document ).on( "connectionEvent", function(e) {
+		$(".connection-status").text(e.originalEvent.data);
 //TODO - possible place to put in loading activity when needed
 		});
 
@@ -535,12 +534,13 @@ var retryCount = 1;
 function get_crew_list() {
 	//if using the API version then call the API here to get back a JSON string
 	crew_times.length = 0; // initialise crew Array before filling it with the crew list
+	//TODO also need to delete the objects already created
 	indexof.length = 0;
+	status("getting crews");
 	var eventRequest = {event_id: event_id_urlsafe};
 	$.mobile.loading( 'show'); //show user that they have to wait
 	try {
 		var crewListRequest = gapi.client.observedtimes.crew.list(eventRequest).execute(function(resp) {
-
 		    for (var i=0; i < resp.result.crews.length; i++) {   //step through the crew_data passed and assign it to crew_times
 		    	var tmpcrew = new Crew();
 		    	tmpcrew = copyCrew(resp.result.crews[i],tmpcrew);//convert the JSON string to an object
@@ -549,20 +549,22 @@ function get_crew_list() {
 		    	// console.log("put crew number " + crew_times[i].crew_number+" into the object array");
 			}
 			get_times(); //now the crews are loaded it is safe to load any times already recorded
-
 		});
 	} catch(err) {
-		var e = new $.Event({type: "connection", data: "Connection Error! retry "+retryCount});
-		$(document).trigger(e);
+		status("Connection Error! retry "+retryCount)
 		$.mobile.loading( 'hide');
 		if (retryCount <= 5){
 			setTimeout(get_crew_list, 2000);
 			retryCount++;
 		} else {retryCount = 1}
-
 	}
-
 }
+
+  function status(message) {
+		var e = new $.Event({type: "connectionEvent", data: message });
+		$(document).trigger(e);
+  }
+
 //initialise the API calls to the rowtime-26 server.//
   function init() {
   	var host = document.location.host.replace(/www./i, "");
@@ -575,7 +577,7 @@ function get_crew_list() {
 	 	}, ROWTIME_API);
     }
     catch(err) {
-    	var e = new $.Event({type: "connection", data: "Connection Error! try again"});
+    	var e = new $.Event({type: "connectionEvent", data: "Connection Error! try again"});
 		$(document).trigger(e);
     	return("error connecting...!");
     }
@@ -603,9 +605,9 @@ function get_crew_list() {
 			console.log("latency: "+accuracy.latency)
 			$(document).data("accuracy", accuracy);
 			if (accuracy.diff_in_ms<accuracy.latency && accuracy.diff_in_ms > 0){
-				e = new $.Event({type: "connection", data: "Successfully connected - your time is exact"});
+				e = new $.Event({type: "connectionEvent", data: "Successfully connected - your time is exact"});
 				} else {
-				e = new $.Event({type: "connection", data: "Successfully connected - your time is NOT EXACT"});
+				e = new $.Event({type: "connectionEvent", data: "Successfully connected - your time is NOT EXACT"});
 				}
 			$(document).trigger(e);
 			$(".ClientTime").text(accuracy.client_time.slice(11,-3));
@@ -618,7 +620,7 @@ function get_crew_list() {
   function api_loading_init() {
   	//this function is called when the API is initialised, put anything here we need to do at the start, for example get an initial read of the obeserved times if we need it//
 	console.log("ROWTIME_API loaded and init function called now getting synch time");
- 	e = new $.Event({type: "connection", data: "Successfully connected - checking time"});
+ 	e = new $.Event({type: "connectionEvent", data: "Successfully connected - checking time"});
 	$(document).trigger(e);
 	gae_connected_flag=true;
 
@@ -632,13 +634,13 @@ function get_crew_list() {
 	try {
 		var recordtime = gapi.client.observedtimes.times.timecreate(observed_time).execute(function(resp) {
 	  		console.log(resp);
-		  	e = new $.Event({type: "connection", data: "recorded time"});
+		  	e = new $.Event({type: "connectionEvent", data: "recorded time"});
 			$(document).trigger(e);
 			crew_times[indexof[resp.result.crew]].AddTimeEvent(resp.result);
 
 	  	});
 	} catch(err) {
-		e = new $.Event({type: "connection", data: "failed to record time: try again"});
+		e = new $.Event({type: "connectionEvent", data: "failed to record time: try again"});
 		$(document).trigger(e);
 		console.log("recording time failed");
 		return("error connecting...!");
@@ -652,7 +654,7 @@ function get_crew_list() {
    }
  	var request = gapi.client.observedtimes.times.listtimes(event_and_last_timestamp);
   	try {
-		  e = new $.Event({type: "connection", data: "getting times"});
+		  e = new $.Event({type: "connectionEvent", data: "getting times"});
 		  $(document).trigger(e);
 		  request.then(function(resp) {
 	    	last_timestamp = resp.result.last_timestamp;
@@ -663,15 +665,17 @@ function get_crew_list() {
 		    	}
 	    		$("#table-column-toggle").trigger("update");
 		   	}
-			e = new $.Event({type: "connection", data: "got times"});
+			e = new $.Event({type: "connectionEvent", data: "got times"});
 			$(document).trigger(e);
 			$.mobile.loading( 'hide');
+			getServerInterval=setTimeout(get_times,REFRESH_TIME2);
 	      });
  
 	} catch(err) {
-	   	e = new $.Event({type: "connection", data: "get times - failed"});
+	   	e = new $.Event({type: "connectionEvent", data: "get times - failed"});
 		$(document).trigger(e);
 		$.mobile.loading( 'hide');
+		getServerInterval=setTimeout(get_times,REFRESH_TIME2);
 
    	}
 
