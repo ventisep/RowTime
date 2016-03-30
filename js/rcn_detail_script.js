@@ -91,12 +91,12 @@ function Crew(k,e,n,cn,d,s,ss,stl,sts,etl,ets,f,t,c,x,r,o) {
         <div class="back ui-corner-all"> \
           	<div class="ui-body"> \
   				<p style="text-align:center; color:white">Undo the last recorded time</p> \
-          		<button class="cancel back-button">cancel</button> <button class="confirm back-button" >confirm</button> \
+          		<button class="cancel back-button">cancel</button> <button class="confirm back-button" >confirm</button> <button class="edit back-button" >Edit</button>\
         	</div> \
         </div> \
   		<div class="front ui-corner-all"> \
           <div class="ui-bar-a ui-corner-top"> \
-  			<h2><img class="Iphone_oars" height="20" src="/images/blade-icons/'+this.pic_file+'"> '+this.crew_number+' '+this.crew_name+' '+this.crew_type+'</h2> \
+  			<h2><img class="Iphone_oars" height="20" src="/images/blade-icons/'+this.pic_file+'"> '+this.crew_number+' '+this.crew_name+' '+this.category+'</h2> \
   		  </div> \
   		  <div class="ui-body ui-grid-a"> \
   			<div class="ui-block-a"> \
@@ -215,11 +215,6 @@ function copyCrew(myParsedJSON, crewObj) {
 	}
 
 	crewObj.event_id = event_id_urlsafe;
-	crewObj.paint_crew();
-	crewObj.button = $('#'+event_id_urlsafe+'_'+crewObj.crew_number);
-	crewObj.start_time_textElement = $('#'+event_id_urlsafe+'_start_'+crewObj.crew_number);
-	crewObj.end_time_textElement = $('#'+event_id_urlsafe+'_stop_'+crewObj.crew_number);
-	crewObj.delta_time_textElement = $('#'+event_id_urlsafe+'_delta_'+crewObj.crew_number);
 
 	if (crewObj.stages !== undefined) {
 
@@ -237,6 +232,16 @@ function copyCrew(myParsedJSON, crewObj) {
 
 
 	return crewObj;
+}
+
+function addCrewsToDom() {
+	for (var i=0;i<crew_times.length;i++){
+		crew_times[i].paint_crew();
+		crew_times[i].button = $('#'+event_id_urlsafe+'_'+crew_times[i].crew_number);
+		crew_times[i].start_time_textElement = $('#'+event_id_urlsafe+'_start_'+crew_times[i].crew_number);
+		crew_times[i].end_time_textElement = $('#'+event_id_urlsafe+'_stop_'+crew_times[i].crew_number);
+		crew_times[i].delta_time_textElement = $('#'+event_id_urlsafe+'_delta_'+crew_times[i].crew_number);
+	}
 }
 
 
@@ -301,19 +306,14 @@ $(function() {
 		var page_event_id = $(this).attr('data-event-id');
 		updatetimer = setInterval(RefreshDeltaTimes,REFRESH_TIME);
 		autoUpdate = true;
-		if (page_event_id != last_event_id) {  //the event has changed
-	    	$(".ui-table-columntoggle-btn").appendTo($("#columnsTD"));
-			event_id_urlsafe = page_event_id;
-	        last_event_id = page_event_id;
-		    last_timestamp = LAST_TIMESTAMP_RESET;
-			event_and_last_timestamp = {"event_id":event_id_urlsafe,
-							"last_timestamp":last_timestamp};
-			get_crew_list();  //initialise the crew_times array and times
-	        $("#table-column-toggle").tablesorter({sortAppend: [[7,0]], headers: {7: {sorter:'shortTime'}}});
-	    } else {
-	    	get_times();
-	    }
-
+    	$(".ui-table-columntoggle-btn").appendTo($("#columnsTD"));
+		event_id_urlsafe = page_event_id;
+        last_event_id = page_event_id;
+	    last_timestamp = LAST_TIMESTAMP_RESET;
+		event_and_last_timestamp = {"event_id":event_id_urlsafe,
+						"last_timestamp":last_timestamp};
+		get_crew_list();  //initialise the crew_times array and times
+	    $("#table-column-toggle").tablesorter({sortAppend: [[7,0]], headers: {7: {sorter:'shortTime'}}});
 	});
 
 	$(document).on( "pagehide" , "#crewtimes", function() {
@@ -327,16 +327,12 @@ $(function() {
 	$(document).on( "pageshow", "#paint-crewtimes", function(e,u) {
 		var page_event_id = $(this).attr('data-event-id');
 		autoUpdate = true;
-		if (page_event_id != last_event_id) {  //the event has changed
-			event_id_urlsafe = page_event_id;
-	        last_event_id = page_event_id;
-		    last_timestamp = LAST_TIMESTAMP_RESET;
-			event_and_last_timestamp = {"event_id":event_id_urlsafe,
+		event_id_urlsafe = page_event_id;
+	    last_event_id = page_event_id;
+		last_timestamp = LAST_TIMESTAMP_RESET;
+		event_and_last_timestamp = {"event_id":event_id_urlsafe,
 							"last_timestamp":last_timestamp};
-			get_crew_list();  //initialise the crew_times array
-	    } else {
-	    	get_times();
-	    }
+		get_crew_list();  //initialise the crew_times array
 		updatetimer = setInterval(RefreshDeltaTimes,REFRESH_TIME);
 	});
 
@@ -345,6 +341,7 @@ $(function() {
 	$(document).on( "pagehide" , "#paint-crewtimes", function() {
 	    // stop the function calls to update time
 	    autoUpdate = false;
+		$("#CrewList").empty(); //delete all the crews from the DOM	    
 	    clearTimeout(getServerInterval);
 	    clearInterval(updatetimer);
 
@@ -548,6 +545,7 @@ function get_crew_list() {
 		    	indexof[crew_times[i].crew_number]=i; //create a lookup
 		    	// console.log("put crew number " + crew_times[i].crew_number+" into the object array");
 			}
+			addCrewsToDom();
 			get_times(); //now the crews are loaded it is safe to load any times already recorded
 		});
 	} catch(err) {
