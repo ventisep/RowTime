@@ -24,12 +24,37 @@
     	<a href="/" data-transition="slide" data-icon="back" data-direction="reverse" data-iconpos="notext">back</a>
     	<a href="#settings" data-icon="gear" data-iconpos="notext">Settings</a>
   </div> <!-- /Header -->
-
-  <div data-role="main" class="ui-content" data-mini="true">
+  <div data-role="main" id="maindiv" class="ui-content" data-mini="true">
     <input type="text" id="search-input" data-mini="true" data-type="search" />
 
     <ul id="CrewList" data-role="listview" data-filter = "true" data-input="#search-input" data-inset="true" class="ui-content">
-	 </ul>
+
+<!-- test code for the first item in the list
+      <li class="swipeable ui-corner-all" style="margin: 5px" id="testbox" data-crew = "testcrew">
+          <div class="back ui-corner-all">
+              <div class="ui-body">
+            <p style="text-align:center; color:white">Undo the last recorded time</p>
+                <button class="cancel back-button">cancel</button> <button class="confirm back-button" >confirm</button> <button class="edit back-button" >Edit</button>
+            </div>
+          </div>
+        <div class="front ui-corner-all">
+          <div class="ui-bar-a ui-corner-top">
+            <h2><img class="Iphone_oars" height="20" src="/images/blade-icons/testblade.gif"> 999 A Test Crew Club IM2.4x+'</h2>
+          </div>
+          <div class="ui-body ui-grid-a">
+            <div class="ui-block-a">
+              <span>time: <div style="display: inline" class="ui-corner-all"  id="testid2" type="datetime"></div></span><br>
+              <span>start: <div  style="display: inline" class="ui-corner-all" id="testid3" type="datetime"></div></span><br>
+              <span>stop: <div style="display: inline" class="ui-corner-all"  id="'testid4"  type="datetime"></div></span><br>
+            </div>
+            <div class="ui-block-b">
+              <button id="testid5" data-crew = "testcrew1" class = "stopwatch startClass ui-body ui-corner-all">start</button>
+            </div>
+          </div>
+        </div>
+      </li>
+end of test code-->
+    </ul>
   </div>
   
   <div data-role="panel" data-position="right" data-display="overlay" data-theme="a" id="settings">

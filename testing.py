@@ -81,30 +81,18 @@ class ConvertData(BaseRequestHandler):
 
         # First check if user is signed in and if not redirect to sign-in page
         if self.logged_in:
+            user=self.current_user
+            event_list = list()
+            event_list = Events.query().fetch()
+            #read each event and add stages start and stop to them
+            for e in event_list:
 
-        	user=self.current_user
-
-        	try:
-        		#read each event and add stages start and stop to them
-        		event_list = list()
-        		event_list = Events.query().fetch();
-
-        		for e in event_list:
-
-	        		s1=Stages(
-				    	event_id = e.key,
-				    	stage_index = 0,
-				    	label = "start").put()
-
-	        		s2=Stages(
-				    	event_id = e.key,
-				    	stage_index = 1,
-				    	label = "stop").put()
-
-	        except:
-        		message = sys.exc_info()[0]
-        		raise
-
+                s1=Stages(event_id = e.key,
+    		    	stage_index = 0,
+    		    	label = "start").put()
+                s2=Stages(event_id = e.key,
+    		    	stage_index = 1,
+    		    	label = "stop").put()
 
         	self.response.write("stages added")
 

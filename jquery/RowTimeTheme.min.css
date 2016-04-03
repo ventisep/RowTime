@@ -27,8 +27,8 @@ li .back {
   transform: rotateY(180deg);
   -webkit-transform-style: preserve-3d;
   transform-style: preserve-3d;
-  width: 100%;
-  height:100%;
+  width: 90%;
+  height: 90%;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
   /*z-index: -1*/
@@ -44,7 +44,7 @@ li button.startClass.stopwatch {
   background-color: white;
 }
 li button.stopClass.stopwatch {
-  background-color: red; 
+  background-color: red;
 }
 li button.finishedClass.stopwatch{
   background-color: grey;
@@ -62,17 +62,6 @@ th.headerSortDown {
 th.header { 
     cursor: pointer; 
 }
-
-
-#my-wrapper form {
-    position :fixed;
-    top      : 40px;
-    left     : 20px;
-    right    : 20px;
-    z-index  : 1;
-}
-
-
 
 /* Globals */
 /* Font

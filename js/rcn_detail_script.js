@@ -87,12 +87,10 @@ function Crew(k,e,n,cn,d,s,ss,stl,sts,etl,ets,f,t,c,x,r,o) {
 
   this.paint_crew = function(){
 	var htmlsegment = 	'\
-	  <li class="swipeable ui-corner-all" style="margin: 5px" id="'+event_id_urlsafe+'_crew_'+this.crew_number+'" data-crew = "'+this.crew_number+'"> \
+	  <li class="swipeable ui-corner-all ui-body-inherit ui-li-static" style="margin: 5px" id="'+event_id_urlsafe+'_crew_'+this.crew_number+'" data-crew = "'+this.crew_number+'"> \
         <div class="back ui-corner-all"> \
-          	<div class="ui-body"> \
-  				<p style="text-align:center; color:white">Undo the last recorded time</p> \
-          		<button class="cancel back-button">cancel</button> <button class="confirm back-button" >confirm</button> <button class="edit back-button" >Edit</button>\
-        	</div> \
+  			<p style="text-align:center; color:white">Undo the last recorded time</p> \
+          	<button class="cancel back-button">cancel</button> <button class="confirm back-button" >confirm</button> <button class="edit back-button" >Edit</button>\
         </div> \
   		<div class="front ui-corner-all"> \
           <div class="ui-bar-a ui-corner-top"> \
@@ -111,7 +109,7 @@ function Crew(k,e,n,cn,d,s,ss,stl,sts,etl,ets,f,t,c,x,r,o) {
         </div> \
 	  </li>'
 
-	var newelement=$(htmlsegment).appendTo('#CrewList');
+	var newelement=$(htmlsegment).appendTo('#CrewList').enhanceWithin();
   }
 
   this.UpdateStartTime = function(time, type) {
@@ -324,7 +322,7 @@ $(function() {
 
 	    });
 
-	$(document).on( "pageshow", "#paint-crewtimes", function(e,u) {
+	$(document).on( "pagecreate", "#paint-crewtimes", function(e,u) {
 		var page_event_id = $(this).attr('data-event-id');
 		autoUpdate = true;
 		event_id_urlsafe = page_event_id;
