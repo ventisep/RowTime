@@ -6,6 +6,7 @@ from google.appengine.api import users
 from protorpc import messages
 from protorpc import message_types
 from protorpc import remote
+from protorpc.wsgi import service
 import datetime
 from datetime import tzinfo
 import logging
@@ -31,6 +32,10 @@ class CrewsRequest(messages.Message):
   "used to store the request for a list of crews for a specific event"
   event_id = messages.StringField(1)
 
+class EventRequest(messages.Message):
+  "used to store the request for a list of crews for a specific event"
+  search_string = messages.StringField(1)
+
 class Stage(messages.Message):
   "used to store the stages of the specific event to put in the CrewList message"
   stage_index = messages.IntegerField(1)
@@ -53,6 +58,16 @@ class Crew(messages.Message):
 class CrewList(messages.Message):
   event_id = messages.StringField(1)
   crews = messages.MessageField(Crew, 2, repeated=True)
+
+class Event(messages.Message):
+  "used to store the event information"
+  event_id = messages.StringField(1)
+  event_name = messages.StringField(2)
+  event_date = messages.StringField(3)
+  event_desc = messages.StringField(4)
+
+class EventList(messages.Message):
+  events = messages.MessageField(Event, 1, repeated=True)
 
 class TimesRequest(messages.Message):
   "used to store the request for a list of times since the last timestamp"
@@ -254,6 +269,32 @@ class ObservedTimesApi(remote.Service):
 
     return reply
 
+  @endpoints.method(EventRequest, EventList,
+                    path='event', http_method='GET',
+                    name='event.list')
+  def events_list(self, request):
+
+  # EventRequest has one attribute "search_string"
+  # but it is not used in this version of the 
+  # API.
+
+    event_list = list()
+    reply = EventList()
+
+    event_list = Events.query().order(Events.event_date).fetch()
+
+    if event_list:
+      i=0
+      for event in event_list:
+      #for each crew get their details and fill the reply message
+        reply.events.append(Event())
+        reply.events[i].event_id = event.key.urlsafe()
+        reply.events[i].event_name = event.event_name
+        reply.events[i].event_date = event.event_date.strftime('%d-%m-%Y')
+        reply.events[i].event_desc = event.event_desc
+        i=i+1
+
+    return reply
 
 
 

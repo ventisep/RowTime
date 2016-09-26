@@ -1,0 +1,353 @@
+{
+ "kind": "discovery#rpcDescription",
+ "etag": "\"H01Z-1ikbwOw463Un2bFZHenx1g/ZOQcJAqRuON9q5A68g7m9OQoc8I\"",
+ "discoveryVersion": "v1",
+ "id": "observedtimes:v1",
+ "name": "observedtimes",
+ "version": "v1",
+ "description": "ObservedTimes API v1. This API allows the GET method to get a collection of observed times since the last time the user asked for a list and a POST method to record new times",
+ "icons": {
+  "x16": "http://www.google.com/images/icons/product/search-16.gif",
+  "x32": "http://www.google.com/images/icons/product/search-32.gif"
+ },
+ "protocol": "rpc",
+ "rootUrl": "https://rowtime-26.appspot.com/_ah/api/",
+ "rpcUrl": "https://rowtime-26.appspot.com/_ah/api/rpc",
+ "rpcPath": "/_ah/api/rpc",
+ "parameters": {
+  "alt": {
+   "type": "string",
+   "description": "Data format for the response.",
+   "default": "json",
+   "enum": [
+    "json"
+   ],
+   "enumDescriptions": [
+    "Responses with Content-Type of application/json"
+   ],
+   "location": "query"
+  },
+  "fields": {
+   "type": "string",
+   "description": "Selector specifying which fields to include in a partial response.",
+   "location": "query"
+  },
+  "key": {
+   "type": "string",
+   "description": "API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.",
+   "location": "query"
+  },
+  "oauth_token": {
+   "type": "string",
+   "description": "OAuth 2.0 token for the current user.",
+   "location": "query"
+  },
+  "prettyPrint": {
+   "type": "boolean",
+   "description": "Returns response with indentations and line breaks.",
+   "default": "true",
+   "location": "query"
+  },
+  "quotaUser": {
+   "type": "string",
+   "description": "Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters. Overrides userIp if both are provided.",
+   "location": "query"
+  },
+  "userIp": {
+   "type": "string",
+   "description": "IP address of the site where the request originates. Use this if you want to enforce per-user limits.",
+   "location": "query"
+  }
+ },
+ "auth": {
+  "oauth2": {
+   "scopes": {
+    "https://www.googleapis.com/auth/userinfo.email": {
+     "description": "View your email address"
+    }
+   }
+  }
+ },
+ "schemas": {
+  "RowTimePackageClockSyncReply": {
+   "id": "RowTimePackageClockSyncReply",
+   "type": "object",
+   "description": "used to reply with the server time and comparison to the client time",
+   "properties": {
+    "client_time": {
+     "type": "string",
+     "format": "date-time"
+    },
+    "diff_in_ms": {
+     "type": "number",
+     "format": "double"
+    },
+    "server_time": {
+     "type": "string",
+     "format": "date-time"
+    }
+   }
+  },
+  "RowTimePackageClockSyncRequest": {
+   "id": "RowTimePackageClockSyncRequest",
+   "type": "object",
+   "description": "used to store the request for a comparison of time between the server and the client",
+   "properties": {
+    "client_time": {
+     "type": "string",
+     "format": "date-time"
+    }
+   }
+  },
+  "RowTimePackageCrew": {
+   "id": "RowTimePackageCrew",
+   "type": "object",
+   "description": "used to store the crew information",
+   "properties": {
+    "category": {
+     "type": "string"
+    },
+    "cox": {
+     "type": "boolean"
+    },
+    "crew_id": {
+     "type": "string"
+    },
+    "crew_name": {
+     "type": "string"
+    },
+    "crew_number": {
+     "type": "string",
+     "format": "int64"
+    },
+    "division": {
+     "type": "string",
+     "format": "int64"
+    },
+    "end_time_local": {
+     "type": "string",
+     "format": "date-time"
+    },
+    "pic_file": {
+     "type": "string"
+    },
+    "rower_count": {
+     "type": "string",
+     "format": "int64"
+    },
+    "stages": {
+     "type": "array",
+     "description": "used to store the stages of the specific event to put in the CrewList message",
+     "items": {
+      "$ref": "RowTimePackageStage"
+     }
+    },
+    "start_time_local": {
+     "type": "string",
+     "format": "date-time"
+    }
+   }
+  },
+  "RowTimePackageCrewList": {
+   "id": "RowTimePackageCrewList",
+   "type": "object",
+   "properties": {
+    "crews": {
+     "type": "array",
+     "description": "used to store the crew information",
+     "items": {
+      "$ref": "RowTimePackageCrew"
+     }
+    },
+    "event_id": {
+     "type": "string"
+    }
+   }
+  },
+  "RowTimePackageEvent": {
+   "id": "RowTimePackageEvent",
+   "type": "object",
+   "description": "used to store the event information",
+   "properties": {
+    "event_date": {
+     "type": "string",
+     "format": "date-time"
+    },
+    "event_desc": {
+     "type": "string"
+    },
+    "event_id": {
+     "type": "string"
+    },
+    "event_name": {
+     "type": "string"
+    }
+   }
+  },
+  "RowTimePackageEventList": {
+   "id": "RowTimePackageEventList",
+   "type": "object",
+   "properties": {
+    "events": {
+     "type": "array",
+     "description": "used to store the event information",
+     "items": {
+      "$ref": "RowTimePackageEvent"
+     }
+    }
+   }
+  },
+  "RowTimePackageObservedTime": {
+   "id": "RowTimePackageObservedTime",
+   "type": "object",
+   "description": "used to store an observered time from a user for a specific Crew.",
+   "properties": {
+    "crew": {
+     "type": "string",
+     "format": "int64"
+    },
+    "event_id": {
+     "type": "string"
+    },
+    "obs_type": {
+     "type": "string",
+     "format": "int64"
+    },
+    "stage": {
+     "type": "string",
+     "format": "int64"
+    },
+    "time": {
+     "type": "string",
+     "format": "date-time"
+    },
+    "time_id": {
+     "type": "string"
+    },
+    "timestamp": {
+     "type": "string",
+     "format": "date-time"
+    }
+   }
+  },
+  "RowTimePackageObservedTimeList": {
+   "id": "RowTimePackageObservedTimeList",
+   "type": "object",
+   "description": "Used to provide a list of Observed times since last request for a specific event",
+   "properties": {
+    "event_id": {
+     "type": "string"
+    },
+    "last_timestamp": {
+     "type": "string",
+     "format": "date-time"
+    },
+    "times": {
+     "type": "array",
+     "description": "used to store an observered time from a user for a specific Crew.",
+     "items": {
+      "$ref": "RowTimePackageObservedTime"
+     }
+    }
+   }
+  },
+  "RowTimePackageStage": {
+   "id": "RowTimePackageStage",
+   "type": "object",
+   "description": "used to store the stages of the specific event to put in the CrewList message",
+   "properties": {
+    "label": {
+     "type": "string"
+    },
+    "stage_index": {
+     "type": "string",
+     "format": "int64"
+    }
+   }
+  }
+ },
+ "methods": {
+  "observedtimes.clock.clockcheck": {
+   "id": "observedtimes.clock.clockcheck",
+   "parameters": {
+    "resource": {
+     "$ref": "RowTimePackageClockSyncRequest"
+    }
+   },
+   "parameterOrder": [
+    "resource"
+   ],
+   "returns": {
+    "$ref": "RowTimePackageClockSyncReply"
+   },
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
+  },
+  "observedtimes.crew.list": {
+   "id": "observedtimes.crew.list",
+   "allowGet": true,
+   "parameters": {
+    "event_id": {
+     "type": "string"
+    }
+   },
+   "returns": {
+    "$ref": "RowTimePackageCrewList"
+   },
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
+  },
+  "observedtimes.event.list": {
+   "id": "observedtimes.event.list",
+   "allowGet": true,
+   "parameters": {
+    "search_string": {
+     "type": "string"
+    }
+   },
+   "returns": {
+    "$ref": "RowTimePackageEventList"
+   },
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
+  },
+  "observedtimes.times.listtimes": {
+   "id": "observedtimes.times.listtimes",
+   "allowGet": true,
+   "parameters": {
+    "event_id": {
+     "type": "string"
+    },
+    "last_timestamp": {
+     "type": "string"
+    }
+   },
+   "returns": {
+    "$ref": "RowTimePackageObservedTimeList"
+   },
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
+  },
+  "observedtimes.times.timecreate": {
+   "id": "observedtimes.times.timecreate",
+   "parameters": {
+    "resource": {
+     "$ref": "RowTimePackageObservedTime"
+    }
+   },
+   "parameterOrder": [
+    "resource"
+   ],
+   "returns": {
+    "$ref": "RowTimePackageObservedTime"
+   },
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
+  }
+ }
+}

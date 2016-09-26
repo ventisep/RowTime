@@ -90,6 +90,7 @@ class ConvertData(BaseRequestHandler):
                 s1=Stages(event_id = e.key,
     		    	stage_index = 0,
     		    	label = "start").put()
+                
                 s2=Stages(event_id = e.key,
     		    	stage_index = 1,
     		    	label = "stop").put()

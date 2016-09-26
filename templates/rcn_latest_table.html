@@ -1,0 +1,105 @@
+<!doctype html>
+<html >
+<head>
+  <meta charset="utf-8">
+  <meta name="Paul Ventisei" content="Rowing Times">
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<!--
+  <link rel="stylesheet" href="jquery/jquery.mobile-1.4.5.min.css"/>
+-->
+  <link rel="stylesheet" href="jquery/RowTimeTheme.min.css" />
+  <link rel="stylesheet" href="jquery/jquery.mobile.icons.min.css" />
+  <link rel="stylesheet" href="jquery/jquery.mobile.structure-1.4.5.min.css" />
+  <script src="jquery/jquery-1.11.3.min.js"></script>
+  <script src="jquery/jquery.tablesorter.js"></script>
+  <script type="text/javascript" src="js/rcn_detail_script.js"></script>
+  <script src="jquery/jquery.mobile-1.4.5.min.js"></script>
+  <script src="https://apis.google.com/js/client.js?onload=init"></script>
+
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+</head>
+
+
+<div data-role="page" data-event-id = "{{event.urlsafe()}}" id="latestcrewtimes">
+	<div data-role="header" data-position="fixed">
+    	<h1 id="username">NOT OFFICIAL TIMES</h1>
+    	<a href="#" data-rel="back" data-icon="back" data-iconpos="notext">back</a>
+    	<a href="#eventsettings3" data-icon="gear" data-iconpos="notext">Settings</a>
+  	</div>
+
+  	<div data-role="main" class="ui-content ui-corner-all jqm-content">
+	  <table style="width: 100%" >
+        <tr>
+            <td><input id="filterTable-input2" data-type="search" /></td>
+            <td id="columnsTD2" style="width: 75px; padding-top: 4px;"></td>
+        </tr>
+    </table>
+  	<table data-role="table" id="table-column-toggle2" data-mode="columntoggle" class="ui-responsive table-stripe ui-body-a ui-corner-all tablesorter" data-filter="true" data-input="#filterTable-input2">
+	  	<thead>
+	        <tr>
+	          <th data-priority="2">Oar</th>
+	          <th>Div</th>
+	          <th>Crew</th>
+	          <th data-priority="1">Name</th>
+	          <th data-priority="3"><abbr title="Category">Cat</abbr></th>
+	          <th data-priority="4"><abbr title="Start Time">Start</abbr></th>
+	          <th data-priority="5"><abbr title="Stop Time">Stop</abbr></th>
+	          <th style="text-align:right; width:76px">Time</th>
+	        </tr>
+	    </thead>
+	    <tbody>
+			{% for crew in crews %}
+			<tr>
+				<td><img class="Iphone_oars" height = "20" src="/images/blade-icons/{{crew.pic_file}}"></td>
+				<td>{{crew.division}}</td>
+				<td>{{crew.crew_number}}</td>
+				<td>{{crew.crew_name}}</td>
+				<td>{{crew.crew_type}}</td>
+				<td id="{{event.urlsafe()}}_start_{{crew.crew_number}}"></td>
+				<td id="{{event.urlsafe()}}_stop_{{crew.crew_number}}"></td>
+				<td style="text-align:right;" id="{{event.urlsafe()}}_delta_{{crew.crew_number}}"></td>
+			</tr>
+			{% endfor %}
+		  </tbody>
+	  </table>
+	</div>
+  <div data-role="panel" data-position="right" data-display="overlay" data-theme="a" id="eventsettings3">
+
+{% if logged_in %}
+      <h2>Settings for {{user.name}}</h2>
+
+      <label for="email">E-mail:</label>
+      <input type="text" placeholder="E-mail" id="email" name="email" value = "{{user.email}}" data-clear-btn="true" data-mini="true">
+       <a href="/logout" class="ui-btn ui-corner-all">Logout</a>
+
+{% else %}
+      <h2>Login</h2>
+      <h5>(FOR EVENT ADMINS ONLY)</h5>
+        <form data-ajax="false" method="post" action="/login">
+
+            <label for="email">E-mail:</label>
+            <input type="text" placeholder="E-mail" id="login-signup-style" name="email" class="login_text-box2" value = "" data-clear-btn="true" data-mini="true"> 
+
+
+            <label for="password">Password:</label>
+            <input type="password" placeholder="Password" id="login-signup-style" name="password" class="login_text-box" data-clear-btn="true" autocomplete="off" data-mini="true">
+
+            <input type="submit" value="Login" id="login-button">
+        </form>
+
+{% endif %}
+      <h2>Time Synchronisation Check - Results</h2>
+      <div>
+          Time on Your Device: <span class="ClientTime"></span><p>
+          Time at The Server: <span class="ServerTime"></span><p>
+          Difference in ms: <span class="TimeDiff"></span><p>
+          latency in ms: <span class="Latency"></span>
+      </div>
+  </div><!-- /panel -->
+   <div data-role="footer" data-position="fixed">
+    <span class="connection-status">Connecting...</span>
+   </div>
+</div><!-- /page -->
+

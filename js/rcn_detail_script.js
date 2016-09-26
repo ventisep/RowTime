@@ -2,15 +2,11 @@
 //ToDos
 //1. consider how to create an off-line version of the time recording to speed up the user experience
 //	 and allow use where the wifi or mobile connectivity is poor.
-//2. make the call for crew data more efficient and sort out the resetting of the variables on second
-//   use of the call
-//
 //4. add stage names to the button rather than start/stop these should be part of the event
 //   so add to data model as repeated group stage and stage desc.
 //5. add a verify option at the end of the stages which allow edit of official times with
 //   with the addition of an obs_type of 3 - design spike on whether to add these to the crew-times
 //   table or whether to get rid of that table all-together
-//
 //6. Use offline storage to store the events and send back and forth async to the server enabling
 //   offline use and times get synch'd when possible - precursor to this would be to save session
 //   in offline storage (not sure this will work)
@@ -146,16 +142,16 @@ function Crew(k,e,n,cn,d,s,ss,stl,sts,etl,ets,f,t,c,x,r,o) {
 
   this.AddTimeEvent = function(timeEvent) { 
  	var stage = parseInt(timeEvent.stage);
- 	if (timeEvent.time_id != undefined) {
+ 	if (timeEvent.time_id != undefined) { //if time event is undefined then it is an event that has not been stored at the server end yet
  		if (this.isDupTimeId(timeEvent)){return;}//check for duplicates, do any of the times already processed have the same id?
 		this.observedTimes.push(timeEvent);
  	}
  	if (stage == 0) {this.UpdateStartTime(timeEvent.time, timeEvent.obs_type);} //stage 0 is always the start
  	if (stage == this.stages.length-2) {this.UpdateStopTime(timeEvent.time, timeEvent.obs_type, stage);} //last but one stage is always the end
-	if (stage > this.stages.length-2){return;};
+	if (stage > this.stages.length-2){return;}; //illegal stage number
 	if (timeEvent.obs_type == 0) {  //add the stage time provided
-		this.stages[stage].local_time = new Date(timeEvent.time); //start time
-		this.stages[stage].server_time = new Date(timeEvent.timestamp); //start time
+		this.stages[stage].local_time = new Date(timeEvent.time);
+		this.stages[stage].server_time = new Date(timeEvent.timestamp);
 		this.stage=stage;
 		this.nextstage=this.stage+1;
 		//this.stages[stage].time_textElement.css("color","green");
@@ -234,11 +230,13 @@ function copyCrew(myParsedJSON, crewObj) {
 
 function addCrewsToDom() {
 	for (var i=0;i<crew_times.length;i++){
-		crew_times[i].paint_crew();
+		crew_times[i].paint_crew(); //TODO This is only needed if the page from the server did not have the DOM loaded already
+		//rcn_detail needs this but rcd_detail_not_logged_in does not as it is already loaded with a table
 		crew_times[i].button = $('#'+event_id_urlsafe+'_'+crew_times[i].crew_number);
 		crew_times[i].start_time_textElement = $('#'+event_id_urlsafe+'_start_'+crew_times[i].crew_number);
 		crew_times[i].end_time_textElement = $('#'+event_id_urlsafe+'_stop_'+crew_times[i].crew_number);
 		crew_times[i].delta_time_textElement = $('#'+event_id_urlsafe+'_delta_'+crew_times[i].crew_number);
+		//TODO crew stage times need to be added as text elements too if in the DOM.
 	}
 }
 
@@ -291,7 +289,7 @@ function record_a_time_event() {
 		    </div>\
 		</div>\
 	</li>';
-	var newelement=$(htmlsegment).prependTo('#CrewList');
+	var newelement=$(htmlsegment).prependTo('#CrewList').enhanceWithin();
 	$(newelement).data("datetime", time);
 }
 
@@ -312,6 +310,28 @@ $(function() {
 						"last_timestamp":last_timestamp};
 		get_crew_list();  //initialise the crew_times array and times
 	    $("#table-column-toggle").tablesorter({sortAppend: [[7,0]], headers: {7: {sorter:'shortTime'}}});
+	});
+
+	$(document).on( "pagehide" , "#latestcrewtimes", function() {
+	    // stop the function calls to update time
+	    autoUpdate = false;
+	    clearTimeout(getServerInterval);
+	    clearInterval(updatetimer);
+
+	    });
+
+	$(document).on( "pageshow", "#latestcrewtimes", function(e,u) {
+		var page_event_id = $(this).attr('data-event-id');
+		updatetimer = setInterval(RefreshDeltaTimes,REFRESH_TIME);
+		autoUpdate = true;
+    	$(".ui-table-columntoggle-btn").appendTo($("#columnsTD2"));
+		event_id_urlsafe = page_event_id;
+        last_event_id = page_event_id;
+	    last_timestamp = LAST_TIMESTAMP_RESET;
+		event_and_last_timestamp = {"event_id":event_id_urlsafe,
+						"last_timestamp":last_timestamp};
+		get_crew_list();  //initialise the crew_times array and times
+	    $("#table-column-toggle2").tablesorter({sortAppend: [[7,0]], headers: {7: {sorter:'shortTime'}}});
 	});
 
 	$(document).on( "pagehide" , "#crewtimes", function() {
@@ -347,7 +367,6 @@ $(function() {
 
 	$( document ).on( "connectionEvent", function(e) {
 		$(".connection-status").text(e.originalEvent.data);
-//TODO - possible place to put in loading activity when needed
 		});
 
 	function record_stage(e) {
@@ -529,7 +548,7 @@ var retryCount = 1;
 function get_crew_list() {
 	//if using the API version then call the API here to get back a JSON string
 	crew_times.length = 0; // initialise crew Array before filling it with the crew list
-	//TODO also need to delete the objects already created
+	//TODO also need to delete the objects already created - DONE
 	indexof.length = 0;
 	status("getting crews");
 	var eventRequest = {event_id: event_id_urlsafe};
@@ -660,7 +679,11 @@ function get_crew_list() {
 		    		crew_times[indexof[resp.result.times[i].crew]].AddTimeEvent(resp.result.times[i]);
 		    	}
 	    		$("#table-column-toggle").trigger("update");
+	    		$("#table-column-toggle2").trigger("update");
 		   	}
+		   	//var sorting = [[7,0]]; //this code creates real time update of list but very heavy on performance
+            // sort on the first column 
+            //$("#table-column-toggle").trigger("sorton",[sorting]);
 			e = new $.Event({type: "connectionEvent", data: "got times"});
 			$(document).trigger(e);
 			$.mobile.loading( 'hide');
